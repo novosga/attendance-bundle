@@ -1,0 +1,17 @@
+{
+    "name": "novosga/attendance-bundle",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": { "Novosga\\AttendanceBundle\\": "" }
+    },
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "config": {
+        "platform": {
+            "php": "5.5.9"
+        }
+    }
+}
+
