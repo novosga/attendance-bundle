@@ -18,75 +18,105 @@ App.Atendimento = {
     init: function(status) {
         App.Atendimento.ajaxUpdate();
         App.Atendimento.updateControls(status);
+        
         $('#dialog-busca').on('show.bs.modal', function () {
             $('#numero_busca').val('');
             $('#result_table tbody').html('');
         });
+        
         App.Atendimento.defaultTitle = document.title;
         if (!App.Notification.allowed()) {
             $('#notification').show();
         }
+        
+        App.Websocket.connect();
+
+        App.Websocket.on('connect', function () {
+            console.log('connected!');
+            App.Websocket.emit('register user', {
+                unidade: 1
+            });
+        });
+
+        App.Websocket.on('disconnect', function () {
+            console.log('disconnected!');
+            App.Atendimento.updateInterval = App.updateInterval;
+        });
+
+        App.Websocket.on('error', function () {
+            console.log('error');
+            App.Atendimento.updateInterval = App.updateInterval;
+        });
+        
+        App.Websocket.on('register ok', function () {
+            console.log('registered!');
+            // increment interval to 10min when using websocket
+            App.Atendimento.updateInterval = 10 * 60 * 1000;
+        });
+        
+        App.Websocket.on('update queue', function () {
+            console.log('do update!');
+            App.Atendimento.ajaxUpdate();
+        });
+        
+        App.Atendimento.updateInterval = App.updateInterval;
     },
     
     ajaxUpdate: function() {
         clearTimeout(App.Atendimento.timeoutId);
-        if (!App.paused) {
-            App.ajax({
-                url: App.url('/novosga.attendance/ajax_update'),
-                success: function(response) {
-                    response.data = response.data || {};
-                    var atendimentos = response.data.atendimentos || [],
-                            usuario = response.data.usuario || {};
-                    var list = $("#fila ul");
-                    // habilitando botao chamar
-                    if (atendimentos.length > 0) {
-                        $('#chamar .chamar').prop('disabled', false);
-                        // se a fila estava vazia e chegou um novo atendimento, entao toca o som
-                        if (list.find('li.empty').length > 0) {
-                            document.getElementById("alert").play();
-                            App.Notification.show('Atendimento', 'Novo atendimento na fila');
-                        }
+        App.ajax({
+            url: App.url('/novosga.attendance/ajax_update'),
+            success: function(response) {
+                response.data = response.data || {};
+                var atendimentos = response.data.atendimentos || [],
+                        usuario = response.data.usuario || {};
+                var list = $("#fila ul");
+                // habilitando botao chamar
+                if (atendimentos.length > 0) {
+                    $('#chamar .chamar').prop('disabled', false);
+                    // se a fila estava vazia e chegou um novo atendimento, entao toca o som
+                    if (list.find('li.empty').length > 0) {
+                        document.getElementById("alert").play();
+                        App.Notification.show('Atendimento', 'Novo atendimento na fila');
                     }
-                    list.text('');
-                    if (atendimentos.length > 0) {
-                        document.body.focus();
-                        for (var i = 0; i < atendimentos.length; i++) {
-                            var atendimento = atendimentos[i];
-                            var cssClass = atendimento.prioridade ? 'prioridade' : '';
-                            if (i == 0) {
-                                cssClass += ' proximo';
-                            }
-                            var onclick = 'App.Atendimento.infoSenha(' + atendimento.id + ')';
-                            var title = atendimento.servico + ' (' + atendimento.espera + ')';
-                            var item = '<li><a class="' + cssClass + '" href="javascript:void(0)" onclick="' + onclick + '" title="' + title + '">' + atendimento.senha + '</a></li>';
-                            list.append(item);
-                        }
-                        document.title = "(" + atendimentos.length + ") " + App.Atendimento.defaultTitle;
-                    } else {
-                        $('#chamar .chamar').prop('disabled', true);
-                        list.append('<li class="empty">' + App.Atendimento.filaVazia + '</li>');
-                        document.title = App.Atendimento.defaultTitle;
-                    }
-                    if (usuario.numeroLocal) {
-                        $('span.config-numero-local').text(usuario.numeroLocal);
-                        $('.config-numero-local:input').val(usuario.numeroLocal);
-                    }
-                    if (usuario.tipoAtendimento) {
-                        $('span.config-tipo-atendimento')
-                                .removeClass('tipo-1 tipo-2 tipo-3')
-                                .addClass('tipo-' + usuario.tipoAtendimento)
-                                .text(App.Atendimento.tiposAtendimento[usuario.tipoAtendimento]);
-                        $('.config-tipo-atendimento:input').val(usuario.tipoAtendimento);
-                        ;
-                    }
-                },
-                complete: function() {
-                    App.Atendimento.timeoutId = setTimeout(App.Atendimento.ajaxUpdate, App.updateInterval);
                 }
-            });
-        } else {
-            App.Atendimento.timeoutId = setTimeout(App.Atendimento.ajaxUpdate, App.updateInterval);
-        }
+                list.text('');
+                if (atendimentos.length > 0) {
+                    document.body.focus();
+                    for (var i = 0; i < atendimentos.length; i++) {
+                        var atendimento = atendimentos[i];
+                        var cssClass = atendimento.prioridade ? 'prioridade' : '';
+                        if (i == 0) {
+                            cssClass += ' proximo';
+                        }
+                        var onclick = 'App.Atendimento.infoSenha(' + atendimento.id + ')';
+                        var title = atendimento.servico + ' (' + atendimento.espera + ')';
+                        var item = '<li><a class="' + cssClass + '" href="javascript:void(0)" onclick="' + onclick + '" title="' + title + '">' + atendimento.senha + '</a></li>';
+                        list.append(item);
+                    }
+                    document.title = "(" + atendimentos.length + ") " + App.Atendimento.defaultTitle;
+                } else {
+                    $('#chamar .chamar').prop('disabled', true);
+                    list.append('<li class="empty">' + App.Atendimento.filaVazia + '</li>');
+                    document.title = App.Atendimento.defaultTitle;
+                }
+                if (usuario.numeroLocal) {
+                    $('span.config-numero-local').text(usuario.numeroLocal);
+                    $('.config-numero-local:input').val(usuario.numeroLocal);
+                }
+                if (usuario.tipoAtendimento) {
+                    $('span.config-tipo-atendimento')
+                            .removeClass('tipo-1 tipo-2 tipo-3')
+                            .addClass('tipo-' + usuario.tipoAtendimento)
+                            .text(App.Atendimento.tiposAtendimento[usuario.tipoAtendimento]);
+                    $('.config-tipo-atendimento:input').val(usuario.tipoAtendimento);
+                    ;
+                }
+            },
+            complete: function() {
+                App.Atendimento.timeoutId = setTimeout(App.Atendimento.ajaxUpdate, App.Atendimento.updateInterval);
+            }
+        });
     },
     
     updateControls: function(status, atendimento) {
