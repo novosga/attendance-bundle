@@ -99,9 +99,7 @@ class DefaultController extends Controller
             
             AppConfig::getInstance()->hook('sga.atendimento.setlocal', [$unidade, $usuario, $numero, $tipo]);
         } catch (\Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -222,9 +220,7 @@ class DefaultController extends Controller
             $data = $proximo->jsonSerialize();
             $envelope->setData($data);
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -331,9 +327,7 @@ class DefaultController extends Controller
                 $em->rollback();
             } catch (Exception $ex) {
             }
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -374,9 +368,7 @@ class DefaultController extends Controller
                 throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
             }
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -411,9 +403,7 @@ class DefaultController extends Controller
             $envelope->setData($data);
             
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -447,9 +437,7 @@ class DefaultController extends Controller
             }
             $envelope->setData($data);
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
         
         return $this->json($envelope);
@@ -489,9 +477,7 @@ class DefaultController extends Controller
             $data = $atual->jsonSerialize();
             $envelope->setData($data);
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
         
 
