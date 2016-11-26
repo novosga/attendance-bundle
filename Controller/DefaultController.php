@@ -44,7 +44,7 @@ class DefaultController extends Controller
         $atendimentoService = new AtendimentoService($em);
         
         $usuario = $this->getUser();
-        $unidade = $request->getSession()->get('unidade');
+        $unidade = $usuario->getLotacao()->getUnidade();
         
         if (!$usuario || !$unidade) {
             return $this->redirectToRoute('home');
@@ -86,8 +86,8 @@ class DefaultController extends Controller
     {
         $envelope = new Envelope();
         try {
-            $unidade = $request->getSession()->get('unidade');
             $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
             $numero = (int) $request->get('local');
             $tipo = (int) $request->get('tipo');
 
@@ -115,8 +115,8 @@ class DefaultController extends Controller
     public function ajaxUpdateAction(Request $request)
     {
         $envelope = new Envelope();
-        $unidade = $request->getSession()->get('unidade');
         $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
         
         $em = $this->getDoctrine()->getManager();
         
@@ -170,7 +170,7 @@ class DefaultController extends Controller
             $proximo = null;
             $success = false;
             $usuario = $this->getUser();
-            $unidade = $em->getReference(Unidade::class, $request->getSession()->get('unidade')->getId());
+            $unidade = $usuario->getLotacao()->getUnidade();
             
             $filaService = new FilaService($em);
             $atendimentoService = new AtendimentoService($em);
@@ -279,13 +279,8 @@ class DefaultController extends Controller
         $envelope = new Envelope();
         
         try {
-            $unidade = $request->getSession()->get('unidade');
-            if (!$unidade) {
-                throw new Exception(_('Nenhum unidade escolhida'));
-            }
-            $unidade = $em->getReference(Unidade::class, $unidade->getId());
-            
             $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
             $atendimentoService = new AtendimentoService($em);
             $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
             
@@ -344,13 +339,10 @@ class DefaultController extends Controller
      */
     public function redirecionarAction(Request $request)
     {
-        $unidade = $request->getSession()->get('unidade');
         $envelope = new Envelope();
         try {
-            if (!$unidade) {
-                throw new Exception(_('Nenhum unidade escolhida'));
-            }
             $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
             $servico = (int) $request->get('servico');
             $em = $this->getDoctrine()->getManager();
             $atendimentoService = new AtendimentoService($em);
@@ -359,10 +351,12 @@ class DefaultController extends Controller
             if (!$atual) {
                 throw new Exception(_('Nenhum atendimento em andamento'));
             }
+            
             $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
             if (!$redirecionado->getId()) {
                 throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
             }
+            
             $success = $this->mudaStatusAtendimento($atual, [AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO], AtendimentoService::ERRO_TRIAGEM, 'dataFim');
             if (!$success) {
                 throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
@@ -384,12 +378,9 @@ class DefaultController extends Controller
     public function infoSenhaAction(Request $request)
     {
         $envelope = new Envelope();
-        $unidade = $request->getSession()->get('unidade');
-        
         try {
-            if (!$unidade) {
-                throw new Exception(_('Nenhuma unidade escolhida'));
-            }
+            $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
             $id = (int) $request->get('id');
             $em = $this->getDoctrine()->getManager();
             $atendimentoService = new AtendimentoService($em);
@@ -419,13 +410,11 @@ class DefaultController extends Controller
     public function consultaSenhaAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $unidade = $request->getSession()->get('unidade');
         $envelope = new Envelope();
         
         try {
-            if ($unidade) {
-                throw new Exception(_('Nenhuma unidade selecionada'));
-            }
+            $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
             $numero = $request->get('numero');
             $atendimentoService = new AtendimentoService($em);
             $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
