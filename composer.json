@@ -1,7 +1,7 @@
 {
     "name": "novosga/attendance-bundle",
     "license": "MIT",
-    "type": "library",
+    "type": "novosga-module",
     "autoload": {
         "psr-4": { "Novosga\\AttendanceBundle\\": "" }
     },
