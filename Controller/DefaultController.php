@@ -7,10 +7,11 @@ use Novosga\Config\AppConfig;
 use Novosga\Http\Envelope;
 use Novosga\Entity\Atendimento;
 use Novosga\Entity\Usuario;
-use Novosga\Entity\Unidade;
+use Novosga\Entity\ServicoUsuario;
 use Novosga\Service\AtendimentoService;
 use Novosga\Service\FilaService;
 use Novosga\Service\UsuarioService;
+use Novosga\Service\ServicoService;
 use Novosga\Util\Arrays;
 use Novosga\Util\DateUtil;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,14 +62,25 @@ class DefaultController extends Controller
         
         $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId());
         
-        $servicos = $usuarioService->servicos($usuario, $unidade);
+        $servicosUsuario = $usuarioService->servicos($usuario, $unidade);
+        
+        $servicos = array_map(function (ServicoUsuario $su) {
+            return [
+                'servico'     => $su->getServico(),
+                'subServicos' => $su->getServico()->getSubServicos()->toArray(),
+                'peso'        => $su->getPeso(),
+            ];
+        }, $servicosUsuario);
+        
+        $servicoService = new ServicoService($em);
+        $servicosIndisponiveis = $servicoService->servicosIndisponiveis($unidade, $usuario);
 
         return $this->render('NovosgaAttendanceBundle:default:index.html.twig', [
             'time' => time() * 1000,
             'unidade' => $unidade,
             'atendimento' => $atendimentoAtual,
             'servicos' => $servicos,
-            'servicosIndisponiveis' => [],
+            'servicosIndisponiveis' => $servicosIndisponiveis,
             'tiposAtendimento' => $tiposAtendimento,
             'local' => $local,
             'tipoAtendimento' => $tipo
@@ -81,16 +93,19 @@ class DefaultController extends Controller
      * @return Response
      * 
      * @Route("/set_local", name="novosga_attendance_setlocal")
+     * @Method("POST")
      */
     public function setLocalAction(Request $request)
     {
         $envelope = new Envelope();
         try {
+            $data = json_decode($request->getContent());
+            $numero = (int) $data->numeroLocal;
+            $tipo   = (int) $data->tipoAtendimento;
+            
             $usuario = $this->getUser();
             $unidade = $usuario->getLotacao()->getUnidade();
-            $numero = (int) $request->get('local');
-            $tipo = (int) $request->get('tipo');
-
+            
             AppConfig::getInstance()->hook('sga.atendimento.pre-setlocal', [$unidade, $usuario, $numero, $tipo]);
 
             $usuarioService = new UsuarioService($this->getDoctrine()->getManager());
@@ -120,34 +135,22 @@ class DefaultController extends Controller
         
         $em = $this->getDoctrine()->getManager();
         
-        
-        $filaService = new FilaService($em);
+        $filaService    = new FilaService($em);
         $usuarioService = new UsuarioService($em);
         
-        $servicos = $usuarioService->servicos($usuario, $unidade);
-        
-        if ($unidade && $usuario) {
-            // long polling
-            $maxtime = 10;
-            $starttime = time();
-            
-            do {
-                $atendimentos = $filaService->filaAtendimento($unidade, $servicos);
+        $servicos     = $usuarioService->servicos($usuario, $unidade);
+        $atendimentos = $filaService->filaAtendimento($unidade, $servicos);
 
-                // fila de atendimento do atendente atual
-                $data = [
-                    'atendimentos' => $atendimentos,
-                    'usuario'      => [
-                        'numeroLocal'     => $this->getNumeroLocalAtendimento($usuario),
-                        'tipoAtendimento' => $this->getTipoAtendimento($usuario),
-                    ],
-                ];
-                
-                $envelope->setData($data);
-                
-                $elapsed = time() - $starttime;
-            } while (empty($atendimentos) && $elapsed < $maxtime);
-        }
+        // fila de atendimento do atendente atual
+        $data = [
+            'atendimentos' => $atendimentos,
+            'usuario'      => [
+                'numeroLocal'     => $this->getNumeroLocalAtendimento($usuario),
+                'tipoAtendimento' => $this->getTipoAtendimento($usuario),
+            ],
+        ];
+
+        $envelope->setData($data);
 
         return $this->json($envelope);
     }
@@ -262,23 +265,12 @@ class DefaultController extends Controller
      */
     public function encerrarAction(Request $request)
     {
-        return $this->mudaStatusAtualResponse($request, AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO, null);
-    }
-
-    /**
-     * Marca o atendimento como encerrado e codificado.
-     *
-     * @param Novosga\Request $request
-     * 
-     * @Route("/codificar", name="novosga_attendance_codificar")
-     * @Method("POST")
-     */
-    public function codificarAction(Request $request)
-    {
         $em = $this->getDoctrine()->getManager();
         $envelope = new Envelope();
         
         try {
+            $data = json_decode($request->getContent());
+            
             $usuario = $this->getUser();
             $unidade = $usuario->getLotacao()->getUnidade();
             $atendimentoService = new AtendimentoService($em);
@@ -287,32 +279,37 @@ class DefaultController extends Controller
             if (!$atual) {
                 throw new Exception(_('Nenhum atendimento em andamento'));
             }
-            $servicos = $request->get('servicos');
-            $servicos = Arrays::valuesToInt(explode(',', $servicos));
+            $servicos = Arrays::valuesToInt(explode(',', $data->servicos));
             if (empty($servicos)) {
                 throw new Exception(_('Nenhum serviço selecionado'));
             }
 
             $em->beginTransaction();
             foreach ($servicos as $s) {
+                $servico = $em->find('Novosga\Entity\Servico', $s);
+                
+                if (!$servico) {
+                    throw new Exception(_('Serviço inválido'));
+                }
+                
                 $codificado = new \Novosga\Entity\AtendimentoCodificado();
                 $codificado->setAtendimento($atual);
-                $codificado->setServico($em->find('Novosga\Entity\Servico', $s));
+                $codificado->setServico($servico);
                 $codificado->setPeso(1);
                 $em->persist($codificado);
             }
             // verifica se esta encerrando e redirecionando
-            $redirecionar = $request->get('redirecionar');
+            $redirecionar = $data->redirecionar;
             if ($redirecionar) {
-                $servico = $request->get('novoServico');
+                $servico = $data->novoServico;
                 $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
                 if (!$redirecionado->getId()) {
                     throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
                 }
             }
-            $success = $this->mudaStatusAtendimento($atual, AtendimentoService::ATENDIMENTO_ENCERRADO, AtendimentoService::ATENDIMENTO_ENCERRADO_CODIFICADO, 'dataFim');
+            $success = $this->mudaStatusAtendimento($atual, AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO, 'dataFim');
             if (!$success) {
-                throw new Exception(sprintf(_('Erro ao codificar o atendimento %s'), $atual->getId()));
+                throw new Exception(sprintf(_('Erro ao encerrar o atendimento %s'), $atual->getId()));
             }
 
             $em->commit();
@@ -373,15 +370,14 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      * 
-     * @Route("/info_senha", name="novosga_attendance_infosenha")
+     * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
      */
-    public function infoSenhaAction(Request $request)
+    public function infoSenhaAction(Request $request, $id)
     {
         $envelope = new Envelope();
         try {
             $usuario = $this->getUser();
             $unidade = $usuario->getLotacao()->getUnidade();
-            $id = (int) $request->get('id');
             $em = $this->getDoctrine()->getManager();
             $atendimentoService = new AtendimentoService($em);
             $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
@@ -418,13 +414,7 @@ class DefaultController extends Controller
             $numero = $request->get('numero');
             $atendimentoService = new AtendimentoService($em);
             $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
-            $data = [
-                'total' => count($atendimentos)
-            ];
-            foreach ($atendimentos as $atendimento) {
-                $data['atendimentos'][] = $atendimento->jsonSerialize();
-            }
-            $envelope->setData($data);
+            $envelope->setData($atendimentos);
         } catch (Exception $e) {
             $envelope->exception($e);
         }
@@ -451,17 +441,22 @@ class DefaultController extends Controller
         $envelope = new Envelope();
         $em = $this->getDoctrine()->getManager();
         $atendimentoService = new AtendimentoService($em);
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
         
         try {
-            if ($atual) {
+            $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+            
+            if (!$atual) {
                 throw new Exception(_('Nenhum atendimento disponível'));
             }
+            
             // atualizando atendimento
             $success = $this->mudaStatusAtendimento($atual, $statusAtual, $novoStatus, $campoData);
-            if ($success) {
+            
+            if (!$success) {
                 throw new Exception(_('Erro desconhecido'));
             }
+            
+            $atual->setStatus($novoStatus);
             
             $data = $atual->jsonSerialize();
             $envelope->setData($data);
