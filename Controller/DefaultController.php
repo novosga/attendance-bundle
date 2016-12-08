@@ -21,8 +21,6 @@ use Novosga\Service\AtendimentoService;
 use Novosga\Service\FilaService;
 use Novosga\Service\UsuarioService;
 use Novosga\Service\ServicoService;
-use Novosga\Util\Arrays;
-use Novosga\Util\DateUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -288,7 +286,7 @@ class DefaultController extends Controller
             if (!$atual) {
                 throw new Exception(_('Nenhum atendimento em andamento'));
             }
-            $servicos = Arrays::valuesToInt(explode(',', $data->servicos));
+            $servicos = explode(',', $data->servicos);
             if (empty($servicos)) {
                 throw new Exception(_('Nenhum serviço selecionado'));
             }
@@ -496,6 +494,9 @@ class DefaultController extends Controller
         if (!is_array($statusAtual)) {
             $statusAtual = [$statusAtual];
         }
+        
+        $data = (new \DateTime())->format('Y-m-d H:i:s');
+        
         // atualizando atendimento
         $query = $em->createQuery("
             UPDATE
@@ -507,7 +508,7 @@ class DefaultController extends Controller
                 e.status IN (:statusAtual)
         ");
         if ($campoData !== null) {
-            $query->setParameter('data', DateUtil::nowSQL());
+            $query->setParameter('data', $data);
         }
         $query->setParameter('novoStatus', $novoStatus);
         $query->setParameter('id', $atendimento->getId());
