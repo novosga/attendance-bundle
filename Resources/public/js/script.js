@@ -46,33 +46,33 @@ var App = App || {};
 
                 //App.Websocket.connect();
 
-//                App.Websocket.on('connect', function () {
-//                    console.log('connected!');
-//                    App.Websocket.emit('register user', {
-//                        unidade: 1
-//                    });
-//                });
-//
-//                App.Websocket.on('disconnect', function () {
-//                    console.log('disconnected!');
-//                    updateInterval = App.updateInterval;
-//                });
-//
-//                App.Websocket.on('error', function () {
-//                    console.log('error');
-//                    updateInterval = App.updateInterval;
-//                });
-//
-//                App.Websocket.on('register ok', function () {
-//                    console.log('registered!');
-//                    // increment interval to 10min when using websocket
-//                    updateInterval = 10 * 60 * 1000;
-//                });
-//
-//                App.Websocket.on('update queue', function () {
-//                    console.log('do update!');
-//                    self.ajaxUpdate();
-//                });
+                App.Websocket.on('connect', function () {
+                    console.log('connected!');
+                    App.Websocket.emit('register user', {
+                        unidade: 1
+                    });
+                });
+
+                App.Websocket.on('disconnect', function () {
+                    console.log('disconnected!');
+                    updateInterval = App.updateInterval;
+                });
+
+                App.Websocket.on('error', function () {
+                    console.log('error');
+                    updateInterval = App.updateInterval;
+                });
+
+                App.Websocket.on('register ok', function () {
+                    console.log('registered!');
+                    // increment interval to 10min when using websocket
+                    updateInterval = 10 * 60 * 1000;
+                });
+
+                App.Websocket.on('update queue', function () {
+                    console.log('do update!');
+                    self.ajaxUpdate();
+                });
             },
 
             ajaxUpdate: function() {
@@ -219,10 +219,12 @@ var App = App || {};
             
             addServicoRealizado: function (servico) {
                 this.servicosRealizados.push(servico);
+                servico.disabled = true;
             },
             
             removeServicoRealizado: function (servico) {
                 this.servicosRealizados.splice(this.servicosRealizados.indexOf(servico), 1);
+                servico.disabled = false;
             },
             
             consultar: function() {

@@ -108,7 +108,7 @@
                                         {%- endverbatim -%}
                                     </span>
                                     <ul v-if="su.subServicos.length">
-                                        <li v-for="sub in su.subServicos">
+                                        <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
                                             <a href="#" title="{% trans %}Adicionar{% endtrans %}"
                                                v-on:click.prevent="addServicoRealizado(sub)">
                                                 {%- verbatim -%}
