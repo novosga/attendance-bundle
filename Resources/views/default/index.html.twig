@@ -74,7 +74,7 @@
                                                 </th>
                                                 <td>
                                                     {%- verbatim -%}
-                                                        {{ atendimento.cliente.nome }}
+                                                        {{ atendimento.cliente ? atendimento.cliente.nome : '' }}
                                                     {%- endverbatim -%}
                                                 </td>
                                             </tr>
@@ -84,7 +84,7 @@
                                                 </th>
                                                 <td>
                                                     {%- verbatim -%}
-                                                        {{ atendimento.cliente.documento }}
+                                                        {{ atendimento.cliente ? atendimento.cliente.documento : '' }}
                                                     {%- endverbatim -%}
                                                 </td>
                                             </tr>
