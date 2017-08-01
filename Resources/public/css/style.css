@@ -72,19 +72,16 @@
 }
 
 #atendimento #fila span.tipo-1 { } /* todos */
-#atendimento #fila span.tipo-2 { color: blue; } /* convencional */ 
+#atendimento #fila span.tipo-2 { color: blue; } /* convencional */
 #atendimento #fila span.tipo-3 { color: red; } /* prioridade */
 
 #atendimento #fila ul {
     min-height: 40px;
-    padding: 0 0 10px 45px;
+    padding: 0 0 10px 10px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
     background-color: #F7F9FE;
-    background-image: url(../images/client-16.png);
-    background-position: 20px center;
-    background-repeat: no-repeat;
     border: 1px solid #e1e1e8;
 }
     

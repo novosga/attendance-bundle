@@ -1,4 +1,4 @@
-{% extends "::base.html.twig" %}
+{% extends "NovosgaAttendanceBundle::base.html.twig" %}
 
 {% block body %}
     <div id="attendance">
@@ -227,6 +227,9 @@
             <div id="fila">
                 <h4>{% trans %}Minha fila{% endtrans %}  (<span v-bind:class="'tipo-' + tipoAtendimento " v-text="tiposAtendimento[usuario.tipoAtendimento]">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
                 <ul>
+                    <li>
+                        <i class="fa fa-users"></i>
+                    </li>
                     <li v-for="(atendimento, index) in atendimentos">
                         <a href="#" 
                            v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }" 
@@ -296,7 +299,7 @@
         {# dialog redirecionar #}
         <div id="dialog-redirecionar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
+                <div class="modal-content" v-if="atendimento">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">{% trans %}Redirecionar{% endtrans %}</h4>
@@ -314,7 +317,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" 
-                                v-on:click="encerrar(true)">
+                                v-on:click="redirecionar()"
+                                v-if="atendimento.status !== 'encerrando'">
+                            {% trans %}Redirecionar{% endtrans %}
+                        </button>
+                        
+                        <button type="button" class="btn btn-primary" 
+                                v-on:click="encerrar(true)"
+                                v-if="atendimento.status === 'encerrando'">
                             {% trans %}Encerrar e redirecionar{% endtrans %}
                         </button>
                     </div>
@@ -494,13 +504,15 @@
             atendimento = {{ atendimento|json_encode()|raw }},
             tipoAtendimento = {{ tipoAtendimento ? tipoAtendimento : 'null' }}
             tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }},
-            servicosUsuario = {{ servicos|json_encode()|raw }};
+            servicosUsuario = {{ servicos|json_encode()|raw }},
+            MARCAR_ERRO_TRIAGEM = '{% trans %}Realmente deseja marcar como erro de triagem?{% endtrans %}';
     </script>
     <script src="{{ asset('bundles/novosgaattendance/js/script.js') }}"></script>
-{#    <script type="text/javascript">
+    <script>
+        {#
         App.Clock.init("sga-clock", {{ time }});
-        App.Atendimento.marcarErroTriagem = '{% trans %}Realmente deseja marcar como erro de triagem?{% endtrans %}';
         App.Atendimento.marcarNaoCompareceu = '{% trans %}Realmente deseja marcar como não compareceu?{% endtrans %}';
         App.Atendimento.init({% if atendimento %}{{ atendimento.status }}{% else %}1{% endif %});
-    </script>#}
+        #}
+    </script>
 {% endblock %}

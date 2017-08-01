@@ -8,7 +8,7 @@ var App = App || {};
     'use strict'
     
     var timeoutId,
-        updateInterval = App.updateInterval, 
+        updateInterval = App.updateInterval,
         defaultTitle = document.title;
     
     var app = new Vue({
@@ -34,7 +34,7 @@ var App = App || {};
             searchResult: [],
         },
         methods: {
-            init: function(atendimento) {
+            init: function (atendimento) {
                 var self = this;
                 
                 this.atendimento = atendimento;
@@ -75,12 +75,12 @@ var App = App || {};
                 });
             },
 
-            ajaxUpdate: function() {
+            ajaxUpdate: function () {
                 var self = this;
                 clearTimeout(timeoutId);
                 App.ajax({
                     url: App.url('/novosga.attendance/ajax_update'),
-                    success: function(response) {
+                    success: function (response) {
                         response.data = response.data || {};
                         var estavaVazio = self.atendimentos.length === 0;
                         self.atendimentos = response.data.atendimentos || [];
@@ -97,17 +97,17 @@ var App = App || {};
                             }
                         }
                     },
-                    complete: function() {
+                    complete: function () {
                         timeoutId = setTimeout(self.ajaxUpdate, updateInterval);
                     }
                 });
             },
             
-            infoSenha: function(atendimento) {
+            infoSenha: function (atendimento) {
                 var self = this;
                 App.ajax({
                     url: App.url('/novosga.attendance/info_senha/') + atendimento.id,
-                    success: function(response) {
+                    success: function (response) {
                         self.atendimentoInfo = response.data;
                         $('#dialog-senha').modal('show');
                     }
@@ -119,7 +119,7 @@ var App = App || {};
                     url: App.url('/novosga.attendance/set_local'),
                     type: 'post',
                     data: this.novoLocal,
-                    success: function(response) {
+                    success: function (response) {
                         window.location.reload();
                     }
                 });
@@ -130,7 +130,7 @@ var App = App || {};
                 App.ajax({
                     url: App.url('/novosga.attendance/chamar'),
                     type: 'post',
-                    success: function(response) {
+                    success: function (response) {
                         self.atendimento = response.data;
                     }
                 });
@@ -141,7 +141,7 @@ var App = App || {};
                 App.ajax({
                     url: App.url('/novosga.attendance/iniciar'),
                     type: 'post',
-                    success: function(response) {
+                    success: function (response) {
                         self.atendimento = response.data;
                     }
                 });
@@ -152,21 +152,14 @@ var App = App || {};
                 App.ajax({
                     url: App.url('/novosga.attendance/nao_compareceu'),
                     type: 'post',
-                    success: function() {
+                    success: function () {
                         self.atendimento = null;
                     }
                 });
             },
             
             erroTriagem: function () {
-                var self = this;
-                App.ajax({
-                    url: App.url('/novosga.attendance/erro_triagem'),
-                    type: 'post',
-                    success: function() {
-                        self.atendimento = null;
-                    }
-                });
+                $('#dialog-redirecionar').modal('show');
             },
             
             preparaEncerrar: function () {
@@ -177,7 +170,7 @@ var App = App || {};
             encerrar: function (isRedirect) {
                 var self = this;
                 
-                var servicos = this.servicosRealizados.map(function(servico) {
+                var servicos = this.servicosRealizados.map(function (servico) {
                     return servico.id;
                 });
                 
@@ -210,11 +203,31 @@ var App = App || {};
                     url: App.url('/novosga.attendance/encerrar'),
                     type: 'post',
                     data: data,
-                    success: function() {
+                    success: function () {
                         self.atendimento = null;
+                        self.redirecionarAoEncerrar = false;
                         $('.modal').modal('hide');
                     }
                 });
+            },
+            
+            redirecionar: function () {
+                var servico = this.servicoRedirecionar,
+                    self = this;
+            
+                if (servico > 0 && window.confirm(MARCAR_ERRO_TRIAGEM)) {
+                    App.ajax({
+                        url: App.url('/novosga.attendance/redirecionar'),
+                        type: 'post',
+                        data: {
+                            servico: servico
+                        },
+                        success: function () {
+                            self.atendimento = null;
+                            $('.modal').modal('hide');
+                        }
+                    });
+                }
             },
             
             addServicoRealizado: function (servico) {
@@ -227,14 +240,14 @@ var App = App || {};
                 servico.disabled = false;
             },
             
-            consultar: function() {
+            consultar: function () {
                 var self = this;
                 App.ajax({
                     url: App.url('/novosga.attendance/consulta_senha'),
                     data: {
                         numero: self.search
                     },
-                    success: function(response) {
+                    success: function (response) {
                         self.searchResult = response.data;
                     }
                 });

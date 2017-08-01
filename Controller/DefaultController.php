@@ -39,10 +39,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
-     * 
+     *
      * @Route("/", name="novosga_attendance_index")
      */
     public function indexAction(Request $request)
@@ -95,10 +95,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
      * @return Response
-     * 
+     *
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
@@ -128,10 +128,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
      * @return Response
-     * 
+     *
      * @Route("/ajax_update", name="novosga_attendance_ajaxupdate")
      */
     public function ajaxUpdateAction(Request $request)
@@ -166,7 +166,7 @@ class DefaultController extends Controller
      * Chama ou rechama o próximo da fila.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/chamar", name="novosga_attendance_chamar")
      * @Method("POST")
      */
@@ -240,7 +240,7 @@ class DefaultController extends Controller
      * Inicia o atendimento com o proximo da fila.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/iniciar", name="novosga_attendance_iniciar")
      * @Method("POST")
      */
@@ -253,7 +253,7 @@ class DefaultController extends Controller
      * Marca o atendimento como nao compareceu.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu")
      * @Method("POST")
      */
@@ -266,7 +266,7 @@ class DefaultController extends Controller
      * Marca o atendimento como encerrado.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/encerrar", name="novosga_attendance_encerrar")
      * @Method("POST")
      */
@@ -337,7 +337,7 @@ class DefaultController extends Controller
      * o servico informado.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/redirecionar", name="novosga_attendance_redirecionar")
      * @Method("POST")
      */
@@ -345,9 +345,11 @@ class DefaultController extends Controller
     {
         $envelope = new Envelope();
         try {
+            $data = json_decode($request->getContent());
+            
             $usuario = $this->getUser();
             $unidade = $usuario->getLotacao()->getUnidade();
-            $servico = (int) $request->get('servico');
+            $servico = (int) $data->servico;
             $em = $this->getDoctrine()->getManager();
             $atendimentoService = new AtendimentoService($em);
             $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
@@ -373,10 +375,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
      * @return Response
-     * 
+     *
      * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
      */
     public function infoSenhaAction(Request $request, $id)
@@ -407,7 +409,7 @@ class DefaultController extends Controller
      * Busca os atendimentos a partir do número da senha.
      *
      * @param Novosga\Request $request
-     * 
+     *
      * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
      */
     public function consultaSenhaAction(Request $request)
