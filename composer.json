@@ -6,12 +6,12 @@
         "psr-4": { "Novosga\\AttendanceBundle\\": "" }
     },
     "require": {
-        "php": ">=5.5.9"
+        "php": "^7.1.3",
+        "novosga/core": "self.version"
     },
-    "config": {
-        "platform": {
-            "php": "5.5.9"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
         }
     }
 }
-
