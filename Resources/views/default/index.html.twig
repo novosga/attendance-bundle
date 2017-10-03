@@ -499,6 +499,7 @@
     {{ parent() }}
     <script type="text/javascript">
         var local = {{ local ? local : 'null' }},
+            unidade = {{ unidade|json_encode()|raw }},
             atendimento = {{ atendimento|json_encode()|raw }},
             tipoAtendimento = {{ tipoAtendimento ? tipoAtendimento : 'null' }}
             tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }},

@@ -7,13 +7,12 @@ var App = App || {};
 (function () {
     'use strict'
     
-    var timeoutId,
-        updateInterval = App.updateInterval,
-        defaultTitle = document.title;
+    var defaultTitle = document.title;
     
     var app = new Vue({
         el: '#attendance',
         data: {
+            unidade: unidade,
             tiposAtendimento: tiposAtendimento,
             servicosRealizados: [],
             servicosUsuario: servicosUsuario,
@@ -38,46 +37,42 @@ var App = App || {};
                 var self = this;
                 
                 this.atendimento = atendimento;
-                this.ajaxUpdate();
                 
                 if (!App.Notification.allowed()) {
                     $('#notification').show();
                 }
 
-                //App.Websocket.connect();
+                App.Websocket.connect();
 
                 App.Websocket.on('connect', function () {
                     console.log('connected!');
                     App.Websocket.emit('register user', {
-                        unidade: 1
+                        unidade: self.unidade.id
                     });
                 });
 
                 App.Websocket.on('disconnect', function () {
                     console.log('disconnected!');
-                    updateInterval = App.updateInterval;
                 });
 
                 App.Websocket.on('error', function () {
                     console.log('error');
-                    updateInterval = App.updateInterval;
                 });
 
                 App.Websocket.on('register ok', function () {
                     console.log('registered!');
-                    // increment interval to 10min when using websocket
-                    updateInterval = 10 * 60 * 1000;
                 });
 
                 App.Websocket.on('update queue', function () {
                     console.log('do update!');
-                    self.ajaxUpdate();
+                    self.update();
                 });
+                
+                self.update();
             },
 
-            ajaxUpdate: function () {
+            update: function () {
                 var self = this;
-                clearTimeout(timeoutId);
                 App.ajax({
                     url: App.url('/novosga.attendance/ajax_update'),
                     success: function (response) {
@@ -88,17 +83,12 @@ var App = App || {};
                         
                         // habilitando botao chamar
                         if (self.atendimentos.length > 0) {
-                            
                             document.title = "(" + self.atendimentos.length + ") " + defaultTitle;
-                            
                             if (estavaVazio) {
                                 document.getElementById("alert").play();
                                 App.Notification.show('Atendimento', 'Novo atendimento na fila');
                             }
                         }
-                    },
-                    complete: function () {
-                        timeoutId = setTimeout(self.ajaxUpdate, updateInterval);
                     }
                 });
             },
