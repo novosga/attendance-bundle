@@ -82,7 +82,7 @@ class DefaultController extends Controller
         $servicoService = new ServicoService($em);
         $servicosIndisponiveis = $servicoService->servicosIndisponiveis($unidade, $usuario);
 
-        return $this->render('NovosgaAttendanceBundle:default:index.html.twig', [
+        return $this->render('@NovosgaAttendance/default/index.html.twig', [
             'time' => time() * 1000,
             'unidade' => $unidade,
             'atendimento' => $atendimentoAtual,
