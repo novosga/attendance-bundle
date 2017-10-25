@@ -122,6 +122,11 @@ var App = App || {};
                     type: 'post',
                     success: function (response) {
                         self.atendimento = response.data;
+                        App.Websocket.emit('call ticket', {
+                            unidade: self.unidade.id,
+                            servico: self.atendimento.servico.id,
+                            hash: self.atendimento.hash
+                        });
                     }
                 });
             },
