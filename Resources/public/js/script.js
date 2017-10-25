@@ -15,7 +15,7 @@ var App = App || {};
             unidade: unidade,
             tiposAtendimento: tiposAtendimento,
             servicosRealizados: [],
-            servicosUsuario: servicosUsuario,
+            servicosUsuario: JSON.parse(JSON.stringify(servicosUsuario)),
             usuario: {
                 numeroLocal: local,
                 tipoAtendimento: tipoAtendimento
@@ -159,6 +159,7 @@ var App = App || {};
             
             preparaEncerrar: function () {
                 this.servicosRealizados = [];
+                this.servicosUsuario = JSON.parse(JSON.stringify(servicosUsuario));
                 this.atendimento.status = 'encerrando';
             },
             
