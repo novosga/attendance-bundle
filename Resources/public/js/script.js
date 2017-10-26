@@ -45,14 +45,16 @@ var App = App || {};
                 App.Websocket.connect();
 
                 App.Websocket.on('connect', function () {
-                    console.log('connected!');
                     App.Websocket.emit('register user', {
                         unidade: self.unidade.id
                     });
                 });
 
-                App.Websocket.on('disconnect', function () {
-                    console.log('disconnected!');
+                // ajax polling fallback
+                App.Websocket.on('reconnect_failed', function () {
+                    App.Websocket.connect();
+                    console.log('ws timeout, ajax polling fallback');
+                    self.update();
                 });
 
                 App.Websocket.on('error', function () {

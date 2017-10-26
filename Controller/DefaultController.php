@@ -12,12 +12,12 @@
 namespace Novosga\AttendanceBundle\Controller;
 
 use Exception;
-use Novosga\Config\AppConfig;
 use Novosga\Http\Envelope;
 use Novosga\Entity\Atendimento;
 use Novosga\Entity\Usuario;
 use Novosga\Entity\ServicoUsuario;
 use Novosga\Service\AtendimentoService;
+use Novosga\Service\Dispatcher;
 use Novosga\Service\FilaService;
 use Novosga\Service\UsuarioService;
 use Novosga\Service\ServicoService;
@@ -33,11 +33,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  */
 class DefaultController extends Controller
 {
-    
-    public function __construct()
-    {
-    }
-
     /**
      *
      * @param Request $request
@@ -45,12 +40,12 @@ class DefaultController extends Controller
      *
      * @Route("/", name="novosga_attendance_index")
      */
-    public function indexAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $usuarioService = new UsuarioService($em);
-        $atendimentoService = new AtendimentoService($em);
-        
+    public function indexAction(
+            Request $request,
+            AtendimentoService $atendimentoService,
+            UsuarioService $usuarioService,
+            ServicoService $servicoService
+    ) {
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         
@@ -79,7 +74,6 @@ class DefaultController extends Controller
             ];
         }, $servicosUsuario);
         
-        $servicoService = new ServicoService($em);
         $servicosIndisponiveis = $servicoService->servicosIndisponiveis($unidade, $usuario);
 
         return $this->render('@NovosgaAttendance/default/index.html.twig', [
@@ -102,27 +96,23 @@ class DefaultController extends Controller
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
-    public function setLocalAction(Request $request)
+    public function setLocalAction(Request $request, UsuarioService $usuarioService, Dispatcher $dispatcher)
     {
         $envelope = new Envelope();
-        try {
-            $data = json_decode($request->getContent());
-            $numero = (int) $data->numeroLocal;
-            $tipo   = (int) $data->tipoAtendimento;
-            
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            
-            AppConfig::getInstance()->hook('sga.atendimento.pre-setlocal', [$unidade, $usuario, $numero, $tipo]);
+        
+        $data = json_decode($request->getContent());
+        $numero = (int) $data->numeroLocal;
+        $tipo   = (int) $data->tipoAtendimento;
 
-            $usuarioService = new UsuarioService($this->getDoctrine()->getManager());
-            $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
-            $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
-            
-            AppConfig::getInstance()->hook('sga.atendimento.setlocal', [$unidade, $usuario, $numero, $tipo]);
-        } catch (\Exception $e) {
-            $envelope->exception($e);
-        }
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+
+        $dispatcher->dispatch('sga.atendimento.pre-setlocal', [$unidade, $usuario, $numero, $tipo]);
+
+        $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
+        $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
+
+        $dispatcher->dispatch('sga.atendimento.setlocal', [$unidade, $usuario, $numero, $tipo]);
 
         return $this->json($envelope);
     }
@@ -134,16 +124,14 @@ class DefaultController extends Controller
      *
      * @Route("/ajax_update", name="novosga_attendance_ajaxupdate")
      */
-    public function ajaxUpdateAction(Request $request)
-    {
+    public function ajaxUpdateAction(
+            Request $request,
+            FilaService $filaService,
+            UsuarioService $usuarioService
+    ) {
         $envelope = new Envelope();
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        
-        $em = $this->getDoctrine()->getManager();
-        
-        $filaService    = new FilaService($em);
-        $usuarioService = new UsuarioService($em);
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
         $atendimentos = $filaService->filaAtendimento($unidade, $servicos);
@@ -170,68 +158,63 @@ class DefaultController extends Controller
      * @Route("/chamar", name="novosga_attendance_chamar")
      * @Method("POST")
      */
-    public function chamarAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
+    public function chamarAction(
+            Request $request,
+            AtendimentoService $atendimentoService,
+            FilaService $filaService,
+            UsuarioService $usuarioService
+    ) {
         $envelope = new Envelope();
         
-        try {
-            $attempts = 5;
-            $proximo = null;
-            $success = false;
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            
-            $filaService = new FilaService($em);
-            $atendimentoService = new AtendimentoService($em);
-            $usuarioService = new UsuarioService($em);
-            
-            if (!$usuario) {
-                throw new Exception(_('Nenhum usuário na sessão'));
-            }
-            
-            // verifica se ja esta atendendo alguem
-            $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
-            
-            // se ja existe um atendimento em andamento (chamando senha novamente)
-            if ($atual) {
-                $success = true;
-                $proximo = $atual;
-            } else {
-                $local = $this->getNumeroLocalAtendimento($usuario);
-                $servicos = $usuarioService->servicos($usuario, $unidade);
-                
-                do {
-                    $atendimentos = $filaService->filaAtendimento($unidade, $servicos, 1, 1);
-                    if (count($atendimentos)) {
-                        $proximo = $atendimentos[0];
-                        $success = $atendimentoService->chamar($proximo, $usuario, $local);
-                        if (!$success) {
-                            usleep(100);
-                        }
-                        --$attempts;
-                    } else {
-                        // nao existe proximo
-                        break;
-                    }
-                } while (!$success && $attempts > 0);
-            }
-            // response
-            if (!$success) {
-                if (!$proximo) {
-                    throw new Exception(_('Fila vazia'));
-                } else {
-                    throw new Exception(_('Já existe um atendimento em andamento'));
-                }
-            }
-            
-            $atendimentoService->chamarSenha($unidade, $proximo);
-            
-            $data = $proximo->jsonSerialize();
-            $envelope->setData($data);
-        } catch (Exception $e) {
-            $envelope->exception($e);
+        $attempts = 5;
+        $proximo = null;
+        $success = false;
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        
+        if (!$usuario) {
+            throw new Exception(_('Nenhum usuário na sessão'));
         }
+
+        // verifica se ja esta atendendo alguem
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+
+        // se ja existe um atendimento em andamento (chamando senha novamente)
+        if ($atual) {
+            $success = true;
+            $proximo = $atual;
+        } else {
+            $local = $this->getNumeroLocalAtendimento($usuario);
+            $servicos = $usuarioService->servicos($usuario, $unidade);
+
+            do {
+                $atendimentos = $filaService->filaAtendimento($unidade, $servicos, 1, 1);
+                if (count($atendimentos)) {
+                    $proximo = $atendimentos[0];
+                    $success = $atendimentoService->chamar($proximo, $usuario, $local);
+                    if (!$success) {
+                        usleep(100);
+                    }
+                    --$attempts;
+                } else {
+                    // nao existe proximo
+                    break;
+                }
+            } while (!$success && $attempts > 0);
+        }
+        // response
+        if (!$success) {
+            if (!$proximo) {
+                throw new Exception(_('Fila vazia'));
+            } else {
+                throw new Exception(_('Já existe um atendimento em andamento'));
+            }
+        }
+
+        $atendimentoService->chamarSenha($unidade, $proximo);
+
+        $data = $proximo->jsonSerialize();
+        $envelope->setData($data);
 
         return $this->json($envelope);
     }
@@ -244,9 +227,9 @@ class DefaultController extends Controller
      * @Route("/iniciar", name="novosga_attendance_iniciar")
      * @Method("POST")
      */
-    public function iniciarAction(Request $request)
+    public function iniciarAction(Request $request, AtendimentoService $atendimentoService)
     {
-        return $this->mudaStatusAtualResponse($request, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::ATENDIMENTO_INICIADO, 'dataInicio');
+        return $this->mudaStatusAtualResponse($request, $atendimentoService, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::ATENDIMENTO_INICIADO, 'dataInicio');
     }
 
     /**
@@ -257,9 +240,9 @@ class DefaultController extends Controller
      * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu")
      * @Method("POST")
      */
-    public function naoCompareceuAction(Request $request)
+    public function naoCompareceuAction(Request $request, AtendimentoService $atendimentoService)
     {
-        return $this->mudaStatusAtualResponse($request, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::NAO_COMPARECEU, 'dataFim');
+        return $this->mudaStatusAtualResponse($request, $atendimentoService, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::NAO_COMPARECEU, 'dataFim');
     }
 
     /**
@@ -270,64 +253,34 @@ class DefaultController extends Controller
      * @Route("/encerrar", name="novosga_attendance_encerrar")
      * @Method("POST")
      */
-    public function encerrarAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
+    public function encerrarAction(
+            Request $request,
+            AtendimentoService $atendimentoService
+    ) {
         $envelope = new Envelope();
         
-        try {
-            $data = json_decode($request->getContent());
-            
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            $atendimentoService = new AtendimentoService($em);
-            $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
-            
-            if (!$atual) {
-                throw new Exception(_('Nenhum atendimento em andamento'));
-            }
-            $servicos = explode(',', $data->servicos);
-            if (empty($servicos)) {
-                throw new Exception(_('Nenhum serviço selecionado'));
-            }
+        $data = json_decode($request->getContent());
 
-            $em->beginTransaction();
-            foreach ($servicos as $s) {
-                $servico = $em->find('Novosga\Entity\Servico', $s);
-                
-                if (!$servico) {
-                    throw new Exception(_('Serviço inválido'));
-                }
-                
-                $codificado = new \Novosga\Entity\AtendimentoCodificado();
-                $codificado->setAtendimento($atual);
-                $codificado->setServico($servico);
-                $codificado->setPeso(1);
-                $em->persist($codificado);
-            }
-            // verifica se esta encerrando e redirecionando
-            $redirecionar = $data->redirecionar;
-            if ($redirecionar) {
-                $servico = $data->novoServico;
-                $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
-                if (!$redirecionado->getId()) {
-                    throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
-                }
-            }
-            $success = $this->mudaStatusAtendimento($atual, AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO, 'dataFim');
-            if (!$success) {
-                throw new Exception(sprintf(_('Erro ao encerrar o atendimento %s'), $atual->getId()));
-            }
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
 
-            $em->commit();
-            $em->flush();
-        } catch (Exception $e) {
-            try {
-                $em->rollback();
-            } catch (Exception $ex) {
-            }
-            $envelope->exception($e);
+        if (!$atual) {
+            throw new Exception(_('Nenhum atendimento em andamento'));
         }
+
+        $servicos = explode(',', $data->servicos);
+
+        if (empty($servicos)) {
+            throw new Exception(_('Nenhum serviço selecionado'));
+        }
+
+        $servicoRedirecionado = null;
+        if ($data->redirecionar) {
+            $servicoRedirecionado = $data->novoServico;
+        }
+
+        $atendimentoService->encerrar($atual, $unidade, $usuario, $servicos, $servicoRedirecionado);
 
         return $this->json($envelope);
     }
@@ -341,34 +294,31 @@ class DefaultController extends Controller
      * @Route("/redirecionar", name="novosga_attendance_redirecionar")
      * @Method("POST")
      */
-    public function redirecionarAction(Request $request)
-    {
+    public function redirecionarAction(
+            Request $request, 
+            AtendimentoService $atendimentoService
+    ) {
         $envelope = new Envelope();
-        try {
-            $data = json_decode($request->getContent());
-            
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            $servico = (int) $data->servico;
-            $em = $this->getDoctrine()->getManager();
-            $atendimentoService = new AtendimentoService($em);
-            $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
-            
-            if (!$atual) {
-                throw new Exception(_('Nenhum atendimento em andamento'));
-            }
-            
-            $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
-            if (!$redirecionado->getId()) {
-                throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
-            }
-            
-            $success = $this->mudaStatusAtendimento($atual, [AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO], AtendimentoService::ERRO_TRIAGEM, 'dataFim');
-            if (!$success) {
-                throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
-            }
-        } catch (Exception $e) {
-            $envelope->exception($e);
+        
+        $data = json_decode($request->getContent());
+
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $servico = (int) $data->servico;
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+
+        if (!$atual) {
+            throw new Exception(_('Nenhum atendimento em andamento'));
+        }
+
+        $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
+        if (!$redirecionado->getId()) {
+            throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
+        }
+
+        $success = $this->mudaStatusAtendimento($atual, [AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO], AtendimentoService::ERRO_TRIAGEM, 'dataFim');
+        if (!$success) {
+            throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
         }
 
         return $this->json($envelope);
@@ -381,26 +331,23 @@ class DefaultController extends Controller
      *
      * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
      */
-    public function infoSenhaAction(Request $request, $id)
-    {
+    public function infoSenhaAction(
+            Request $request,
+            AtendimentoService $atendimentoService,
+            $id
+    ) {
         $envelope = new Envelope();
-        try {
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            $em = $this->getDoctrine()->getManager();
-            $atendimentoService = new AtendimentoService($em);
-            $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
-            
-            if (!$atendimento) {
-                throw new Exception(_('Atendimento inválido'));
-            }
-            
-            $data = $atendimento->jsonSerialize();
-            $envelope->setData($data);
-            
-        } catch (Exception $e) {
-            $envelope->exception($e);
+        
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
+
+        if (!$atendimento) {
+            throw new Exception(_('Atendimento inválido'));
         }
+
+        $data = $atendimento->jsonSerialize();
+        $envelope->setData($data);
 
         return $this->json($envelope);
     }
@@ -412,21 +359,17 @@ class DefaultController extends Controller
      *
      * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
      */
-    public function consultaSenhaAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
+    public function consultaSenhaAction(
+            Request $request,
+            AtendimentoService $atendimentoService
+    ) {
         $envelope = new Envelope();
         
-        try {
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-            $numero = $request->get('numero');
-            $atendimentoService = new AtendimentoService($em);
-            $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
-            $envelope->setData($atendimentos);
-        } catch (Exception $e) {
-            $envelope->exception($e);
-        }
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $numero = $request->get('numero');
+        $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
+        $envelope->setData($atendimentos);
         
         return $this->json($envelope);
     }
@@ -440,7 +383,7 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    private function mudaStatusAtualResponse(Request $request, $statusAtual, $novoStatus, $campoData)
+    private function mudaStatusAtualResponse(Request $request, AtendimentoService $atendimentoService, $statusAtual, $novoStatus, $campoData)
     {
         $usuario = $this->getUser();
         if (!$usuario) {
@@ -448,31 +391,24 @@ class DefaultController extends Controller
         }
         
         $envelope = new Envelope();
-        $em = $this->getDoctrine()->getManager();
-        $atendimentoService = new AtendimentoService($em);
         
-        try {
-            $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
-            
-            if (!$atual) {
-                throw new Exception(_('Nenhum atendimento disponível'));
-            }
-            
-            // atualizando atendimento
-            $success = $this->mudaStatusAtendimento($atual, $statusAtual, $novoStatus, $campoData);
-            
-            if (!$success) {
-                throw new Exception(_('Erro desconhecido'));
-            }
-            
-            $atual->setStatus($novoStatus);
-            
-            $data = $atual->jsonSerialize();
-            $envelope->setData($data);
-        } catch (Exception $e) {
-            $envelope->exception($e);
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+
+        if (!$atual) {
+            throw new Exception(_('Nenhum atendimento disponível'));
         }
-        
+
+        // atualizando atendimento
+        $success = $this->mudaStatusAtendimento($atual, $statusAtual, $novoStatus, $campoData);
+
+        if (!$success) {
+            throw new Exception(_('Erro desconhecido'));
+        }
+
+        $atual->setStatus($novoStatus);
+
+        $data = $atual->jsonSerialize();
+        $envelope->setData($data);
 
         return $this->json($envelope);
     }
