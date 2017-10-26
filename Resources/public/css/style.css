@@ -2,6 +2,9 @@
  * Novo SGA - Atendimento
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
+.attendance-panel {
+    padding: 20px 10px;
+}
 
 .module-content .header {
     margin-bottom: 0 !important;
@@ -117,7 +120,7 @@ p.links a {
 }
 
 #dialog-busca .modal-dialog {
-    width: 90%;
+    max-width: 90%;
 }
 
 #dialog-busca .result {

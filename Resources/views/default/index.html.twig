@@ -17,47 +17,45 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-sm-9 col-md-10">
+                <div class="attendance-panel col-sm-9 col-md-10">
                     <div class="row" v-if="atendimento && atendimento.status!=='encerrando'">
                         <div class="col-6">
                             <div class="card">
                                 <div class="card-header">
                                     {% trans %}Atendimento{% endtrans %}
                                 </div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <tr>
-                                            <th class="col-3">
-                                                {% trans %}Senha|Bilhete{% endtrans %}
-                                            </th>
-                                            <td>
-                                                {%- verbatim -%}
-                                                    {{ atendimento.senha.format }}
-                                                {%- endverbatim -%}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                {% trans %}Serviço{% endtrans %}
-                                            </th>
-                                            <td>
-                                                {%- verbatim -%}
-                                                    {{ atendimento.servico.nome }}
-                                                {%- endverbatim -%}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                {% trans %}Prioridade{% endtrans %}
-                                            </th>
-                                            <td>
-                                                {%- verbatim -%}
-                                                    {{ atendimento.prioridade.nome }}
-                                                {%- endverbatim -%}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <table class="table">
+                                    <tr>
+                                        <th>
+                                            {% trans %}Senha|Bilhete{% endtrans %}
+                                        </th>
+                                        <td>
+                                            {%- verbatim -%}
+                                                {{ atendimento.senha.format }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            {% trans %}Serviço{% endtrans %}
+                                        </th>
+                                        <td>
+                                            {%- verbatim -%}
+                                                {{ atendimento.servico.nome }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            {% trans %}Prioridade{% endtrans %}
+                                        </th>
+                                        <td>
+                                            {%- verbatim -%}
+                                                {{ atendimento.prioridade.nome }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                         <div class="col-6">
@@ -65,85 +63,130 @@
                                 <div class="card-header">
                                     {% trans %}Cliente{% endtrans %}
                                 </div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <tr>
-                                            <th class="col-3">
-                                                {% trans %}Nome{% endtrans %}
-                                            </th>
-                                            <td>
-                                                {%- verbatim -%}
-                                                    {{ atendimento.cliente ? atendimento.cliente.nome : '' }}
-                                                {%- endverbatim -%}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                {% trans %}Documento{% endtrans %}
-                                            </th>
-                                            <td>
-                                                {%- verbatim -%}
-                                                    {{ atendimento.cliente ? atendimento.cliente.documento : '' }}
-                                                {%- endverbatim -%}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <table class="table">
+                                    <tr>
+                                        <th>
+                                            {% trans %}Nome{% endtrans %}
+                                        </th>
+                                        <td>
+                                            {%- verbatim -%}
+                                                {{ atendimento.cliente ? atendimento.cliente.nome : '' }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            {% trans %}Documento{% endtrans %}
+                                        </th>
+                                        <td>
+                                            {%- verbatim -%}
+                                                {{ atendimento.cliente ? atendimento.cliente.documento : '' }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>                                                
                         </div>
                     </div>
                                     
                     <div class="row" v-if="atendimento && atendimento.status==='encerrando'">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    {% trans %}Atendimento{% endtrans %}
+                                </div>
+                                <table class="table">
+                                    <tr class="row">
+                                        <td class="col-4 text-center">
+                                            <strong>{% trans %}Senha|Bilhete{% endtrans %}</strong>
+                                            <br>
+                                            {%- verbatim -%}
+                                                {{ atendimento.senha.format }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                        <td class="col-4 text-center">
+                                            <strong>{% trans %}Serviço{% endtrans %}</strong>
+                                            <br>
+                                            {%- verbatim -%}
+                                                {{ atendimento.servico.nome }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                        <td class="col-4 text-center">
+                                            <strong>{% trans %}Prioridade{% endtrans %}</strong>
+                                            <br>
+                                            {%- verbatim -%}
+                                                {{ atendimento.prioridade.nome }}
+                                            {%- endverbatim -%}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <br>
+                        </div>
                         <div class="col-6">
-                            <h3>{% trans %}Serviços disponíveis{% endtrans %}</h3>
-                            <ul class="list-group">
-                                <li class="list-group-item" 
-                                    v-for="su in servicosUsuario" 
-                                    v-if="servicosRealizados.indexOf(su.servico)===-1">
-                                    <span v-if="su.subServicos.length">
-                                        {%- verbatim -%}
-                                            {{ su.servico.nome }}
-                                        {%- endverbatim -%}
-                                    </span>
-                                    <ul v-if="su.subServicos.length">
-                                        <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
-                                            <a href="#" title="{% trans %}Adicionar{% endtrans %}"
-                                               v-on:click.prevent="addServicoRealizado(sub)">
+                            <div class="card">
+                                <div class="card-header">
+                                    {% trans %}Serviços disponíveis{% endtrans %}
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted" v-if="servicosUsuario.length===0">
+                                        {% trans %}Nenhum serviço disponível{% endtrans %}
+                                    </p>
+                                    
+                                    <ul class="list-group">
+                                        <li class="list-group-item" 
+                                            v-for="su in servicosUsuario" 
+                                            v-if="servicosRealizados.indexOf(su.servico)===-1">
+                                            <span v-if="su.subServicos.length">
                                                 {%- verbatim -%}
-                                                    {{ sub.nome }}
+                                                    {{ su.servico.nome }}
+                                                {%- endverbatim -%}
+                                            </span>
+                                            <ul v-if="su.subServicos.length">
+                                                <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
+                                                    <a href="#" title="{% trans %}Adicionar{% endtrans %}"
+                                                       v-on:click.prevent="addServicoRealizado(sub)">
+                                                        {%- verbatim -%}
+                                                            {{ sub.nome }}
+                                                        {%- endverbatim -%}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <a href="#" title="{% trans %}Adicionar{% endtrans %}"
+                                               v-if="su.subServicos.length===0"
+                                               v-on:click.prevent="addServicoRealizado(su.servico)">
+                                                {%- verbatim -%}
+                                                    {{ su.servico.nome }}
                                                 {%- endverbatim -%}
                                             </a>
                                         </li>
                                     </ul>
-                                    <a href="#" title="{% trans %}Adicionar{% endtrans %}"
-                                       v-if="su.subServicos.length===0"
-                                       v-on:click.prevent="addServicoRealizado(su.servico)">
-                                        {%- verbatim -%}
-                                            {{ su.servico.nome }}
-                                        {%- endverbatim -%}
-                                    </a>
-                                </li>
-                            </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-6">
-                            <h3>{% trans %}Serviços realizados{% endtrans %}</h3>
-                            <ul class="list-group">
-                                <li class="list-group-item" 
-                                    v-for="servico in servicosRealizados">
-                                    <a href="#" 
-                                       title="{% trans %}Remover{% endtrans %}"
-                                       v-on:click.prevent="removeServicoRealizado(servico)">
-                                        {% verbatim %}
-                                            {{ servico.nome }}
-                                        {% endverbatim %}
-                                    </a>
-                                </li>
-                            </ul>
-                            <div class="checkbox">
-                                <label title="{% trans %}Marque para encerrar e redirecionar o atendimento atual{% endtrans %}">
-                                    <input type="checkbox" v-model="redirecionarAoEncerrar" >
-                                    {% trans %}Redirecionar atendimento ao encerrar {% endtrans %}
-                                </label>
+                            <div class="card">
+                                <div class="card-header">
+                                    {% trans %}Serviços realizados{% endtrans %}
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted" v-if="servicosRealizados.length===0">
+                                        {% trans %}Nenhum serviço selecionado{% endtrans %}
+                                    </p>
+                                    
+                                    <ul class="list-group">
+                                        <li class="list-group-item" 
+                                            v-for="servico in servicosRealizados">
+                                            <a href="#" 
+                                               title="{% trans %}Remover{% endtrans %}"
+                                               v-on:click.prevent="removeServicoRealizado(servico)">
+                                                {% verbatim %}
+                                                    {{ servico.nome }}
+                                                {% endverbatim %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -219,6 +262,16 @@
                                     title="{% trans %}Encerrar atendimento{% endtrans %}">
                                 <i class="fa fa-stop"></i>
                                 <span>{% trans %}Encerrar atendimento{% endtrans %}</span>
+                            </button>
+                        </div>
+                            
+                        <div class="col-4" v-if="atendimento && atendimento.status==='encerrando'">
+                            <button type="button"
+                                    class="btn btn-secondary btn-block"
+                                    v-on:click="encerrarRedirecionar"
+                                    title="{% trans %}Encerrar e redirecionar atendimento{% endtrans %}">
+                                <i class="fa fa-stop"></i>
+                                <span>{% trans %}Encerrar e redirecionar atendimento{% endtrans %}</span>
                             </button>
                         </div>
                     </div>
@@ -341,7 +394,7 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            {% trans %}Nenhum serviço selecionado{% endtrans %}
+                            {% trans %}Por favor selecione os serviços realizados primeiro.{% endtrans %}
                         </p>
                     </div>
                 </div>
@@ -357,17 +410,21 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <form class="form-inline" role="form" v-on:submit.prevent="consultar">
-                            <div class="form-group">
-                                <input type="text" maxlength="10" class="form-search form-control" placeholder="{% trans %}Número{% endtrans %}" required
-                                       v-model="search">
+                        <form class="row" role="form" v-on:submit.prevent="consultar">
+                            <div class="col-3">
+                                <div class="input-group">
+                                    <input type="text" maxlength="10" class="form-search form-control" placeholder="{% trans %}Senha completa, sigla ou número{% endtrans %}" v-model="search">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-primary" title="{% trans %}Consultar{% endtrans %}">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                {% trans %}Consultar{% endtrans %}
-                            </button>
                         </form>
+                        <hr>
                         <div class="result">
-                            <table class="table table-bordered">
+                            <table class="table">
                                 <thead>
                                     <tr>
                                         <th>{% trans %}Número{% endtrans %}</th>
@@ -381,48 +438,40 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="atendimento in searchResult">
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.senha.format }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.servico.nome }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.chegada }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.inicio }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.fim }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.triagem }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.usuario }}
-                                            {% endverbatim %}
-                                        </td>
-                                        <td>
-                                            {% verbatim %}
-                                                {{ atendimento.status }}
-                                            {% endverbatim %}
-                                        </td>
-                                    </tr>
+                                    {% verbatim %}
+                                        <tr v-for="atendimento in searchResult">
+                                            <td>
+                                                {{atendimento.senha.format}}
+                                            </td>
+                                            <td>
+                                                {{atendimento.servico.nome}}
+                                            </td>
+                                            <td>
+                                                <span v-if="atendimento.chegada">
+                                                    {{moment(atendimento.chegada, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span v-if="atendimento.inicio">
+                                                    {{moment(atendimento.inicio, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span v-if="atendimento.fim">
+                                                    {{moment(atendimento.fim, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{atendimento.triagem}}
+                                            </td>
+                                            <td>
+                                                {{atendimento.usuario}}
+                                            </td>
+                                            <td>
+                                                {{atendimento.status}}
+                                            </td>
+                                        </tr>
+                                    {% endverbatim %}
                                 </tbody>
                             </table>
                         </div>

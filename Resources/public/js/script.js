@@ -209,6 +209,11 @@ var App = App || {};
                 });
             },
             
+            encerrarRedirecionar: function() {
+                this.redirecionarAoEncerrar = true;
+                this.encerrar(false);
+            },
+            
             redirecionar: function () {
                 var servico = this.servicoRedirecionar,
                     self = this;
