@@ -162,6 +162,14 @@ var App = App || {};
             preparaEncerrar: function () {
                 this.servicosRealizados = [];
                 this.servicosUsuario = JSON.parse(JSON.stringify(servicosUsuario));
+                if (this.servicosUsuario.length === 1) {
+                    var su = this.servicosUsuario[0];
+                    if (su.subServicos.length === 0) {
+                        this.addServicoRealizado(su.servico);
+                    } else if (su.subServicos.length === 1) {
+                        this.addServicoRealizado(su.subServicos[0]);
+                    }
+                }
                 this.atendimento.status = 'encerrando';
             },
             
