@@ -6,9 +6,6 @@
             <div class="row">
                 <div class="col-sm-3 col-md-2">
                     <div id="local">
-                        <span class="label-local">
-                            {% trans %}Guichê{% endtrans %}
-                        </span>
                         <span class="numero" v-text="usuario.numeroLocal">
                             {{ local }}
                         </span>
@@ -19,7 +16,7 @@
                 </div>
                 <div class="attendance-panel col-sm-9 col-md-10">
                     <div class="row" v-if="atendimento && atendimento.status!=='encerrando'">
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     {% trans %}Atendimento{% endtrans %}
@@ -58,7 +55,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     {% trans %}Cliente{% endtrans %}
@@ -85,10 +82,10 @@
                                         </td>
                                     </tr>
                                 </table>
-                            </div>                                                
+                            </div>
                         </div>
                     </div>
-                                    
+
                     <div class="row" v-if="atendimento && atendimento.status==='encerrando'">
                         <div class="col-12">
                             <div class="card">
@@ -97,21 +94,21 @@
                                 </div>
                                 <table class="table">
                                     <tr class="row">
-                                        <td class="col-4 text-center">
+                                        <td class="col-md-4 text-center">
                                             <strong>{% trans %}Senha|Bilhete{% endtrans %}</strong>
                                             <br>
                                             {%- verbatim -%}
                                                 {{ atendimento.senha.format }}
                                             {%- endverbatim -%}
                                         </td>
-                                        <td class="col-4 text-center">
+                                        <td class="col-md-4 text-center">
                                             <strong>{% trans %}Serviço{% endtrans %}</strong>
                                             <br>
                                             {%- verbatim -%}
                                                 {{ atendimento.servico.nome }}
                                             {%- endverbatim -%}
                                         </td>
-                                        <td class="col-4 text-center">
+                                        <td class="col-md-4 text-center">
                                             <strong>{% trans %}Prioridade{% endtrans %}</strong>
                                             <br>
                                             {%- verbatim -%}
@@ -123,7 +120,7 @@
                             </div>
                             <br>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     {% trans %}Serviços disponíveis{% endtrans %}
@@ -132,10 +129,10 @@
                                     <p class="text-muted" v-if="servicosUsuario.length===0">
                                         {% trans %}Nenhum serviço disponível{% endtrans %}
                                     </p>
-                                    
+
                                     <ul class="list-group">
-                                        <li class="list-group-item" 
-                                            v-for="su in servicosUsuario" 
+                                        <li class="list-group-item"
+                                            v-for="su in servicosUsuario"
                                             v-if="servicosRealizados.indexOf(su.servico)===-1">
                                             <span v-if="su.subServicos.length">
                                                 {%- verbatim -%}
@@ -164,7 +161,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     {% trans %}Serviços realizados{% endtrans %}
@@ -173,11 +170,11 @@
                                     <p class="text-muted" v-if="servicosRealizados.length===0">
                                         {% trans %}Nenhum serviço selecionado{% endtrans %}
                                     </p>
-                                    
+
                                     <ul class="list-group">
-                                        <li class="list-group-item" 
+                                        <li class="list-group-item"
                                             v-for="servico in servicosRealizados">
-                                            <a href="#" 
+                                            <a href="#"
                                                title="{% trans %}Remover{% endtrans %}"
                                                v-on:click.prevent="removeServicoRealizado(servico)">
                                                 {% verbatim %}
@@ -192,9 +189,9 @@
                     </div>
 
                     <hr>
-                    
+
                     <div class="row controls">
-                        <div class="col-4" v-if="!atendimento">
+                        <div class="col-md-4" v-if="!atendimento">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{% trans %}Chamar próximo{% endtrans %}"
@@ -204,8 +201,8 @@
                                 <span>{% trans %}Chamar próximo{% endtrans %}</span>
                             </button>
                         </div>
-                            
-                        <div class="col-4" v-if="atendimento && atendimento.status==='chamado'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{% trans %}Chamar próximo{% endtrans %}"
@@ -214,8 +211,8 @@
                                 <span>{% trans %}Chamar novamente{% endtrans %}</span>
                             </button>
                         </div>
-                        
-                        <div class="col-4" v-if="atendimento && atendimento.status==='chamado'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-primary btn-block btn-control iniciar"
                                     title="{% trans %}Iniciar atendimento{% endtrans %}"
@@ -224,8 +221,8 @@
                                 <span>{% trans %}Iniciar atendimento{% endtrans %}</span>
                             </button>
                         </div>
-                            
-                        <div class="col-4" v-if="atendimento && atendimento.status==='chamado'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{% trans %}Não compareceu{% endtrans %}"
@@ -234,8 +231,8 @@
                                 <span>{% trans %}Não compareceu{% endtrans %}</span>
                             </button>
                         </div>
-                            
-                        <div class="col-4" v-if="atendimento && atendimento.status==='iniciado'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{% trans %}Encerrar atendimento{% endtrans %}"
@@ -244,8 +241,8 @@
                                 <span>{% trans %}Encerrar atendimento{% endtrans %}</span>
                             </button>
                         </div>
-                        
-                        <div class="col-4" v-if="atendimento && atendimento.status==='iniciado'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{% trans %}Erro de triagem{% endtrans %}"
@@ -254,8 +251,8 @@
                                 <span>{% trans %}Erro de triagem{% endtrans %}</span>
                             </button>
                         </div>
-                            
-                        <div class="col-4" v-if="atendimento && atendimento.status==='encerrando'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     v-on:click="encerrar(false)"
@@ -264,8 +261,8 @@
                                 <span>{% trans %}Encerrar atendimento{% endtrans %}</span>
                             </button>
                         </div>
-                            
-                        <div class="col-4" v-if="atendimento && atendimento.status==='encerrando'">
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     v-on:click="encerrarRedirecionar"
@@ -284,9 +281,9 @@
                         <i class="fa fa-users"></i>
                     </li>
                     <li v-for="(atendimento, index) in atendimentos">
-                        <a href="#" 
-                           v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }" 
-                           v-on:click.prevent="infoSenha(atendimento)" 
+                        <a href="#"
+                           v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
+                           v-on:click.prevent="infoSenha(atendimento)"
                            v-bind:title="atendimento.servico.nome + ' (' + atendimento.espera + ')'">
                             {%- verbatim -%}
                                 {{ atendimento.senha.format }}
@@ -299,7 +296,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <p class="links">
             <a href="#dialog-busca" class="btn btn-secondary" data-toggle="modal">
                 <i class="fa fa-search"></i>&nbsp;
@@ -369,13 +366,13 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" 
+                        <button type="button" class="btn btn-primary"
                                 v-on:click="redirecionar()"
                                 v-if="atendimento.status !== 'encerrando'">
                             {% trans %}Redirecionar{% endtrans %}
                         </button>
-                        
-                        <button type="button" class="btn btn-primary" 
+
+                        <button type="button" class="btn btn-primary"
                                 v-on:click="encerrar(true)"
                                 v-if="atendimento.status === 'encerrando'">
                             {% trans %}Encerrar e redirecionar{% endtrans %}
@@ -544,7 +541,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link type="text/css" rel="stylesheet" href="{{ asset('bundles/novosgaattendance/css/style.css') }}">
-{% endblock %}    
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
