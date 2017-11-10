@@ -41,10 +41,10 @@ class DefaultController extends Controller
      * @Route("/", name="novosga_attendance_index")
      */
     public function indexAction(
-            Request $request,
-            AtendimentoService $atendimentoService,
-            UsuarioService $usuarioService,
-            ServicoService $servicoService
+        Request $request,
+        AtendimentoService $atendimentoService,
+        UsuarioService $usuarioService,
+        ServicoService $servicoService
     ) {
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -125,9 +125,9 @@ class DefaultController extends Controller
      * @Route("/ajax_update", name="novosga_attendance_ajaxupdate")
      */
     public function ajaxUpdateAction(
-            Request $request,
-            FilaService $filaService,
-            UsuarioService $usuarioService
+        Request $request,
+        FilaService $filaService,
+        UsuarioService $usuarioService
     ) {
         $envelope = new Envelope();
         $usuario = $this->getUser();
@@ -159,10 +159,10 @@ class DefaultController extends Controller
      * @Method("POST")
      */
     public function chamarAction(
-            Request $request,
-            AtendimentoService $atendimentoService,
-            FilaService $filaService,
-            UsuarioService $usuarioService
+        Request $request,
+        AtendimentoService $atendimentoService,
+        FilaService $filaService,
+        UsuarioService $usuarioService
     ) {
         $envelope = new Envelope();
         
@@ -229,7 +229,13 @@ class DefaultController extends Controller
      */
     public function iniciarAction(Request $request, AtendimentoService $atendimentoService)
     {
-        return $this->mudaStatusAtualResponse($request, $atendimentoService, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::ATENDIMENTO_INICIADO, 'dataInicio');
+        return $this->mudaStatusAtualResponse(
+            $request,
+            $atendimentoService,
+            AtendimentoService::CHAMADO_PELA_MESA,
+            AtendimentoService::ATENDIMENTO_INICIADO,
+            'dataInicio'
+        );
     }
 
     /**
@@ -242,7 +248,13 @@ class DefaultController extends Controller
      */
     public function naoCompareceuAction(Request $request, AtendimentoService $atendimentoService)
     {
-        return $this->mudaStatusAtualResponse($request, $atendimentoService, AtendimentoService::CHAMADO_PELA_MESA, AtendimentoService::NAO_COMPARECEU, 'dataFim');
+        return $this->mudaStatusAtualResponse(
+            $request,
+            $atendimentoService,
+            AtendimentoService::CHAMADO_PELA_MESA,
+            AtendimentoService::NAO_COMPARECEU,
+            'dataFim'
+        );
     }
 
     /**
@@ -253,10 +265,8 @@ class DefaultController extends Controller
      * @Route("/encerrar", name="novosga_attendance_encerrar")
      * @Method("POST")
      */
-    public function encerrarAction(
-            Request $request,
-            AtendimentoService $atendimentoService
-    ) {
+    public function encerrarAction(Request $request, AtendimentoService $atendimentoService)
+    {
         $envelope = new Envelope();
         
         $data = json_decode($request->getContent());
@@ -294,10 +304,8 @@ class DefaultController extends Controller
      * @Route("/redirecionar", name="novosga_attendance_redirecionar")
      * @Method("POST")
      */
-    public function redirecionarAction(
-            Request $request, 
-            AtendimentoService $atendimentoService
-    ) {
+    public function redirecionarAction(Request $request, AtendimentoService $atendimentoService)
+    {
         $envelope = new Envelope();
         
         $data = json_decode($request->getContent());
@@ -313,10 +321,22 @@ class DefaultController extends Controller
 
         $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
         if (!$redirecionado->getId()) {
-            throw new Exception(sprintf(_('Erro ao redirecionar atendimento %s para o serviço %s'), $atual->getId(), $servico));
+            throw new Exception(
+                sprintf(
+                    _('Erro ao redirecionar atendimento %s para o serviço %s'),
+                    $atual->getId(),
+                    $servico
+                )
+            );
         }
 
-        $success = $this->mudaStatusAtendimento($atual, [AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO], AtendimentoService::ERRO_TRIAGEM, 'dataFim');
+        $success = $this->mudaStatusAtendimento(
+            $atual,
+            [ AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO ],
+            AtendimentoService::ERRO_TRIAGEM,
+            'dataFim'
+        );
+        
         if (!$success) {
             throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
         }
@@ -332,9 +352,9 @@ class DefaultController extends Controller
      * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
      */
     public function infoSenhaAction(
-            Request $request,
-            AtendimentoService $atendimentoService,
-            $id
+        Request $request,
+        AtendimentoService $atendimentoService,
+        $id
     ) {
         $envelope = new Envelope();
         
@@ -360,8 +380,8 @@ class DefaultController extends Controller
      * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
      */
     public function consultaSenhaAction(
-            Request $request,
-            AtendimentoService $atendimentoService
+        Request $request,
+        AtendimentoService $atendimentoService
     ) {
         $envelope = new Envelope();
         
@@ -383,8 +403,13 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    private function mudaStatusAtualResponse(Request $request, AtendimentoService $atendimentoService, $statusAtual, $novoStatus, $campoData)
-    {
+    private function mudaStatusAtualResponse(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        $statusAtual,
+        $novoStatus,
+        $campoData
+    ) {
         $usuario = $this->getUser();
         if (!$usuario) {
             return $this->redirectToRoute('home');
