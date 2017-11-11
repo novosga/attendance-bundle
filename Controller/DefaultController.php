@@ -62,7 +62,7 @@ class DefaultController extends Controller
             3 => _('Prioridade'),
         ];
         
-        $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId());
+        $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
         
         $servicosUsuario = $usuarioService->servicos($usuario, $unidade);
         
@@ -177,7 +177,7 @@ class DefaultController extends Controller
         }
 
         // verifica se ja esta atendendo alguem
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         // se ja existe um atendimento em andamento (chamando senha novamente)
         if ($atual) {
@@ -273,7 +273,7 @@ class DefaultController extends Controller
 
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(_('Nenhum atendimento em andamento'));
@@ -313,7 +313,7 @@ class DefaultController extends Controller
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         $servico = (int) $data->servico;
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(_('Nenhum atendimento em andamento'));
@@ -415,9 +415,11 @@ class DefaultController extends Controller
             return $this->redirectToRoute('home');
         }
         
+        $unidade = $usuario->getLotacao()->getUnidade();
+        
         $envelope = new Envelope();
         
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId());
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(_('Nenhum atendimento disponível'));
