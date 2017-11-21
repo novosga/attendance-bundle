@@ -353,7 +353,7 @@ class DefaultController extends Controller
                     [
                         '%atendimento%' => $atual->getId(),
                         '%servico%'     => $servico,
-                    ], 
+                    ],
                     self::DOMAIN
                 )
             );
