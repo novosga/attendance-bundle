@@ -17,7 +17,7 @@ use Novosga\Entity\Atendimento;
 use Novosga\Entity\Usuario;
 use Novosga\Entity\ServicoUsuario;
 use Novosga\Service\AtendimentoService;
-use Novosga\Service\Dispatcher;
+use Novosga\Service\EventDispatcher;
 use Novosga\Service\FilaService;
 use Novosga\Service\UsuarioService;
 use Novosga\Service\ServicoService;
@@ -96,7 +96,7 @@ class DefaultController extends Controller
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
-    public function setLocalAction(Request $request, UsuarioService $usuarioService, Dispatcher $dispatcher)
+    public function setLocalAction(Request $request, UsuarioService $usuarioService, EventDispatcher $dispatcher)
     {
         $envelope = new Envelope();
         
@@ -107,12 +107,12 @@ class DefaultController extends Controller
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
 
-        $dispatcher->dispatch('sga.atendimento.pre-setlocal', [$unidade, $usuario, $numero, $tipo]);
+        $dispatcher->createAndDispatch('novosga.attendance.pre-setlocal', [$unidade, $usuario, $numero, $tipo], true);
 
         $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
         $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
 
-        $dispatcher->dispatch('sga.atendimento.setlocal', [$unidade, $usuario, $numero, $tipo]);
+        $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
 
         return $this->json($envelope);
     }
