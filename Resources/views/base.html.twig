@@ -1,5 +1,7 @@
 {% extends "base.html.twig" %}
 
+{% trans_default_domain 'NovosgaAttendanceBundle' %}
+
 {% block title -%}
-    {% trans %}Atendimento{% endtrans %}
+    {{ 'title'|trans }}
 {%- endblock %} 

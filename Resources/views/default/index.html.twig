@@ -1,5 +1,7 @@
 {% extends "@NovosgaAttendance/base.html.twig" %}
 
+{% trans_default_domain 'NovosgaAttendanceBundle' %}
+
 {% block body %}
     <div id="attendance" v-cloak>
         <div id="atendimento" v-if="local">
@@ -10,7 +12,7 @@
                             {{ local }}
                         </span>
                         <a href="#dialog-local" data-toggle="modal">
-                            {% trans %}Alterar{% endtrans %}
+                            {{ 'button.change'|trans }}
                         </a>
                     </div>
                 </div>
@@ -19,12 +21,12 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    {% trans %}Atendimento{% endtrans %}
+                                    {{ 'label.attendance'|trans }}
                                 </div>
                                 <table class="table">
                                     <tr>
                                         <th>
-                                            {% trans %}Senha|Bilhete{% endtrans %}
+                                            {{ 'label.ticket'|trans }}
                                         </th>
                                         <td>
                                             {%- verbatim -%}
@@ -34,7 +36,7 @@
                                     </tr>
                                     <tr>
                                         <th>
-                                            {% trans %}Serviço{% endtrans %}
+                                            {{ 'label.service'|trans }}
                                         </th>
                                         <td>
                                             {%- verbatim -%}
@@ -44,7 +46,7 @@
                                     </tr>
                                     <tr>
                                         <th>
-                                            {% trans %}Prioridade{% endtrans %}
+                                            {{ 'label.priority'|trans }}
                                         </th>
                                         <td>
                                             {%- verbatim -%}
@@ -58,12 +60,12 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    {% trans %}Cliente{% endtrans %}
+                                    {{ 'label.customer'|trans }}
                                 </div>
                                 <table class="table">
                                     <tr>
                                         <th>
-                                            {% trans %}Nome{% endtrans %}
+                                            {{ 'label.customer.name'|trans }}
                                         </th>
                                         <td>
                                             {%- verbatim -%}
@@ -73,7 +75,7 @@
                                     </tr>
                                     <tr>
                                         <th>
-                                            {% trans %}Documento{% endtrans %}
+                                            {{ 'label.customer.id'|trans }}
                                         </th>
                                         <td>
                                             {%- verbatim -%}
@@ -90,26 +92,26 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    {% trans %}Atendimento{% endtrans %}
+                                    {{ 'label.attendance'|trans }}
                                 </div>
                                 <table class="table">
                                     <tr class="row">
                                         <td class="col-md-4 text-center">
-                                            <strong>{% trans %}Senha|Bilhete{% endtrans %}</strong>
+                                            <strong>{{ 'label.ticket'|trans }}</strong>
                                             <br>
                                             {%- verbatim -%}
                                                 {{ atendimento.senha.format }}
                                             {%- endverbatim -%}
                                         </td>
                                         <td class="col-md-4 text-center">
-                                            <strong>{% trans %}Serviço{% endtrans %}</strong>
+                                            <strong>{{ 'label.service'|trans }}</strong>
                                             <br>
                                             {%- verbatim -%}
                                                 {{ atendimento.servico.nome }}
                                             {%- endverbatim -%}
                                         </td>
                                         <td class="col-md-4 text-center">
-                                            <strong>{% trans %}Prioridade{% endtrans %}</strong>
+                                            <strong>{{ 'label.priority'|trans }}</strong>
                                             <br>
                                             {%- verbatim -%}
                                                 {{ atendimento.prioridade.nome }}
@@ -123,11 +125,11 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    {% trans %}Serviços disponíveis{% endtrans %}
+                                    {{ 'label.services.available'|trans }}
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted" v-if="servicosUsuario.length===0">
-                                        {% trans %}Nenhum serviço disponível{% endtrans %}
+                                        {{ 'label.services.available.empty'|trans }}
                                     </p>
 
                                     <ul class="list-group">
@@ -141,7 +143,7 @@
                                             </span>
                                             <ul v-if="su.subServicos.length">
                                                 <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
-                                                    <a href="#" title="{% trans %}Adicionar{% endtrans %}"
+                                                    <a href="#" title="{{ 'button.add'|trans }}"
                                                        v-on:click.prevent="addServicoRealizado(sub)">
                                                         {%- verbatim -%}
                                                             {{ sub.nome }}
@@ -149,7 +151,7 @@
                                                     </a>
                                                 </li>
                                             </ul>
-                                            <a href="#" title="{% trans %}Adicionar{% endtrans %}"
+                                            <a href="#" title="{{ 'button.add'|trans }}"
                                                v-if="su.subServicos.length===0"
                                                v-on:click.prevent="addServicoRealizado(su.servico)">
                                                 {%- verbatim -%}
@@ -164,18 +166,18 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    {% trans %}Serviços realizados{% endtrans %}
+                                    {{ 'label.services.executed'|trans }}
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted" v-if="servicosRealizados.length===0">
-                                        {% trans %}Nenhum serviço selecionado{% endtrans %}
+                                        {{ 'label.services.executed.empty'|trans }}
                                     </p>
 
                                     <ul class="list-group">
                                         <li class="list-group-item"
                                             v-for="servico in servicosRealizados">
                                             <a href="#"
-                                               title="{% trans %}Remover{% endtrans %}"
+                                               title="{{ 'label.remove'|trans }}"
                                                v-on:click.prevent="removeServicoRealizado(servico)">
                                                 {% verbatim %}
                                                     {{ servico.nome }}
@@ -194,61 +196,61 @@
                         <div class="col-md-4" v-if="!atendimento">
                             <button type="button"
                                     class="btn btn-primary btn-block"
-                                    title="{% trans %}Chamar próximo{% endtrans %}"
+                                    title="{{ 'button.call_next'|trans }}"
                                     v-bind:disabled="atendimentos.length===0"
                                     v-on:click="chamar">
                                 <i class="fa fa-bullhorn"></i>
-                                <span>{% trans %}Chamar próximo{% endtrans %}</span>
+                                <span>{{ 'button.call_next'|trans }}</span>
                             </button>
                         </div>
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
-                                    title="{% trans %}Chamar próximo{% endtrans %}"
+                                    title="{{ 'button.call_again'|trans }}"
                                     v-on:click="chamar">
                                 <i class="fa fa-bullhorn"></i>
-                                <span>{% trans %}Chamar novamente{% endtrans %}</span>
+                                <span>{{ 'button.call_again'|trans }}</span>
                             </button>
                         </div>
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-primary btn-block btn-control iniciar"
-                                    title="{% trans %}Iniciar atendimento{% endtrans %}"
+                                    title="{{ 'button.start'|trans }}"
                                     v-on:click="iniciar">
                                 <i class="fa fa-play"></i>
-                                <span>{% trans %}Iniciar atendimento{% endtrans %}</span>
+                                <span>{{ 'button.start'|trans }}</span>
                             </button>
                         </div>
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
-                                    title="{% trans %}Não compareceu{% endtrans %}"
+                                    title="{{ 'button.not_show'|trans }}"
                                     v-on:click="naoCompareceu">
                                 <i class="fa fa-user-times"></i>
-                                <span>{% trans %}Não compareceu{% endtrans %}</span>
+                                <span>{{ 'button.not_show'|trans }}</span>
                             </button>
                         </div>
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
-                                    title="{% trans %}Encerrar atendimento{% endtrans %}"
+                                    title="{{ 'button.finish'|trans }}"
                                     v-on:click="preparaEncerrar">
                                 <i class="fa fa-stop"></i>
-                                <span>{% trans %}Encerrar atendimento{% endtrans %}</span>
+                                <span>{{ 'button.finish'|trans }}</span>
                             </button>
                         </div>
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
-                                    title="{% trans %}Erro de triagem{% endtrans %}"
+                                    title="{{ 'button.error'|trans }}"
                                     v-on:click="erroTriagem">
                                 <i class="fa fa-exclamation-triangle"></i>
-                                <span>{% trans %}Erro de triagem{% endtrans %}</span>
+                                <span>{{ 'button.error'|trans }}</span>
                             </button>
                         </div>
 
@@ -256,9 +258,9 @@
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     v-on:click="encerrar(false)"
-                                    title="{% trans %}Encerrar atendimento{% endtrans %}">
+                                    title="{{ 'button.finish'|trans }}">
                                 <i class="fa fa-stop"></i>
-                                <span>{% trans %}Encerrar atendimento{% endtrans %}</span>
+                                <span>{{ 'button.finish'|trans }}</span>
                             </button>
                         </div>
 
@@ -266,16 +268,16 @@
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     v-on:click="encerrarRedirecionar"
-                                    title="{% trans %}Encerrar e redirecionar atendimento{% endtrans %}">
+                                    title="{{ 'button.redirect'|trans }}">
                                 <i class="fa fa-stop"></i>
-                                <span>{% trans %}Encerrar e redirecionar atendimento{% endtrans %}</span>
+                                <span>{{ 'button.redirect'|trans }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="fila">
-                <h4>{% trans %}Minha fila{% endtrans %}  (<span v-bind:class="'tipo-' + tipoAtendimento " v-text="tiposAtendimento[usuario.tipoAtendimento]">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
+                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + tipoAtendimento " v-text="tiposAtendimento[usuario.tipoAtendimento]">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
                 <ul>
                     <li>
                         <i class="fa fa-users"></i>
@@ -291,7 +293,7 @@
                         </a>
                     </li>
                     <li class="empty" v-if="atendimentos.length===0">
-                        {% trans %}Fila vazia{% endtrans %}
+                        {{ 'label.my_queue.empty'|trans }}
                     </li>
                 </ul>
             </div>
@@ -300,11 +302,11 @@
         <p class="links">
             <a href="#dialog-busca" class="btn btn-secondary" data-toggle="modal">
                 <i class="fa fa-search"></i>&nbsp;
-                {% trans %}Consultar senha{% endtrans %}
+                {{ 'button.find_ticket'|trans }}
             </a>
             <button id="notification" type="button" class="btn btn-warning" onclick="App.Notification.request(this)" style="display: none">
                 <i class="fa fa-exclamation"></i>&nbsp;
-                {% trans %}Habilitar notificação{% endtrans %}
+                {{ 'button.enable_notification'|trans }}
             </button>
         </p>
 
@@ -313,20 +315,20 @@
                 <div class="modal-content">
                     <form v-on:submit.prevent="setLocal">
                         <div class="modal-header">
-                            <h5 class="modal-title">{% trans %}Guichê{% endtrans %}</h5>
+                            <h5 class="modal-title">{{ 'modal.place'|trans }}</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label class="control-label">{% trans %}Número{% endtrans %}</label>
+                                        <label class="control-label">{{ 'label.place.number'|trans }}</label>
                                         <input type="number" maxlength="3" class="form-control" v-model.number="novoLocal.numeroLocal" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label class="control-label" title="{% trans %}Tipo de Atendimento{% endtrans %}">{% trans %}Atendimento{% endtrans %}</label>
+                                        <label class="control-label" title="{{ 'label.attendance.type'|trans }}">{{ 'label.attendance'|trans }}</label>
                                         <select class="form-control" v-model="novoLocal.tipoAtendimento">
                                             {% for v,l in tiposAtendimento %}
                                                 <option value="{{ v }}" {% if tipoAtendimento == v %}selected="selected"{% endif %}>{{ l }}</option>
@@ -338,7 +340,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">
-                                {% trans %}Salvar{% endtrans %}
+                                {{ 'button.save'|trans }}
                             </button>
                         </div>
                     </form>
@@ -351,16 +353,16 @@
             <div class="modal-dialog">
                 <div class="modal-content" v-if="atendimento">
                     <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}Redirecionar{% endtrans %}</h5>
+                        <h5 class="modal-title">{{ 'modal.redirect'|trans }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>{% trans %}Novo Serviço{% endtrans %}</label>
+                            <label>{{ 'label.redirect.new_service'|trans }}</label>
                             <select class="form-control" v-model="servicoRedirecionar">
-                                <option value="">{% trans %}Selecione{% endtrans %}</option>
+                                <option value="">{{ 'label.choose'|trans }}</option>
                                 {% for su in servicosIndisponiveis %}
-                                <option value="{{ su.servico.id }}">{{ su.servico.nome }}</option>
+                                    <option value="{{ su.servico.id }}">{{ su.servico.nome }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -369,13 +371,13 @@
                         <button type="button" class="btn btn-primary"
                                 v-on:click="redirecionar()"
                                 v-if="atendimento.status !== 'encerrando'">
-                            {% trans %}Redirecionar{% endtrans %}
+                            {{ 'modal.redirect.button.redirect'|trans }}
                         </button>
 
                         <button type="button" class="btn btn-primary"
                                 v-on:click="encerrar(true)"
                                 v-if="atendimento.status === 'encerrando'">
-                            {% trans %}Encerrar e redirecionar{% endtrans %}
+                            {{ 'modal.redirect.button.finish'|trans }}
                         </button>
                     </div>
                 </div>
@@ -386,12 +388,12 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}Erro{% endtrans %}</h5>
+                        <h5 class="modal-title">{{ 'modal.error'|trans }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
-                            {% trans %}Por favor selecione os serviços realizados primeiro.{% endtrans %}
+                            {{ 'modal.error.text'|trans }}
                         </p>
                     </div>
                 </div>
@@ -403,16 +405,16 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}Busca{% endtrans %}</h5>
+                        <h5 class="modal-title">{{ 'modal.search'|trans }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form class="row" role="form" v-on:submit.prevent="consultar">
                             <div class="col-3">
                                 <div class="input-group">
-                                    <input type="text" maxlength="10" class="form-search form-control" placeholder="{% trans %}Senha completa, sigla ou número{% endtrans %}" v-model="search">
+                                    <input type="text" maxlength="10" class="form-search form-control" placeholder="{{ 'modal.search.placeholder'|trans }}" v-model="search">
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn btn-primary" title="{% trans %}Consultar{% endtrans %}">
+                                        <button type="submit" class="btn btn-primary" title="{{ 'modal.search.button.submit'|trans }}">
                                             <i class="fa fa-search"></i>
                                         </button>
                                     </span>
@@ -424,14 +426,14 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>{% trans %}Número{% endtrans %}</th>
-                                        <th>{% trans %}Serviço{% endtrans %}</th>
-                                        <th>{% trans %}Data chegada{% endtrans %}</th>
-                                        <th>{% trans %}Data início{% endtrans %}</th>
-                                        <th>{% trans %}Data fim{% endtrans %}</th>
-                                        <th>{% trans %}Triagem{% endtrans %}</th>
-                                        <th>{% trans %}Atendente{% endtrans %}</th>
-                                        <th>{% trans %}Situação{% endtrans %}</th>
+                                        <th>{{ 'label.ticket.number'|trans }}</th>
+                                        <th>{{ 'label.service'|trans }}</th>
+                                        <th>{{ 'label.ticket.arrival_date'|trans }}</th>
+                                        <th>{{ 'label.ticket.start_date'|trans }}</th>
+                                        <th>{{ 'label.ticket.end_date'|trans }}</th>
+                                        <th>{{ 'label.triage'|trans }}</th>
+                                        <th>{{ 'label.ticket.user'|trans }}</th>
+                                        <th>{{ 'label.status'|trans }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -445,17 +447,17 @@
                                             </td>
                                             <td>
                                                 <span v-if="atendimento.chegada">
-                                                    {{moment(atendimento.chegada, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                    {{moment(atendimento.chegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span v-if="atendimento.inicio">
-                                                    {{moment(atendimento.inicio, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                    {{moment(atendimento.inicio, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span v-if="atendimento.fim">
-                                                    {{moment(atendimento.fim, 'YYYY-MM-DD hh:mm:ss').format('DD/MM/YYYY hh:mm:ss')}}
+                                                    {{moment(atendimento.fim, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
@@ -482,12 +484,12 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{% trans %}Senha|Bilhete{% endtrans %}</h5>
+                        <h5 class="modal-title">{{ 'label.ticket'|trans }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body" v-if="atendimentoInfo">
                         <div class="field">
-                            <h4>{% trans %}Número{% endtrans %}</h4>
+                            <h4>{{ 'label.ticket.number'|trans }}</h4>
                             <p class="numero">
                                 {% verbatim %}
                                     {{ atendimentoInfo.senha.format }}
@@ -495,7 +497,7 @@
                             </p>
                         </div>
                         <div class="field">
-                            <h4>{% trans %}Serviço{% endtrans %}</h4>
+                            <h4>{{ 'label.service'|trans }}</h4>
                             <p class="servico">
                                 {% verbatim %}
                                     {{ atendimentoInfo.servico.nome }}
@@ -503,7 +505,7 @@
                             </p>
                         </div>
                         <div class="field">
-                            <h4>{% trans %}Prioridade{% endtrans %}</h4>
+                            <h4>{{ 'label.priority'|trans }}</h4>
                             <p class="nome-prioridade">
                                 {% verbatim %}
                                     {{ atendimentoInfo.prioridade.nome }}
@@ -511,7 +513,7 @@
                             </p>
                         </div>
                         <div class="field">
-                            <h4>{% trans %}Data de chegada{% endtrans %}</h4>
+                            <h4>{{ 'label.ticket.arrival_date'|trans }}</h4>
                             <p class="chegada">
                                 {% verbatim %}
                                     {{ atendimentoInfo.chegada }}
@@ -519,7 +521,7 @@
                             </p>
                         </div>
                         <div class="field">
-                            <h4>{% trans %}Tempo de espera{% endtrans %}</h4>
+                            <h4>{{ 'label.ticket.wait_time'|trans }}</h4>
                             <p class="espera">
                                 {% verbatim %}
                                     {{ atendimentoInfo.espera }}
@@ -530,12 +532,12 @@
                 </div>
             </div>
         </div>
-
-        <div id="sga-clock" title="{% trans %}Data e hora no servidor{% endtrans %}"></div>
-
-        {# som executado quando a fila deixa de estar fazia #}
-        <audio id="alert" src="{{ asset('bundles/novosgaattendance/sounds/alert.wav') }}" style="display:none"></audio>
     </div>
+    
+    {# som executado quando a fila deixa de estar fazia #}
+    <audio id="alert" src="{{ asset('bundles/novosgaattendance/sounds/alert.wav') }}" style="display:none"></audio>
+        
+    <div id="novosga-clock" title="{% trans %}Data e hora no servidor{% endtrans %}" class="clock"></div>
 {% endblock %}
 
 {% block stylesheets %}
@@ -549,17 +551,13 @@
         var local = {{ local ? local : 'null' }},
             unidade = {{ unidade|json_encode()|raw }},
             atendimento = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento = {{ tipoAtendimento ? tipoAtendimento : 'null' }}
+            tipoAtendimento = {{ tipoAtendimento ? tipoAtendimento : 'null' }},
             tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }},
             servicosUsuario = {{ servicos|json_encode()|raw }},
-            MARCAR_ERRO_TRIAGEM = '{% trans %}Realmente deseja marcar como erro de triagem?{% endtrans %}';
+            dateTimeFormat = '{{ 'MM/DD/YYYY hh:mm:ss'|trans }}',
+            MARCAR_ERRO_TRIAGEM = '{{ 'ticket.error.alert'|trans }}';
+    
+        App.Clock.init("novosga-clock", {{ time }});
     </script>
     <script src="{{ asset('bundles/novosgaattendance/js/script.js') }}"></script>
-    <script>
-        {#
-        App.Clock.init("sga-clock", {{ time }});
-        App.Atendimento.marcarNaoCompareceu = '{% trans %}Realmente deseja marcar como não compareceu?{% endtrans %}';
-        App.Atendimento.init({% if atendimento %}{{ atendimento.status }}{% else %}1{% endif %});
-        #}
-    </script>
 {% endblock %}

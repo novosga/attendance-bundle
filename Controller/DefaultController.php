@@ -22,6 +22,7 @@ use Novosga\Service\FilaService;
 use Novosga\Service\UsuarioService;
 use Novosga\Service\ServicoService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -33,6 +34,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  */
 class DefaultController extends Controller
 {
+    const DOMAIN = 'NovosgaAttendanceBundle';
+    
     /**
      *
      * @param Request $request
@@ -44,7 +47,8 @@ class DefaultController extends Controller
         Request $request,
         AtendimentoService $atendimentoService,
         UsuarioService $usuarioService,
-        ServicoService $servicoService
+        ServicoService $servicoService,
+        TranslatorInterface $translator
     ) {
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -55,11 +59,11 @@ class DefaultController extends Controller
 
         $local = $this->getNumeroLocalAtendimento($usuario);
         $tipo = $this->getTipoAtendimento($usuario);
-
+        
         $tiposAtendimento = [
-            1 => _('Todos'),
-            2 => _('Convencional'),
-            3 => _('Prioridade'),
+            1 => $translator->trans('label.all', [], self::DOMAIN),
+            2 => $translator->trans('label.no_priority', [], self::DOMAIN),
+            3 => $translator->trans('label.priority', [], self::DOMAIN),
         ];
         
         $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
@@ -77,14 +81,14 @@ class DefaultController extends Controller
         $servicosIndisponiveis = $servicoService->servicosIndisponiveis($unidade, $usuario);
 
         return $this->render('@NovosgaAttendance/default/index.html.twig', [
-            'time' => time() * 1000,
-            'unidade' => $unidade,
-            'atendimento' => $atendimentoAtual,
-            'servicos' => $servicos,
+            'time'                  => time() * 1000,
+            'unidade'               => $unidade,
+            'atendimento'           => $atendimentoAtual,
+            'servicos'              => $servicos,
             'servicosIndisponiveis' => $servicosIndisponiveis,
-            'tiposAtendimento' => $tiposAtendimento,
-            'local' => $local,
-            'tipoAtendimento' => $tipo
+            'tiposAtendimento'      => $tiposAtendimento,
+            'local'                 => $local,
+            'tipoAtendimento'       => $tipo
         ]);
     }
 
@@ -162,7 +166,8 @@ class DefaultController extends Controller
         Request $request,
         AtendimentoService $atendimentoService,
         FilaService $filaService,
-        UsuarioService $usuarioService
+        UsuarioService $usuarioService,
+        TranslatorInterface $translator
     ) {
         $envelope = new Envelope();
         
@@ -172,10 +177,6 @@ class DefaultController extends Controller
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         
-        if (!$usuario) {
-            throw new Exception(_('Nenhum usuário na sessão'));
-        }
-
         // verifica se ja esta atendendo alguem
         $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
@@ -202,12 +203,17 @@ class DefaultController extends Controller
                 }
             } while (!$success && $attempts > 0);
         }
+        
         // response
         if (!$success) {
             if (!$proximo) {
-                throw new Exception(_('Fila vazia'));
+                throw new Exception(
+                    $translator->trans('error.queue.empty', [], self::DOMAIN)
+                );
             } else {
-                throw new Exception(_('Já existe um atendimento em andamento'));
+                throw new Exception(
+                    $translator->trans('error.attendance.in_process', [], self::DOMAIN)
+                );
             }
         }
 
@@ -227,11 +233,15 @@ class DefaultController extends Controller
      * @Route("/iniciar", name="novosga_attendance_iniciar")
      * @Method("POST")
      */
-    public function iniciarAction(Request $request, AtendimentoService $atendimentoService)
-    {
+    public function iniciarAction(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        TranslatorInterface $translator
+    ) {
         return $this->mudaStatusAtualResponse(
             $request,
             $atendimentoService,
+            $translator,
             AtendimentoService::CHAMADO_PELA_MESA,
             AtendimentoService::ATENDIMENTO_INICIADO,
             'dataInicio'
@@ -246,11 +256,15 @@ class DefaultController extends Controller
      * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu")
      * @Method("POST")
      */
-    public function naoCompareceuAction(Request $request, AtendimentoService $atendimentoService)
-    {
+    public function naoCompareceuAction(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        TranslatorInterface $translator
+    ) {
         return $this->mudaStatusAtualResponse(
             $request,
             $atendimentoService,
+            $translator,
             AtendimentoService::CHAMADO_PELA_MESA,
             AtendimentoService::NAO_COMPARECEU,
             'dataFim'
@@ -265,8 +279,11 @@ class DefaultController extends Controller
      * @Route("/encerrar", name="novosga_attendance_encerrar")
      * @Method("POST")
      */
-    public function encerrarAction(Request $request, AtendimentoService $atendimentoService)
-    {
+    public function encerrarAction(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        TranslatorInterface $translator
+    ) {
         $envelope = new Envelope();
         
         $data = json_decode($request->getContent());
@@ -276,13 +293,17 @@ class DefaultController extends Controller
         $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
-            throw new Exception(_('Nenhum atendimento em andamento'));
+            throw new Exception(
+                $translator->trans('error.attendance.not_in_process', [], self::DOMAIN)
+            );
         }
 
         $servicos = explode(',', $data->servicos);
 
         if (empty($servicos)) {
-            throw new Exception(_('Nenhum serviço selecionado'));
+            throw new Exception(
+                $translator->trans('error.attendance.no_service', [], self::DOMAIN)
+            );
         }
 
         $servicoRedirecionado = null;
@@ -304,8 +325,11 @@ class DefaultController extends Controller
      * @Route("/redirecionar", name="novosga_attendance_redirecionar")
      * @Method("POST")
      */
-    public function redirecionarAction(Request $request, AtendimentoService $atendimentoService)
-    {
+    public function redirecionarAction(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        TranslatorInterface $translator
+    ) {
         $envelope = new Envelope();
         
         $data = json_decode($request->getContent());
@@ -316,16 +340,21 @@ class DefaultController extends Controller
         $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
-            throw new Exception(_('Nenhum atendimento em andamento'));
+            throw new Exception(
+                $translator->trans('error.attendance.not_in_process', [], self::DOMAIN)
+            );
         }
 
         $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
         if (!$redirecionado->getId()) {
             throw new Exception(
-                sprintf(
-                    _('Erro ao redirecionar atendimento %s para o serviço %s'),
-                    $atual->getId(),
-                    $servico
+                $translator->trans(
+                    'error.attendance.redirect',
+                    [
+                        '%atendimento%' => $atual->getId(),
+                        '%servico%'     => $servico,
+                    ], 
+                    self::DOMAIN
                 )
             );
         }
@@ -338,7 +367,15 @@ class DefaultController extends Controller
         );
         
         if (!$success) {
-            throw new Exception(sprintf(_('Erro ao mudar status do atendimento %s para encerrado'), $atual->getId()));
+            throw new Exception(
+                $translator->trans(
+                    'error.attendance.change_status',
+                    [
+                        '%atendimento%' => $atual->getId()
+                    ],
+                    self::DOMAIN
+                )
+            );
         }
 
         return $this->json($envelope);
@@ -354,6 +391,7 @@ class DefaultController extends Controller
     public function infoSenhaAction(
         Request $request,
         AtendimentoService $atendimentoService,
+        TranslatorInterface $translator,
         $id
     ) {
         $envelope = new Envelope();
@@ -363,7 +401,9 @@ class DefaultController extends Controller
         $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
 
         if (!$atendimento) {
-            throw new Exception(_('Atendimento inválido'));
+            throw new Exception(
+                $translator->trans('error.attendance.invalid', [], self::DOMAIN)
+            );
         }
 
         $data = $atendimento->jsonSerialize();
@@ -406,6 +446,7 @@ class DefaultController extends Controller
     private function mudaStatusAtualResponse(
         Request $request,
         AtendimentoService $atendimentoService,
+        TranslatorInterface $translator,
         $statusAtual,
         $novoStatus,
         $campoData
@@ -422,14 +463,18 @@ class DefaultController extends Controller
         $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
-            throw new Exception(_('Nenhum atendimento disponível'));
+            throw new Exception(
+                $translator->trans('error.attendance.empty', [], self::DOMAIN)
+            );
         }
 
         // atualizando atendimento
         $success = $this->mudaStatusAtendimento($atual, $statusAtual, $novoStatus, $campoData);
 
         if (!$success) {
-            throw new Exception(_('Erro desconhecido'));
+            throw new Exception(
+                $translator->trans('error.unknown', [], self::DOMAIN)
+            );
         }
 
         $atual->setStatus($novoStatus);
