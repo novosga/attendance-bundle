@@ -537,7 +537,7 @@
     {# som executado quando a fila deixa de estar fazia #}
     <audio id="alert" src="{{ asset('bundles/novosgaattendance/sounds/alert.wav') }}" style="display:none"></audio>
         
-    <div id="novosga-clock" title="{% trans %}Data e hora no servidor{% endtrans %}" class="clock"></div>
+    <div id="novosga-clock" title="{{ 'server.datetime'|trans }}" class="clock"></div>
 {% endblock %}
 
 {% block stylesheets %}

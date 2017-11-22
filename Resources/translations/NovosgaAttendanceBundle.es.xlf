@@ -302,6 +302,11 @@
         <target>Ninguna atención disponible</target>
         
       </trans-unit>
+      <trans-unit id="62">
+        <source>server.datetime</source>
+        <target>Fecha y hora en el servidor</target>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>

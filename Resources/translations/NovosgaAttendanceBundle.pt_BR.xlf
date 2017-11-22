@@ -250,6 +250,10 @@
         <source>error.attendance.empty</source>
         <target>Nenhum atendimento disponível</target>
       </trans-unit>
+      <trans-unit id="62">
+        <source>server.datetime</source>
+        <target>Data e hora no servidor</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
