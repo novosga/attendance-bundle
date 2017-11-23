@@ -61,9 +61,10 @@ class DefaultController extends Controller
         $tipo = $this->getTipoAtendimento($usuario);
         
         $tiposAtendimento = [
-            1 => $translator->trans('label.all', [], self::DOMAIN),
-            2 => $translator->trans('label.no_priority', [], self::DOMAIN),
-            3 => $translator->trans('label.priority', [], self::DOMAIN),
+            FilaService::TIPO_TODOS => $translator->trans('label.all', [], self::DOMAIN),
+            FilaService::TIPO_NORMAL => $translator->trans('label.no_priority', [], self::DOMAIN),
+            FilaService::TIPO_PRIORIDADE => $translator->trans('label.priority', [], self::DOMAIN),
+            FilaService::TIPO_AGENDAMENTO => $translator->trans('label.schedule', [], self::DOMAIN),
         ];
         
         $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
@@ -106,7 +107,7 @@ class DefaultController extends Controller
         
         $data = json_decode($request->getContent());
         $numero = (int) $data->numeroLocal;
-        $tipo   = (int) $data->tipoAtendimento;
+        $tipo   = $data->tipoAtendimento;
 
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -136,10 +137,11 @@ class DefaultController extends Controller
         $envelope = new Envelope();
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
+        $tipo    = $this->getTipoAtendimento($usuario);
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
-        $atendimentos = $filaService->filaAtendimento($unidade, $servicos);
-
+        $atendimentos = $filaService->filaAtendimento($unidade, $servicos, $tipo);
+        
         // fila de atendimento do atendente atual
         $data = [
             'atendimentos' => $atendimentos,
@@ -544,7 +546,7 @@ class DefaultController extends Controller
         $service = new UsuarioService($em);
         
         $tipoAtendimentoMeta = $service->meta($usuario, 'atendimento.tipo');
-        $tipoAtendimento = $tipoAtendimentoMeta ? (int) $tipoAtendimentoMeta->getValue() : 1;
+        $tipoAtendimento = $tipoAtendimentoMeta ? $tipoAtendimentoMeta->getValue() : FilaService::TIPO_TODOS;
         
         return $tipoAtendimento;
     }

@@ -64,9 +64,10 @@
     padding-left: 5px;
 }
 
-#atendimento #fila span.tipo-1 { } /* todos */
-#atendimento #fila span.tipo-2 { color: blue; } /* convencional */
-#atendimento #fila span.tipo-3 { color: red; } /* prioridade */
+#atendimento #fila span.tipo-todos { }
+#atendimento #fila span.tipo-normal { color: blue; }
+#atendimento #fila span.tipo-prioridade { color: red; }
+#atendimento #fila span.tipo-agendamento { color: darkorange; }
 
 #atendimento #fila ul {
     min-height: 40px;

@@ -277,7 +277,7 @@
                 </div>
             </div>
             <div id="fila">
-                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + tipoAtendimento " v-text="tiposAtendimento[usuario.tipoAtendimento]">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
+                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + tipoAtendimento ">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
                 <ul>
                     <li>
                         <i class="fa fa-users"></i>
@@ -551,7 +551,7 @@
         var local = {{ local ? local : 'null' }},
             unidade = {{ unidade|json_encode()|raw }},
             atendimento = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento = {{ tipoAtendimento ? tipoAtendimento : 'null' }},
+            tipoAtendimento = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
             tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }},
             servicosUsuario = {{ servicos|json_encode()|raw }},
             dateTimeFormat = '{{ 'MM/DD/YYYY hh:mm:ss'|trans }}',
