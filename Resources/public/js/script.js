@@ -173,7 +173,7 @@ var App = App || {};
                 this.atendimento.status = 'encerrando';
             },
             
-            encerrar: function (isRedirect) {
+            fazEncerrar: function (isRedirect) {
                 var self = this;
                 
                 var servicos = this.servicosRealizados.map(function (servico) {
@@ -217,9 +217,14 @@ var App = App || {};
                 });
             },
             
+            encerrar: function(isRedirect) {
+                this.redirecionarAoEncerrar = false;
+                this.fazEncerrar(isRedirect);
+            },
+            
             encerrarRedirecionar: function() {
                 this.redirecionarAoEncerrar = true;
-                this.encerrar(false);
+                this.fazEncerrar(false);
             },
             
             redirecionar: function () {

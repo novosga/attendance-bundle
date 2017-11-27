@@ -11,21 +11,23 @@
 
 namespace Novosga\AttendanceBundle\Controller;
 
+use DateTime;
 use Exception;
-use Novosga\Http\Envelope;
 use Novosga\Entity\Atendimento;
-use Novosga\Entity\Usuario;
+use Novosga\Entity\Servico;
 use Novosga\Entity\ServicoUsuario;
+use Novosga\Entity\Usuario;
+use Novosga\Http\Envelope;
 use Novosga\Service\AtendimentoService;
 use Novosga\Service\EventDispatcher;
 use Novosga\Service\FilaService;
-use Novosga\Service\UsuarioService;
 use Novosga\Service\ServicoService;
+use Novosga\Service\UsuarioService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  * DefaultController
@@ -52,13 +54,14 @@ class DefaultController extends Controller
     ) {
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
+        $repo    = $this->getDoctrine()->getManager()->getRepository(Servico::class);
         
         if (!$usuario || !$unidade) {
             return $this->redirectToRoute('home');
         }
 
-        $local = $this->getNumeroLocalAtendimento($usuario);
-        $tipo = $this->getTipoAtendimento($usuario);
+        $local = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $tipo  = $this->getTipoAtendimento($usuarioService, $usuario);
         
         $tiposAtendimento = [
             FilaService::TIPO_TODOS => $translator->trans('label.all', [], self::DOMAIN),
@@ -68,13 +71,14 @@ class DefaultController extends Controller
         ];
         
         $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+        $servicosUsuario  = $usuarioService->servicos($usuario, $unidade);
         
-        $servicosUsuario = $usuarioService->servicos($usuario, $unidade);
-        
-        $servicos = array_map(function (ServicoUsuario $su) {
+        $servicos = array_map(function (ServicoUsuario $su) use ($repo) {
+            $subservicos = $repo->getSubservicos($su->getServico());
+            
             return [
                 'servico'     => $su->getServico(),
-                'subServicos' => $su->getServico()->getSubServicos()->toArray(),
+                'subServicos' => $subservicos,
                 'peso'        => $su->getPeso(),
             ];
         }, $servicosUsuario);
@@ -137,7 +141,8 @@ class DefaultController extends Controller
         $envelope = new Envelope();
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $tipo    = $this->getTipoAtendimento($usuario);
+        $local   = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $tipo    = $this->getTipoAtendimento($usuarioService, $usuario);
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
         $atendimentos = $filaService->filaAtendimento($unidade, $servicos, $tipo);
@@ -146,8 +151,8 @@ class DefaultController extends Controller
         $data = [
             'atendimentos' => $atendimentos,
             'usuario'      => [
-                'numeroLocal'     => $this->getNumeroLocalAtendimento($usuario),
-                'tipoAtendimento' => $this->getTipoAtendimento($usuario),
+                'numeroLocal'     => $local,
+                'tipoAtendimento' => $tipo,
             ],
         ];
 
@@ -187,7 +192,7 @@ class DefaultController extends Controller
             $success = true;
             $proximo = $atual;
         } else {
-            $local = $this->getNumeroLocalAtendimento($usuario);
+            $local = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
             $servicos = $usuarioService->servicos($usuario, $unidade);
 
             do {
@@ -310,7 +315,11 @@ class DefaultController extends Controller
 
         $servicoRedirecionado = null;
         if ($data->redirecionar) {
-            $servicoRedirecionado = $data->novoServico;
+            $servicoRedirecionado = $this
+                ->getDoctrine()
+                ->getManager()
+                ->getRepository(Servico::class)
+                ->find($data->novoServico);
         }
 
         $atendimentoService->encerrar($atual, $unidade, $usuario, $servicos, $servicoRedirecionado);
@@ -507,7 +516,7 @@ class DefaultController extends Controller
             $statusAtual = [$statusAtual];
         }
         
-        $data = (new \DateTime())->format('Y-m-d H:i:s');
+        $data = (new DateTime())->format('Y-m-d H:i:s');
         
         // atualizando atendimento
         $query = $em->createQuery("
@@ -529,23 +538,17 @@ class DefaultController extends Controller
         return $query->execute() > 0;
     }
 
-    private function getNumeroLocalAtendimento(Usuario $usuario)
+    private function getNumeroLocalAtendimento(UsuarioService $usuarioService, Usuario $usuario)
     {
-        $em = $this->getDoctrine()->getManager();
-        $service = new UsuarioService($em);
-        
-        $numeroLocalMeta = $service->meta($usuario, 'atendimento.local');
+        $numeroLocalMeta = $usuarioService->meta($usuario, 'atendimento.local');
         $numero = $numeroLocalMeta ? (int) $numeroLocalMeta->getValue() : '';
         
         return $numero;
     }
      
-    private function getTipoAtendimento(Usuario $usuario)
+    private function getTipoAtendimento(UsuarioService $usuarioService, Usuario $usuario)
     {
-        $em = $this->getDoctrine()->getManager();
-        $service = new UsuarioService($em);
-        
-        $tipoAtendimentoMeta = $service->meta($usuario, 'atendimento.tipo');
+        $tipoAtendimentoMeta = $usuarioService->meta($usuario, 'atendimento.tipo');
         $tipoAtendimento = $tipoAtendimentoMeta ? $tipoAtendimentoMeta->getValue() : FilaService::TIPO_TODOS;
         
         return $tipoAtendimento;
