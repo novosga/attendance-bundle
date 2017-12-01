@@ -3,7 +3,7 @@
   <file source-language="pt-BR" target-language="pt-BR" datatype="plaintext" original="messages.pt_BR.xlf">
     <body>
       <trans-unit id="0">
-        <source>module.name.atendimento</source>
+        <source>module.name</source>
         <target>Atendimento</target>
       </trans-unit>
       <trans-unit id="1">
@@ -253,6 +253,11 @@
       <trans-unit id="62">
         <source>server.datetime</source>
         <target>Data e hora no servidor</target>
+      </trans-unit>
+      <trans-unit id="63">
+        <source>label.schedule</source>
+        <target>Agendamento</target>
+        
       </trans-unit>
     </body>
   </file>

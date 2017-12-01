@@ -22,7 +22,7 @@ class NovosgaAttendanceBundle extends BaseModule
 
     public function getDisplayName()
     {
-        return 'module.name.atendimento';
+        return 'module.name';
     }
 
     public function getHomeRoute()

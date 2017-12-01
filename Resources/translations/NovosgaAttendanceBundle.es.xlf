@@ -2,7 +2,7 @@
   <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="es">
     <body>
       <trans-unit id="0">
-        <source>module.name.atendimento</source>
+        <source>module.name</source>
         <target>Tratamiento</target>
         
       </trans-unit>
@@ -305,6 +305,10 @@
       <trans-unit id="62">
         <source>server.datetime</source>
         <target>Fecha y hora en el servidor</target>
+        
+      </trans-unit>
+      <trans-unit id="63">
+        <source>label.schedule</source>
         
       </trans-unit>
     </body>
