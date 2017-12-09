@@ -286,7 +286,7 @@
                         <a href="#"
                            v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
                            v-on:click.prevent="infoSenha(atendimento)"
-                           v-bind:title="atendimento.servico.nome + ' (' + atendimento.espera + ')'">
+                           v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
                             {%- verbatim -%}
                                 {{ atendimento.senha.format }}
                             {%- endverbatim -%}
@@ -446,18 +446,18 @@
                                                 {{atendimento.servico.nome}}
                                             </td>
                                             <td>
-                                                <span v-if="atendimento.chegada">
-                                                    {{moment(atendimento.chegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
+                                                <span v-if="atendimento.dataChegada">
+                                                    {{moment(atendimento.dataChegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span v-if="atendimento.inicio">
-                                                    {{moment(atendimento.inicio, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
+                                                <span v-if="atendimento.dataInicio">
+                                                    {{moment(atendimento.dataInicio, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span v-if="atendimento.fim">
-                                                    {{moment(atendimento.fim, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
+                                                <span v-if="atendimento.dataFim">
+                                                    {{moment(atendimento.dataFim, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                                 </span>
                                             </td>
                                             <td>
