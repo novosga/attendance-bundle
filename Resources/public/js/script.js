@@ -46,7 +46,8 @@ var App = App || {};
 
                 App.Websocket.on('connect', function () {
                     App.Websocket.emit('register user', {
-                        unidade: self.unidade.id
+                        secret: wsSecret,
+                        unity: self.unidade.id
                     });
                 });
 
@@ -125,8 +126,8 @@ var App = App || {};
                     success: function (response) {
                         self.atendimento = response.data;
                         App.Websocket.emit('call ticket', {
-                            unidade: self.unidade.id,
-                            servico: self.atendimento.servico.id,
+                            unity: self.unidade.id,
+                            service: self.atendimento.servico.id,
                             hash: self.atendimento.hash
                         });
                     }
@@ -231,7 +232,7 @@ var App = App || {};
                 var servico = this.servicoRedirecionar,
                     self = this;
             
-                if (servico > 0 && window.confirm(MARCAR_ERRO_TRIAGEM)) {
+                if (servico > 0 && window.confirm(alertRedirecionar)) {
                     App.ajax({
                         url: App.url('/novosga.attendance/redirecionar'),
                         type: 'post',

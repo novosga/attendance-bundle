@@ -548,14 +548,15 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        var local = {{ local ? local : 'null' }},
-            unidade = {{ unidade|json_encode()|raw }},
-            atendimento = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
-            tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }},
-            servicosUsuario = {{ servicos|json_encode()|raw }},
-            dateTimeFormat = '{{ 'MM/DD/YYYY hh:mm:ss'|trans }}',
-            MARCAR_ERRO_TRIAGEM = '{{ 'ticket.error.alert'|trans }}';
+        var local             = {{ local ? local : 'null' }},
+            unidade           = {{ unidade|json_encode()|raw }},
+            atendimento       = {{ atendimento|json_encode()|raw }},
+            tipoAtendimento   = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
+            tiposAtendimento  = {{ tiposAtendimento|json_encode()|raw }},
+            servicosUsuario   = {{ servicos|json_encode()|raw }},
+            dateTimeFormat    = '{{ 'MM/DD/YYYY hh:mm:ss'|trans }}',
+            alertRedirecionar = '{{ 'ticket.error.alert'|trans }}',
+            wsSecret          = '{{ wsSecret }}';
     
         App.Clock.init("novosga-clock", {{ time }});
     </script>
