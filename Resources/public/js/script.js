@@ -12,7 +12,6 @@ var App = App || {};
     var app = new Vue({
         el: '#attendance',
         data: {
-            unidade: unidade,
             tiposAtendimento: tiposAtendimento,
             servicosRealizados: [],
             servicosUsuario: JSON.parse(JSON.stringify(servicosUsuario)),
@@ -47,7 +46,8 @@ var App = App || {};
                 App.Websocket.on('connect', function () {
                     App.Websocket.emit('register user', {
                         secret: wsSecret,
-                        unity: self.unidade.id
+                        user: usuario.id,
+                        unity: unidade.id
                     });
                 });
 
@@ -67,7 +67,12 @@ var App = App || {};
                 });
 
                 App.Websocket.on('update queue', function () {
-                    console.log('do update!');
+                    console.log('update queue: do update!');
+                    self.update();
+                });
+
+                App.Websocket.on('change user', function () {
+                    console.log('change user: do update!');
                     self.update();
                 });
                 
@@ -126,7 +131,7 @@ var App = App || {};
                     success: function (response) {
                         self.atendimento = response.data;
                         App.Websocket.emit('call ticket', {
-                            unity: self.unidade.id,
+                            unity: unidade.id,
                             service: self.atendimento.servico.id,
                             hash: self.atendimento.hash
                         });

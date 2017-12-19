@@ -549,6 +549,7 @@
     {{ parent() }}
     <script type="text/javascript">
         var local             = {{ local ? local : 'null' }},
+            usuario           = {{ usuario|json_encode()|raw }},
             unidade           = {{ unidade|json_encode()|raw }},
             atendimento       = {{ atendimento|json_encode()|raw }},
             tipoAtendimento   = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',

@@ -89,6 +89,7 @@ class DefaultController extends Controller
 
         return $this->render('@NovosgaAttendance/default/index.html.twig', [
             'time'                  => time() * 1000,
+            'usuario'               => $usuario,
             'unidade'               => $unidade,
             'atendimento'           => $atendimentoAtual,
             'servicos'              => $servicos,
