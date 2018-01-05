@@ -124,7 +124,7 @@ class DefaultController extends Controller
 
         $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
         $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
-
+        
         $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
         
         $envelope->setData([
@@ -549,15 +549,15 @@ class DefaultController extends Controller
 
     private function getNumeroLocalAtendimento(UsuarioService $usuarioService, Usuario $usuario)
     {
-        $numeroLocalMeta = $usuarioService->meta($usuario, 'atendimento.local');
-        $numero = $numeroLocalMeta ? (int) $numeroLocalMeta->getValue() : '';
+        $numeroLocalMeta = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL);
+        $numero = $numeroLocalMeta ? (int) $numeroLocalMeta->getValue() : null;
         
         return $numero;
     }
      
     private function getTipoAtendimento(UsuarioService $usuarioService, Usuario $usuario)
     {
-        $tipoAtendimentoMeta = $usuarioService->meta($usuario, 'atendimento.tipo');
+        $tipoAtendimentoMeta = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO);
         $tipoAtendimento = $tipoAtendimentoMeta ? $tipoAtendimentoMeta->getValue() : FilaService::TIPO_TODOS;
         
         return $tipoAtendimento;

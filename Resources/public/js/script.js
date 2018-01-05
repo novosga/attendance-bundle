@@ -76,7 +76,9 @@ var App = App || {};
                     self.update();
                 });
                 
-                self.update();
+                if (self.usuario.numeroLocal) {
+                    self.update();
+                }
             },
 
             update: function () {
@@ -120,7 +122,7 @@ var App = App || {};
                     type: 'post',
                     data: self.novoLocal,
                     success: function (response) {
-                        self.usuario.numeroLocal       = response.data.numero.value;
+                        Vue.set(self.usuario, 'numeroLocal', response.data.numero.value);
                         self.usuario.tipoAtendimento   = response.data.tipo.value;
                         self.novoLocal.numeroLocal     = response.data.numero.value;
                         self.novoLocal.tipoAtendimento = response.data.tipo.value;
@@ -285,10 +287,9 @@ var App = App || {};
         }
     });
     
+    app.init(atendimento);
+    
     if (!local) {
         $('#dialog-local').modal('show');
-    } else {
-        app.init(atendimento);
     }
-    
 })();
