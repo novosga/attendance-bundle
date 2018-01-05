@@ -113,12 +113,20 @@ var App = App || {};
             },
             
             setLocal: function () {
+                var self = this;
+                
                 App.ajax({
                     url: App.url('/novosga.attendance/set_local'),
                     type: 'post',
-                    data: this.novoLocal,
+                    data: self.novoLocal,
                     success: function (response) {
-                        window.location.reload();
+                        self.usuario.numeroLocal       = response.data.numero.value;
+                        self.usuario.tipoAtendimento   = response.data.tipo.value;
+                        self.novoLocal.numeroLocal     = response.data.numero.value;
+                        self.novoLocal.tipoAtendimento = response.data.tipo.value;
+                        self.atendimentos              = [];
+                        self.update();
+                        $('#dialog-local').modal('hide');
                     }
                 });
             },

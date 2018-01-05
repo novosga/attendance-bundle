@@ -113,7 +113,7 @@ class DefaultController extends Controller
     {
         $envelope = new Envelope();
         
-        $data = json_decode($request->getContent());
+        $data   = json_decode($request->getContent());
         $numero = (int) $data->numeroLocal;
         $tipo   = $data->tipoAtendimento;
 
@@ -122,10 +122,15 @@ class DefaultController extends Controller
 
         $dispatcher->createAndDispatch('novosga.attendance.pre-setlocal', [$unidade, $usuario, $numero, $tipo], true);
 
-        $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
-        $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
+        $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
+        $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
 
         $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
+        
+        $envelope->setData([
+            'numero' => $m1,
+            'tipo'   => $m2,
+        ]);
 
         return $this->json($envelope);
     }
@@ -196,7 +201,7 @@ class DefaultController extends Controller
             $success = true;
             $proximo = $atual;
         } else {
-            $local = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+            $local    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
             $servicos = $usuarioService->servicos($usuario, $unidade);
 
             do {

@@ -277,7 +277,7 @@
                 </div>
             </div>
             <div id="fila">
-                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + tipoAtendimento ">{%- if tipoAtendimento in tiposAtendimento|keys  -%}{{- tiposAtendimento[tipoAtendimento] -}}{%- endif -%}</span>):</h4>
+                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + usuario.tipoAtendimento">{% verbatim %}{{ tiposAtendimento[usuario.tipoAtendimento] }}{% endverbatim %}</span>):</h4>
                 <ul>
                     <li>
                         <i class="fa fa-users"></i>
