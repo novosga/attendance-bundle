@@ -254,14 +254,23 @@ class DefaultController extends Controller
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
     ) {
-        return $this->mudaStatusAtualResponse(
-            $request,
-            $atendimentoService,
-            $translator,
-            AtendimentoService::CHAMADO_PELA_MESA,
-            AtendimentoService::ATENDIMENTO_INICIADO,
-            'dataInicio'
-        );
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $atual   = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+
+        if (!$atual) {
+            throw new Exception(
+                $translator->trans('error.attendance.empty', [], self::DOMAIN)
+            );
+        }
+        
+        $atendimentoService->iniciarAtendimento($atual, $usuario);
+
+        $data     = $atual->jsonSerialize();
+        $envelope = new Envelope();
+        $envelope->setData($data);
+
+        return $this->json($envelope);
     }
 
     /**
@@ -277,14 +286,23 @@ class DefaultController extends Controller
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
     ) {
-        return $this->mudaStatusAtualResponse(
-            $request,
-            $atendimentoService,
-            $translator,
-            AtendimentoService::CHAMADO_PELA_MESA,
-            AtendimentoService::NAO_COMPARECEU,
-            'dataFim'
-        );
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $atual   = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+
+        if (!$atual) {
+            throw new Exception(
+                $translator->trans('error.attendance.empty', [], self::DOMAIN)
+            );
+        }
+        
+        $atendimentoService->naoCompareceu($atual, $usuario);
+
+        $data     = $atual->jsonSerialize();
+        $envelope = new Envelope();
+        $envelope->setData($data);
+
+        return $this->json($envelope);
     }
 
     /**
@@ -351,13 +369,12 @@ class DefaultController extends Controller
         TranslatorInterface $translator
     ) {
         $envelope = new Envelope();
-        
-        $data = json_decode($request->getContent());
+        $data     = json_decode($request->getContent());
 
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         $servico = (int) $data->servico;
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+        $atual   = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(
@@ -373,25 +390,6 @@ class DefaultController extends Controller
                     [
                         '%atendimento%' => $atual->getId(),
                         '%servico%'     => $servico,
-                    ],
-                    self::DOMAIN
-                )
-            );
-        }
-
-        $success = $this->mudaStatusAtendimento(
-            $atual,
-            [ AtendimentoService::ATENDIMENTO_INICIADO, AtendimentoService::ATENDIMENTO_ENCERRADO ],
-            AtendimentoService::ERRO_TRIAGEM,
-            'dataFim'
-        );
-        
-        if (!$success) {
-            throw new Exception(
-                $translator->trans(
-                    'error.attendance.change_status',
-                    [
-                        '%atendimento%' => $atual->getId()
                     ],
                     self::DOMAIN
                 )
@@ -414,10 +412,9 @@ class DefaultController extends Controller
         TranslatorInterface $translator,
         $id
     ) {
-        $envelope = new Envelope();
-        
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
+        $envelope    = new Envelope();
+        $usuario     = $this->getUser();
+        $unidade     = $usuario->getLotacao()->getUnidade();
         $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
 
         if (!$atendimento) {
@@ -439,69 +436,15 @@ class DefaultController extends Controller
      *
      * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
      */
-    public function consultaSenhaAction(
-        Request $request,
-        AtendimentoService $atendimentoService
-    ) {
-        $envelope = new Envelope();
-        
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
-        $numero = $request->get('numero');
+    public function consultaSenhaAction(Request $request, AtendimentoService $atendimentoService)
+    {
+        $envelope     = new Envelope();
+        $usuario      = $this->getUser();
+        $unidade      = $usuario->getLotacao()->getUnidade();
+        $numero       = $request->get('numero');
         $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
         $envelope->setData($atendimentos);
         
-        return $this->json($envelope);
-    }
-
-    /**
-     * Muda o status do atendimento atual.
-     *
-     * @param mixed  $statusAtual (array[int] | int)
-     * @param int    $novoStatus
-     * @param string $campoData
-     *
-     * @return Response
-     */
-    private function mudaStatusAtualResponse(
-        Request $request,
-        AtendimentoService $atendimentoService,
-        TranslatorInterface $translator,
-        $statusAtual,
-        $novoStatus,
-        $campoData
-    ) {
-        $usuario = $this->getUser();
-        if (!$usuario) {
-            return $this->redirectToRoute('home');
-        }
-        
-        $unidade = $usuario->getLotacao()->getUnidade();
-        
-        $envelope = new Envelope();
-        
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
-
-        if (!$atual) {
-            throw new Exception(
-                $translator->trans('error.attendance.empty', [], self::DOMAIN)
-            );
-        }
-
-        // atualizando atendimento
-        $success = $this->mudaStatusAtendimento($atual, $statusAtual, $novoStatus, $campoData);
-
-        if (!$success) {
-            throw new Exception(
-                $translator->trans('error.unknown', [], self::DOMAIN)
-            );
-        }
-
-        $atual->setStatus($novoStatus);
-
-        $data = $atual->jsonSerialize();
-        $envelope->setData($data);
-
         return $this->json($envelope);
     }
 
