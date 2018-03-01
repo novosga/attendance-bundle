@@ -516,7 +516,7 @@
                             <h4>{{ 'label.ticket.arrival_date'|trans }}</h4>
                             <p class="chegada">
                                 {% verbatim %}
-                                    {{ atendimentoInfo.chegada }}
+                                    {{moment(atendimentoInfo.dataChegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
                                 {% endverbatim %}
                             </p>
                         </div>
@@ -524,7 +524,7 @@
                             <h4>{{ 'label.ticket.wait_time'|trans }}</h4>
                             <p class="espera">
                                 {% verbatim %}
-                                    {{ atendimentoInfo.espera }}
+                                    {{ atendimentoInfo.tempoEspera }}
                                 {% endverbatim %}
                             </p>
                         </div>
@@ -555,7 +555,7 @@
             tipoAtendimento   = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
             tiposAtendimento  = {{ tiposAtendimento|json_encode()|raw }},
             servicosUsuario   = {{ servicos|json_encode()|raw }},
-            dateTimeFormat    = '{{ 'MM/DD/YYYY hh:mm:ss'|trans }}',
+            dateTimeFormat    = '{{ 'MM/DD/YYYY HH:mm:ss'|trans }}',
             alertRedirecionar = '{{ 'ticket.error.alert'|trans }}',
             wsSecret          = '{{ wsSecret }}';
     
