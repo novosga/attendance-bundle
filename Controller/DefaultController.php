@@ -319,12 +319,11 @@ class DefaultController extends Controller
         TranslatorInterface $translator
     ) {
         $envelope = new Envelope();
-        
-        $data = json_decode($request->getContent());
+        $data     = json_decode($request->getContent());
 
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+        $atual   = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(
@@ -332,7 +331,8 @@ class DefaultController extends Controller
             );
         }
 
-        $servicos = explode(',', $data->servicos);
+        $servicos   = explode(',', $data->servicos);
+        $observacao = $data->observacao;
 
         if (empty($servicos)) {
             throw new Exception(
@@ -347,6 +347,10 @@ class DefaultController extends Controller
                 ->getManager()
                 ->getRepository(Servico::class)
                 ->find($data->novoServico);
+        }
+        
+        if ($observacao) {
+            $atual->setObservacao($observacao);
         }
 
         $atendimentoService->encerrar($atual, $unidade, $usuario, $servicos, $servicoRedirecionado);

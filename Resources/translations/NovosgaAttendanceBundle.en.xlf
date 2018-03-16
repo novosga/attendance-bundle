@@ -314,6 +314,11 @@
         <target>Scheduled</target>
         
       </trans-unit>
+      <trans-unit id="64">
+        <source>label.notes</source>
+        <target>Notes</target>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>

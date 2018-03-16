@@ -312,6 +312,11 @@
         <target>Agendamento</target>
         
       </trans-unit>
+      <trans-unit id="64">
+        <source>label.notes</source>
+        <target>Observação</target>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>

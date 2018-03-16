@@ -203,7 +203,8 @@ var App = App || {};
                 
                 var data = {
                     redirecionar: false,
-                    servicos: servicos.join(',')
+                    servicos: servicos.join(','),
+                    observacao: this.atendimento.observacao
                 };
                 
                 // se foi submetido via modal de redirecionamento
