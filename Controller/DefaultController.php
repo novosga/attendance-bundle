@@ -151,13 +151,13 @@ class DefaultController extends Controller
         UsuarioService $usuarioService
     ) {
         $envelope = new Envelope();
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
-        $local   = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-        $tipo    = $this->getTipoAtendimento($usuarioService, $usuario);
+        $usuario  = $this->getUser();
+        $unidade  = $usuario->getLotacao()->getUnidade();
+        $local    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $tipo     = $this->getTipoAtendimento($usuarioService, $usuario);
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
-        $atendimentos = $filaService->filaAtendimento($unidade, $servicos, $tipo);
+        $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo);
         
         // fila de atendimento do atendente atual
         $data = [
@@ -208,7 +208,7 @@ class DefaultController extends Controller
             $servicos = $usuarioService->servicos($usuario, $unidade);
 
             do {
-                $atendimentos = $filaService->filaAtendimento($unidade, $servicos, 1, 1);
+                $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, 1, 1);
                 if (count($atendimentos)) {
                     $proximo = $atendimentos[0];
                     $success = $atendimentoService->chamar($proximo, $usuario, $local);
