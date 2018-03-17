@@ -48,7 +48,7 @@ class DefaultController extends Controller
      *
      * @Route("/", name="novosga_attendance_index")
      */
-    public function indexAction(
+    public function index(
         Request $request,
         AtendimentoService $atendimentoService,
         UsuarioService $usuarioService,
@@ -112,7 +112,7 @@ class DefaultController extends Controller
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
-    public function setLocalAction(Request $request, UsuarioService $usuarioService, EventDispatcher $dispatcher)
+    public function setLocal(Request $request, UsuarioService $usuarioService, EventDispatcher $dispatcher)
     {
         $envelope = new Envelope();
         
@@ -145,7 +145,7 @@ class DefaultController extends Controller
      *
      * @Route("/ajax_update", name="novosga_attendance_ajaxupdate")
      */
-    public function ajaxUpdateAction(
+    public function ajaxUpdate(
         Request $request,
         FilaService $filaService,
         UsuarioService $usuarioService
@@ -181,7 +181,7 @@ class DefaultController extends Controller
      * @Route("/chamar", name="novosga_attendance_chamar")
      * @Method("POST")
      */
-    public function chamarAction(
+    public function chamar(
         Request $request,
         AtendimentoService $atendimentoService,
         FilaService $filaService,
@@ -252,7 +252,7 @@ class DefaultController extends Controller
      * @Route("/iniciar", name="novosga_attendance_iniciar")
      * @Method("POST")
      */
-    public function iniciarAction(
+    public function iniciar(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
@@ -284,7 +284,7 @@ class DefaultController extends Controller
      * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu")
      * @Method("POST")
      */
-    public function naoCompareceuAction(
+    public function naoCompareceu(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
@@ -316,7 +316,7 @@ class DefaultController extends Controller
      * @Route("/encerrar", name="novosga_attendance_encerrar")
      * @Method("POST")
      */
-    public function encerrarAction(
+    public function encerrar(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
@@ -378,7 +378,7 @@ class DefaultController extends Controller
      * @Route("/redirecionar", name="novosga_attendance_redirecionar")
      * @Method("POST")
      */
-    public function redirecionarAction(
+    public function redirecionar(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
@@ -430,7 +430,7 @@ class DefaultController extends Controller
      *
      * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
      */
-    public function infoSenhaAction(
+    public function infoSenha(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator,
@@ -460,7 +460,7 @@ class DefaultController extends Controller
      *
      * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
      */
-    public function consultaSenhaAction(Request $request, AtendimentoService $atendimentoService)
+    public function consultaSenha(Request $request, AtendimentoService $atendimentoService)
     {
         $envelope     = new Envelope();
         $usuario      = $this->getUser();
@@ -479,7 +479,7 @@ class DefaultController extends Controller
      *
      * @Route("/usuarios/{id}", name="novosga_attendance_consultasenha")
      */
-    public function usuariosAction(Request $request, TranslatorInterface $translator, Servico $servico)
+    public function usuarios(Request $request, TranslatorInterface $translator, Servico $servico)
     {
         $envelope       = new Envelope();
         $usuario        = $this->getUser();
