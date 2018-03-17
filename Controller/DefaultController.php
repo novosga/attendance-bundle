@@ -16,6 +16,7 @@ use DateTime;
 use Exception;
 use Novosga\Entity\Atendimento;
 use Novosga\Entity\Servico;
+use Novosga\Entity\ServicoUnidade;
 use Novosga\Entity\ServicoUsuario;
 use Novosga\Entity\Usuario;
 use Novosga\Http\Envelope;
@@ -25,6 +26,7 @@ use Novosga\Service\FilaService;
 use Novosga\Service\ServicoService;
 use Novosga\Service\UsuarioService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,9 +56,10 @@ class DefaultController extends Controller
         TranslatorInterface $translator,
         SecurityService $securityService
     ) {
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
-        $repo    = $this->getDoctrine()->getManager()->getRepository(Servico::class);
+        $em       = $this->getDoctrine()->getManager();
+        $usuario  = $this->getUser();
+        $unidade  = $usuario->getLotacao()->getUnidade();
+        $repo     = $em->getRepository(Servico::class);
         
         if (!$usuario || !$unidade) {
             return $this->redirectToRoute('home');
@@ -66,9 +69,9 @@ class DefaultController extends Controller
         $tipo  = $this->getTipoAtendimento($usuarioService, $usuario);
         
         $tiposAtendimento = [
-            FilaService::TIPO_TODOS => $translator->trans('label.all', [], self::DOMAIN),
-            FilaService::TIPO_NORMAL => $translator->trans('label.no_priority', [], self::DOMAIN),
-            FilaService::TIPO_PRIORIDADE => $translator->trans('label.priority', [], self::DOMAIN),
+            FilaService::TIPO_TODOS       => $translator->trans('label.all', [], self::DOMAIN),
+            FilaService::TIPO_NORMAL      => $translator->trans('label.no_priority', [], self::DOMAIN),
+            FilaService::TIPO_PRIORIDADE  => $translator->trans('label.priority', [], self::DOMAIN),
             FilaService::TIPO_AGENDAMENTO => $translator->trans('label.schedule', [], self::DOMAIN),
         ];
         
@@ -339,21 +342,29 @@ class DefaultController extends Controller
                 $translator->trans('error.attendance.no_service', [], self::DOMAIN)
             );
         }
+        
+        $em = $this->getDoctrine()->getManager();
 
+        $novoUsuario = null;
         $servicoRedirecionado = null;
+        
         if ($data->redirecionar) {
-            $servicoRedirecionado = $this
-                ->getDoctrine()
-                ->getManager()
+            $servicoRedirecionado = $em
                 ->getRepository(Servico::class)
                 ->find($data->novoServico);
+            
+            if (isset($data->novoUsuario)) {
+                $novoUsuario = $em
+                    ->getRepository(Usuario::class)
+                    ->find($data->novoServico);
+            }
         }
         
         if ($observacao) {
             $atual->setObservacao($observacao);
         }
 
-        $atendimentoService->encerrar($atual, $unidade, $usuario, $servicos, $servicoRedirecionado);
+        $atendimentoService->encerrar($atual, $unidade, $servicos, $servicoRedirecionado, $novoUsuario);
 
         return $this->json($envelope);
     }
@@ -375,10 +386,11 @@ class DefaultController extends Controller
         $envelope = new Envelope();
         $data     = json_decode($request->getContent());
 
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
-        $servico = (int) $data->servico;
-        $atual   = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+        $usuario     = $this->getUser();
+        $unidade     = $usuario->getLotacao()->getUnidade();
+        $servico     = (int) $data->servico;
+        $novoUsuario = (int) $data->usuario;
+        $atual       = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(
@@ -386,7 +398,7 @@ class DefaultController extends Controller
             );
         }
 
-        $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $unidade, $servico);
+        $redirecionado = $atendimentoService->redirecionar($atual, $unidade, $servico, $novoUsuario);
         if (!$redirecionado->getId()) {
             throw new Exception(
                 $translator->trans(
@@ -448,6 +460,36 @@ class DefaultController extends Controller
         $numero       = $request->get('numero');
         $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
         $envelope->setData($atendimentos);
+        
+        return $this->json($envelope);
+    }
+
+    /**
+     * Retorna os usuários que atende o serviço na unidade
+     *
+     * @param Novosga\Request $request
+     *
+     * @Route("/usuarios/{id}", name="novosga_attendance_consultasenha")
+     */
+    public function usuariosAction(Request $request, TranslatorInterface $translator, Servico $servico)
+    {
+        $envelope       = new Envelope();
+        $usuario        = $this->getUser();
+        $unidade        = $usuario->getLotacao()->getUnidade();
+        $em             = $this->getDoctrine()->getManager();
+        $servicoUnidade = $em->getRepository(ServicoUnidade::class)->get($unidade, $servico);
+        
+        if (!$servicoUnidade) {
+            throw new Exception(
+                $translator->trans('error.service.invalid', [], self::DOMAIN)
+            );
+        }
+        
+        $usuarios = $em
+            ->getRepository(Usuario::class)
+            ->findByServicoUnidade($servicoUnidade);
+        
+        $envelope->setData($usuarios);
         
         return $this->json($envelope);
     }

@@ -30,6 +30,8 @@ var App = App || {};
             servicoRedirecionar: null,
             search: '',
             searchResult: [],
+            usuarios: [],
+            novoUsuario: null,
         },
         methods: {
             init: function (atendimento) {
@@ -172,6 +174,8 @@ var App = App || {};
             },
             
             erroTriagem: function () {
+                this.novoUsuario = null;
+                this.servicoRedirecionar = null;
                 $('#dialog-redirecionar').modal('show');
             },
             
@@ -215,8 +219,11 @@ var App = App || {};
                     }
                     data.redirecionar = true;
                     data.novoServico = this.servicoRedirecionar;
+                    data.novoUsuario = this.novoUsuario;
                 } else {
                     if (this.redirecionarAoEncerrar) {
+                        this.novoUsuario = null;
+                        this.servicoRedirecionar = null;
                         $('#dialog-redirecionar').modal('show');
                         return;
                     }
@@ -242,6 +249,22 @@ var App = App || {};
             encerrarRedirecionar: function() {
                 this.redirecionarAoEncerrar = true;
                 this.fazEncerrar(false);
+            },
+            
+            changeServicoRedirecionar: function () {
+                var servico = this.servicoRedirecionar,
+                    self = this;
+            
+                this.usuarios = [];
+            
+                if (servico > 0) {
+                    App.ajax({
+                        url: App.url(`/novosga.attendance/usuarios/${servico}`),
+                        success: function (response) {
+                            self.usuarios = response.data;
+                        }
+                    });
+                }
             },
             
             redirecionar: function () {
