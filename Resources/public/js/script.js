@@ -276,7 +276,8 @@ var App = App || {};
                         url: App.url('/novosga.attendance/redirecionar'),
                         type: 'post',
                         data: {
-                            servico: servico
+                            servico: servico,
+                            usuario: this.novoUsuario
                         },
                         success: function () {
                             self.atendimento = null;

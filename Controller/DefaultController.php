@@ -389,13 +389,21 @@ class DefaultController extends Controller
         $usuario     = $this->getUser();
         $unidade     = $usuario->getLotacao()->getUnidade();
         $servico     = (int) $data->servico;
-        $novoUsuario = (int) $data->usuario;
+        $novoUsuario = null;
         $atual       = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(
                 $translator->trans('error.attendance.not_in_process', [], self::DOMAIN)
             );
+        }
+        
+        if (isset($data->usuario)) {
+            $novoUsuario = $this
+                ->getDoctrine()
+                ->getManager()
+                ->getRepository(Usuario::class)
+                ->find($data->usuario);
         }
 
         $redirecionado = $atendimentoService->redirecionar($atual, $unidade, $servico, $novoUsuario);
