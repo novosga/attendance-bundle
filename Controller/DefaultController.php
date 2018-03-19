@@ -477,7 +477,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/usuarios/{id}", name="novosga_attendance_consultasenha")
+     * @Route("/usuarios/{id}", name="novosga_attendance_usuarios")
      */
     public function usuarios(Request $request, TranslatorInterface $translator, Servico $servico)
     {
