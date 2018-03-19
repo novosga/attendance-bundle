@@ -290,26 +290,30 @@
                     </div>
                 </div>
             </div>
-            <div id="fila">
-                <h4>{{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + usuario.tipoAtendimento">{% verbatim %}{{ tiposAtendimento[usuario.tipoAtendimento] }}{% endverbatim %}</span>):</h4>
-                <ul>
-                    <li>
-                        <i class="fa fa-users"></i>
-                    </li>
-                    <li v-for="(atendimento, index) in atendimentos">
-                        <a href="#"
-                           v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
-                           v-on:click.prevent="infoSenha(atendimento)"
-                           v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
-                            {%- verbatim -%}
-                                {{ atendimento.senha.format }}
-                            {%- endverbatim -%}
-                        </a>
-                    </li>
-                    <li class="empty" v-if="atendimentos.length===0">
-                        {{ 'label.my_queue.empty'|trans }}
-                    </li>
-                </ul>
+            <div id="fila" class="card">
+                <h5 class="card-header">
+                    {{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + usuario.tipoAtendimento">{% verbatim %}{{ tiposAtendimento[usuario.tipoAtendimento] }}{% endverbatim %}</span>)
+                </h5>
+                <div class="card-body">
+                    <ul>
+                        <li>
+                            <i class="fa fa-users"></i>
+                        </li>
+                        <li v-for="(atendimento, index) in atendimentos">
+                            <a href="#"
+                               v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
+                               v-on:click.prevent="infoSenha(atendimento)"
+                               v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
+                                {%- verbatim -%}
+                                    {{ atendimento.senha.format }}
+                                {%- endverbatim -%}
+                            </a>
+                        </li>
+                        <li class="empty" v-if="atendimentos.length===0">
+                            {{ 'label.my_queue.empty'|trans }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -510,46 +514,60 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body" v-if="atendimentoInfo">
-                        <div class="field">
-                            <h4>{{ 'label.ticket.number'|trans }}</h4>
-                            <p class="numero">
-                                {% verbatim %}
-                                    {{ atendimentoInfo.senha.format }}
-                                {% endverbatim %}
-                            </p>
-                        </div>
-                        <div class="field">
-                            <h4>{{ 'label.service'|trans }}</h4>
-                            <p class="servico">
-                                {% verbatim %}
-                                    {{ atendimentoInfo.servico.nome }}
-                                {% endverbatim %}
-                            </p>
-                        </div>
-                        <div class="field">
-                            <h4>{{ 'label.priority'|trans }}</h4>
-                            <p class="nome-prioridade">
-                                {% verbatim %}
-                                    {{ atendimentoInfo.prioridade.nome }}
-                                {% endverbatim %}
-                            </p>
-                        </div>
-                        <div class="field">
-                            <h4>{{ 'label.ticket.arrival_date'|trans }}</h4>
-                            <p class="chegada">
-                                {% verbatim %}
-                                    {{moment(atendimentoInfo.dataChegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
-                                {% endverbatim %}
-                            </p>
-                        </div>
-                        <div class="field">
-                            <h4>{{ 'label.ticket.wait_time'|trans }}</h4>
-                            <p class="espera">
-                                {% verbatim %}
-                                    {{ atendimentoInfo.tempoEspera }}
-                                {% endverbatim %}
-                            </p>
-                        </div>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        {{ 'label.ticket.number'|trans }}
+                                    </th>
+                                    <td>
+                                        {% verbatim %}
+                                            {{ atendimentoInfo.senha.format }}
+                                        {% endverbatim %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        {{ 'label.service'|trans }}
+                                    </th>
+                                    <td>
+                                        {% verbatim %}
+                                            {{ atendimentoInfo.servico.nome }}
+                                        {% endverbatim %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        {{ 'label.priority'|trans }}
+                                    </th>
+                                    <td>
+                                        {% verbatim %}
+                                            {{ atendimentoInfo.prioridade.nome }}
+                                        {% endverbatim %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        {{ 'label.ticket.arrival_date'|trans }}
+                                    </th>
+                                    <td>
+                                        {% verbatim %}
+                                            {{moment(atendimentoInfo.dataChegada, 'YYYY-MM-DD hh:mm:ss').format(dateTimeFormat)}}
+                                        {% endverbatim %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        {{ 'label.ticket.wait_time'|trans }}
+                                    </th>
+                                    <td>
+                                        {% verbatim %}
+                                            {{ atendimentoInfo.tempoEspera }}
+                                        {% endverbatim %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
