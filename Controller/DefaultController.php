@@ -21,12 +21,11 @@ use Novosga\Entity\ServicoUsuario;
 use Novosga\Entity\Usuario;
 use Novosga\Http\Envelope;
 use Novosga\Service\AtendimentoService;
-use Novosga\Service\EventDispatcher;
+use Novosga\Event\EventDispatcherInterface;
 use Novosga\Service\FilaService;
 use Novosga\Service\ServicoService;
 use Novosga\Service\UsuarioService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,7 +111,7 @@ class DefaultController extends Controller
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
-    public function setLocal(Request $request, UsuarioService $usuarioService, EventDispatcher $dispatcher)
+    public function setLocal(Request $request, UsuarioService $usuarioService, EventDispatcherInterface $dispatcher)
     {
         $envelope = new Envelope();
         
