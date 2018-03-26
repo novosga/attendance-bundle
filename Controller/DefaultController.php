@@ -207,7 +207,8 @@ class DefaultController extends Controller
             $servicos = $usuarioService->servicos($usuario, $unidade);
 
             do {
-                $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, 1, 1);
+                $tipo         = $this->getTipoAtendimento($usuarioService, $usuario);
+                $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo, 1);
                 if (count($atendimentos)) {
                     $proximo = $atendimentos[0];
                     $success = $atendimentoService->chamar($proximo, $usuario, $local);
