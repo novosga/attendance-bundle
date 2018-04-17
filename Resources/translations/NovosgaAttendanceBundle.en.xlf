@@ -319,6 +319,21 @@
         <target>Notes</target>
         
       </trans-unit>
+      <trans-unit id="65">
+        <source>label.redirect.new_user</source>
+        <target>Atendente (opcional)</target>
+        
+      </trans-unit>
+      <trans-unit id="66">
+        <source>error.place_number</source>
+        <target>Número inválido</target>
+        
+      </trans-unit>
+      <trans-unit id="67">
+        <source>error.queue_type</source>
+        <target>Tipo inválido</target>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>

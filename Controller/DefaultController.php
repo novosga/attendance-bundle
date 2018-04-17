@@ -111,28 +111,48 @@ class DefaultController extends Controller
      * @Route("/set_local", name="novosga_attendance_setlocal")
      * @Method("POST")
      */
-    public function setLocal(Request $request, UsuarioService $usuarioService, EventDispatcherInterface $dispatcher)
-    {
+    public function setLocal(
+        Request $request,
+        UsuarioService $usuarioService,
+        EventDispatcherInterface $dispatcher,
+        TranslatorInterface $translator
+    ) {
         $envelope = new Envelope();
         
-        $data   = json_decode($request->getContent());
-        $numero = (int) $data->numeroLocal;
-        $tipo   = $data->tipoAtendimento;
+        try {
+            $data   = json_decode($request->getContent());
+            $numero = isset($data->numeroLocal) ? (int) $data->numeroLocal : 0;
+            $tipo   = isset($data->tipoAtendimento) ? $data->tipoAtendimento : FilaService::TIPO_TODOS;
+            
+            if ($numero <= 0) {
+                throw new Exception(
+                    $translator->trans('error.place_number', [], self::DOMAIN)
+                );
+            }
+            
+            if ($numero <= 0) {
+                throw new Exception(
+                    $translator->trans('error.queue_type', [], self::DOMAIN)
+                );
+            }
 
-        $usuario = $this->getUser();
-        $unidade = $usuario->getLotacao()->getUnidade();
+            $usuario = $this->getUser();
+            $unidade = $usuario->getLotacao()->getUnidade();
 
-        $dispatcher->createAndDispatch('novosga.attendance.pre-setlocal', [$unidade, $usuario, $numero, $tipo], true);
+            $dispatcher->createAndDispatch('novosga.attendance.pre-setlocal', [$unidade, $usuario, $numero, $tipo], true);
 
-        $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
-        $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
-        
-        $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
-        
-        $envelope->setData([
-            'numero' => $m1,
-            'tipo'   => $m2,
-        ]);
+            $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
+            $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
+
+            $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
+
+            $envelope->setData([
+                'numero' => $m1,
+                'tipo'   => $m2,
+            ]);
+        } catch (Exception $e) {
+            $envelope->exception($e);
+        }
 
         return $this->json($envelope);
     }
