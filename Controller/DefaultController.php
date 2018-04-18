@@ -139,12 +139,20 @@ class DefaultController extends Controller
             $usuario = $this->getUser();
             $unidade = $usuario->getLotacao()->getUnidade();
 
-            $dispatcher->createAndDispatch('novosga.attendance.pre-setlocal', [$unidade, $usuario, $numero, $tipo], true);
+            $dispatcher->createAndDispatch(
+                'novosga.attendance.pre-setlocal',
+                [$unidade, $usuario, $numero, $tipo],
+                true
+            );
 
             $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
             $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
 
-            $dispatcher->createAndDispatch('novosga.attendance.setlocal', [$unidade, $usuario, $numero, $tipo], true);
+            $dispatcher->createAndDispatch(
+                'novosga.attendance.setlocal',
+                [$unidade, $usuario, $numero, $tipo],
+                true
+            );
 
             $envelope->setData([
                 'numero' => $m1,
