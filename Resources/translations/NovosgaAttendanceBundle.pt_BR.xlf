@@ -262,6 +262,18 @@
         <source>label.notes</source>
         <target>Observação</target>
       </trans-unit>
+      <trans-unit id="64-1">
+        <source>label.resolution</source>
+        <target>Resolução</target>
+      </trans-unit>
+      <trans-unit id="64-2">
+        <source>label.resolution_solved</source>
+        <target>Resolvido</target>
+      </trans-unit>
+      <trans-unit id="64-3">
+        <source>label.resolution_pending</source>
+        <target>Pendente</target>
+      </trans-unit>
       <trans-unit id="65">
         <source>label.redirect.new_user</source>
         <target>Atendente (opcional)</target>

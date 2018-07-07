@@ -208,6 +208,7 @@ var App = App || {};
                 var data = {
                     redirecionar: false,
                     servicos: servicos.join(','),
+                    resolucao: this.atendimento.resolucao,
                     observacao: this.atendimento.observacao
                 };
                 

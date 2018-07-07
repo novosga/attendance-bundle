@@ -363,8 +363,9 @@ class DefaultController extends Controller
         }
 
         $servicos   = explode(',', $data->servicos);
+        $resolucao  = $data->resolucao;
         $observacao = $data->observacao;
-
+        
         if (empty($servicos)) {
             throw new Exception(
                 $translator->trans('error.attendance.no_service', [], self::DOMAIN)
@@ -386,6 +387,10 @@ class DefaultController extends Controller
                     ->getRepository(Usuario::class)
                     ->find($data->novoServico);
             }
+        }
+        
+        if (in_array($resolucao, [ AtendimentoService::RESOLVIDO, AtendimentoService::PENDENTE ])) {
+            $atual->setResolucao($resolucao);
         }
         
         if ($observacao) {
