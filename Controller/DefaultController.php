@@ -25,8 +25,7 @@ use Novosga\Event\EventDispatcherInterface;
 use Novosga\Service\FilaService;
 use Novosga\Service\ServicoService;
 use Novosga\Service\UsuarioService;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -45,7 +44,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      *
-     * @Route("/", name="novosga_attendance_index")
+     * @Route("/", name="novosga_attendance_index", methods={"GET"})
      */
     public function index(
         Request $request,
@@ -108,8 +107,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      *
-     * @Route("/set_local", name="novosga_attendance_setlocal")
-     * @Method("POST")
+     * @Route("/set_local", name="novosga_attendance_setlocal", methods={"POST"})
      */
     public function setLocal(
         Request $request,
@@ -170,7 +168,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      *
-     * @Route("/ajax_update", name="novosga_attendance_ajaxupdate")
+     * @Route("/ajax_update", name="novosga_attendance_ajaxupdate", methods={"GET"})
      */
     public function ajaxUpdate(
         Request $request,
@@ -205,8 +203,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/chamar", name="novosga_attendance_chamar")
-     * @Method("POST")
+     * @Route("/chamar", name="novosga_attendance_chamar", methods={"POST"})
      */
     public function chamar(
         Request $request,
@@ -277,8 +274,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/iniciar", name="novosga_attendance_iniciar")
-     * @Method("POST")
+     * @Route("/iniciar", name="novosga_attendance_iniciar", methods={"POST"})
      */
     public function iniciar(
         Request $request,
@@ -309,8 +305,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu")
-     * @Method("POST")
+     * @Route("/nao_compareceu", name="novosga_attendance_naocompareceu", methods={"POST"})
      */
     public function naoCompareceu(
         Request $request,
@@ -341,8 +336,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/encerrar", name="novosga_attendance_encerrar")
-     * @Method("POST")
+     * @Route("/encerrar", name="novosga_attendance_encerrar", methods={"POST"})
      */
     public function encerrar(
         Request $request,
@@ -408,8 +402,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/redirecionar", name="novosga_attendance_redirecionar")
-     * @Method("POST")
+     * @Route("/redirecionar", name="novosga_attendance_redirecionar", methods={"POST"})
      */
     public function redirecionar(
         Request $request,
@@ -461,7 +454,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      *
-     * @Route("/info_senha/{id}", name="novosga_attendance_infosenha")
+     * @Route("/info_senha/{id}", name="novosga_attendance_infosenha", methods={"GET"})
      */
     public function infoSenha(
         Request $request,
@@ -491,7 +484,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/consulta_senha", name="novosga_attendance_consultasenha")
+     * @Route("/consulta_senha", name="novosga_attendance_consultasenha", methods={"GET"})
      */
     public function consultaSenha(Request $request, AtendimentoService $atendimentoService)
     {
@@ -510,7 +503,7 @@ class DefaultController extends Controller
      *
      * @param Novosga\Request $request
      *
-     * @Route("/usuarios/{id}", name="novosga_attendance_usuarios")
+     * @Route("/usuarios/{id}", name="novosga_attendance_usuarios", methods={"GET"})
      */
     public function usuarios(Request $request, TranslatorInterface $translator, Servico $servico)
     {
