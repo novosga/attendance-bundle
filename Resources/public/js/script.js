@@ -135,20 +135,30 @@ var App = App || {};
                 });
             },
             
-            chamar: function () {
+            chamar: function (e) {
                 var self = this;
-                App.ajax({
-                    url: App.url('/novosga.attendance/chamar'),
-                    type: 'post',
-                    success: function (response) {
-                        self.atendimento = response.data;
-                        App.Websocket.emit('call ticket', {
-                            unity: unidade.id,
-                            service: self.atendimento.servico.id,
-                            hash: self.atendimento.hash
-                        });
-                    }
-                });
+                
+                if (!e.target.disabled) {
+                    e.target.disabled = true;
+
+                    App.ajax({
+                        url: App.url('/novosga.attendance/chamar'),
+                        type: 'post',
+                        success: function (response) {
+                            self.atendimento = response.data;
+                            App.Websocket.emit('call ticket', {
+                                unity: unidade.id,
+                                service: self.atendimento.servico.id,
+                                hash: self.atendimento.hash
+                            });
+                        },
+                        complete: function () {
+                            setTimeout(function () {
+                                e.target.disabled = false;
+                            }, 5 * 1000);
+                        }
+                    });
+                }
             },
             
             iniciar: function () {
@@ -164,12 +174,29 @@ var App = App || {};
             
             naoCompareceu: function () {
                 var self = this;
-                App.ajax({
-                    url: App.url('/novosga.attendance/nao_compareceu'),
-                    type: 'post',
-                    success: function () {
-                        self.atendimento = null;
+                
+                swal({
+                    title: alertTitle,
+                    text: alertNaoCompareceu,
+                    type: "warning",
+                    buttons: [
+                        labelNao,
+                        labelSim
+                    ],
+                    //dangerMode: true,
+                })
+                .then(function (ok) {
+                    if (!ok) {
+                        return;
                     }
+                    
+                    App.ajax({
+                        url: App.url('/novosga.attendance/nao_compareceu'),
+                        type: 'post',
+                        success: function () {
+                            self.atendimento = null;
+                        }
+                    });
                 });
             },
             
@@ -191,6 +218,10 @@ var App = App || {};
                     }
                 }
                 this.atendimento.status = 'encerrando';
+            },
+            
+            encerrarVoltar: function () {
+                this.atendimento.status = 'iniciado';
             },
             
             fazEncerrar: function (isRedirect) {
@@ -230,15 +261,31 @@ var App = App || {};
                     }
                 }
                 
-                App.ajax({
-                    url: App.url('/novosga.attendance/encerrar'),
-                    type: 'post',
-                    data: data,
-                    success: function () {
-                        self.atendimento = null;
-                        self.redirecionarAoEncerrar = false;
-                        $('.modal').modal('hide');
+                swal({
+                    title: alertTitle,
+                    text: alertEncerrar,
+                    type: "warning",
+                    buttons: [
+                        labelNao,
+                        labelSim
+                    ],
+                    //dangerMode: true,
+                })
+                .then(function (ok) {
+                    if (!ok) {
+                        return;
                     }
+                    
+                    App.ajax({
+                        url: App.url('/novosga.attendance/encerrar'),
+                        type: 'post',
+                        data: data,
+                        success: function () {
+                            self.atendimento = null;
+                            self.redirecionarAoEncerrar = false;
+                            $('.modal').modal('hide');
+                        }
+                    });
                 });
             },
             
@@ -272,18 +319,34 @@ var App = App || {};
                 var servico = this.servicoRedirecionar,
                     self = this;
             
-                if (servico > 0 && window.confirm(alertRedirecionar)) {
-                    App.ajax({
-                        url: App.url('/novosga.attendance/redirecionar'),
-                        type: 'post',
-                        data: {
-                            servico: servico,
-                            usuario: this.novoUsuario
-                        },
-                        success: function () {
-                            self.atendimento = null;
-                            $('.modal').modal('hide');
+                if (servico > 0) {
+                    swal({
+                        title: alertTitle,
+                        text: alertRedirecionar,
+                        type: "warning",
+                        buttons: [
+                            labelNao,
+                            labelSim
+                        ],
+                        //dangerMode: true,
+                    })
+                    .then(function (ok) {
+                        if (!ok) {
+                            return;
                         }
+
+                        App.ajax({
+                            url: App.url('/novosga.attendance/redirecionar'),
+                            type: 'post',
+                            data: {
+                                servico: servico,
+                                usuario: this.novoUsuario
+                            },
+                            success: function () {
+                                self.atendimento = null;
+                                $('.modal').modal('hide');
+                            }
+                        });
                     });
                 }
             },

@@ -3,7 +3,8 @@
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
 .attendance-panel {
-    padding: 20px 10px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .module-content .header {

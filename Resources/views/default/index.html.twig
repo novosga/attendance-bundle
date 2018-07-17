@@ -96,31 +96,31 @@
                                         <div class="card-header">
                                             {{ 'label.attendance'|trans }}
                                         </div>
-                                        <table class="table">
-                                            <tr class="row">
-                                                <td class="col-md-4 text-center">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-4 text-center">
                                                     <strong>{{ 'label.ticket'|trans }}</strong>
                                                     <br>
                                                     {%- verbatim -%}
                                                         {{ atendimento.senha.format }}
                                                     {%- endverbatim -%}
-                                                </td>
-                                                <td class="col-md-4 text-center">
+                                                </div>
+                                                <div class="col-4 text-center">
                                                     <strong>{{ 'label.service'|trans }}</strong>
                                                     <br>
                                                     {%- verbatim -%}
                                                         {{ atendimento.servico.nome }}
                                                     {%- endverbatim -%}
-                                                </td>
-                                                <td class="col-md-4 text-center">
+                                                </div>
+                                                <div class="col-4 text-center">
                                                     <strong>{{ 'label.priority'|trans }}</strong>
                                                     <br>
                                                     {%- verbatim -%}
                                                         {{ atendimento.prioridade.nome }}
                                                     {%- endverbatim -%}
-                                                </td>
-                                            </tr>
-                                        </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -301,6 +301,16 @@
                                     title="{{ 'button.redirect'|trans }}">
                                 <i class="fa fa-stop"></i>
                                 <span>{{ 'button.redirect'|trans }}</span>
+                            </button>
+                        </div>
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
+                            <button type="button"
+                                    class="btn btn-secondary btn-block"
+                                    v-on:click="encerrarVoltar"
+                                    title="{{ 'button.redirect'|trans }}">
+                                <i class="fa fa-chevron-left"></i>
+                                <span>{{ 'button.back'|trans }}</span>
                             </button>
                         </div>
                     </div>
@@ -604,18 +614,24 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        var local             = {{ local ? local : 'null' }},
-            usuario           = {{ usuario|json_encode()|raw }},
-            unidade           = {{ unidade|json_encode()|raw }},
-            atendimento       = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento   = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
-            tiposAtendimento  = {{ tiposAtendimento|json_encode()|raw }},
-            servicosUsuario   = {{ servicos|json_encode()|raw }},
-            dateTimeFormat    = '{{ 'MM/DD/YYYY HH:mm:ss'|trans }}',
-            alertRedirecionar = '{{ 'ticket.error.alert'|trans }}',
-            wsSecret          = '{{ wsSecret }}';
+        var local              = {{ local ? local : 'null' }},
+            usuario            = {{ usuario|json_encode()|raw }},
+            unidade            = {{ unidade|json_encode()|raw }},
+            atendimento        = {{ atendimento|json_encode()|raw }},
+            tipoAtendimento    = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
+            tiposAtendimento   = {{ tiposAtendimento|json_encode()|raw }},
+            servicosUsuario    = {{ servicos|json_encode()|raw }},
+            labelSim           = '{{ 'label.yes'|trans }}',
+            labelNao           = '{{ 'label.no'|trans }}',
+            dateTimeFormat     = '{{ 'MM/DD/YYYY HH:mm:ss'|trans }}',
+            alertTitle         = '{{ 'alert.title'|trans }}',
+            alertRedirecionar  = '{{ 'alert.ticket_error.text'|trans }}',
+            alertNaoCompareceu = '{{ 'alert.no_show.text'|trans }}',
+            alertEncerrar      = '{{ 'alert.finish.text'|trans }}',
+            wsSecret           = '{{ wsSecret }}';
     
         App.Clock.init("novosga-clock", {{ time }});
     </script>
+    <script type="text/javascript" src="{{ asset('bundles/novosgaattendance/js/sweetalert.min.js') }}"></script>
     <script src="{{ asset('bundles/novosgaattendance/js/script.js') }}"></script>
 {% endblock %}

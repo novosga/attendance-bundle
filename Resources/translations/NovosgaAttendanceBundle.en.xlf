@@ -102,6 +102,12 @@
       </trans-unit>
       <trans-unit id="20">
         <source>button.redirect</source>
+        <target>Redirecionar</target>
+        
+      </trans-unit>
+      <trans-unit id="20-1">
+        <source>button.back</source>
+        <target>Voltar</target>
         
       </trans-unit>
       <trans-unit id="21">
@@ -170,6 +176,7 @@
       </trans-unit>
       <trans-unit id="34">
         <source>modal.error.text</source>
+        <target>Por favor selecione os serviços realizados primeiro.</target>
         
       </trans-unit>
       <trans-unit id="35">
@@ -227,7 +234,7 @@
         
       </trans-unit>
       <trans-unit id="46">
-        <source>ticket.error.alert</source>
+        <source>alert.ticket_error.text</source>
         <target>Do you really wish to declare screening error?</target>
         
       </trans-unit>
@@ -347,6 +354,31 @@
       <trans-unit id="67">
         <source>error.queue_type</source>
         <target>Tipo inválido</target>
+        
+      </trans-unit>
+      <trans-unit id="69">
+        <source>label.yes</source>
+        <target>Sim</target>
+        
+      </trans-unit>
+      <trans-unit id="70">
+        <source>label.no</source>
+        <target>Não</target>
+        
+      </trans-unit>
+      <trans-unit id="71">
+        <source>alert.title</source>
+        <target>Atenção</target>
+        
+      </trans-unit>
+      <trans-unit id="72">
+        <source>alert.finish.text</source>
+        <target>Deseja realmente encerrar o atendimento?</target>
+        
+      </trans-unit>
+      <trans-unit id="73">
+        <source>alert.no_show.text</source>
+        <target>Deseja realmente marcar como não compareceu?</target>
         
       </trans-unit>
     </body>

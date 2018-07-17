@@ -106,6 +106,11 @@
         <target>Cerrar o redireccionar la atención</target>
         
       </trans-unit>
+      <trans-unit id="20-1">
+        <source>button.back</source>
+        <target>Voltar</target>
+        
+      </trans-unit>
       <trans-unit id="21">
         <source>label.my_queue</source>
         <target>Mi fila</target>
@@ -232,7 +237,7 @@
         
       </trans-unit>
       <trans-unit id="46">
-        <source>ticket.error.alert</source>
+        <source>alert.ticket_error.text</source>
         <target>Realmente desea marcar como error de selección?</target>
         
       </trans-unit>
@@ -358,6 +363,31 @@
       <trans-unit id="68">
         <source>modal.error</source>
         <target>Erro</target>
+        
+      </trans-unit>
+      <trans-unit id="69">
+        <source>label.yes</source>
+        <target>Sim</target>
+        
+      </trans-unit>
+      <trans-unit id="70">
+        <source>label.no</source>
+        <target>Não</target>
+        
+      </trans-unit>
+      <trans-unit id="71">
+        <source>alert.title</source>
+        <target>Atenção</target>
+        
+      </trans-unit>
+      <trans-unit id="72">
+        <source>alert.finish.text</source>
+        <target>Deseja realmente encerrar o atendimento?</target>
+        
+      </trans-unit>
+      <trans-unit id="73">
+        <source>alert.no_show.text</source>
+        <target>Deseja realmente marcar como não compareceu?</target>
         
       </trans-unit>
     </body>
