@@ -340,7 +340,7 @@ var App = App || {};
                             type: 'post',
                             data: {
                                 servico: servico,
-                                usuario: this.novoUsuario
+                                usuario: self.novoUsuario
                             },
                             success: function () {
                                 self.atendimento = null;
