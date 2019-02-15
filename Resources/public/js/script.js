@@ -97,7 +97,10 @@ var App = App || {};
                         if (self.atendimentos.length > 0) {
                             document.title = "(" + self.atendimentos.length + ") " + defaultTitle;
                             if (estavaVazio) {
-                                document.getElementById("alert").play();
+                                var audio = document.getElementById("alert");
+                                if (audio) {
+                                    audio.play();
+                                }
                                 App.Notification.show('Atendimento', 'Novo atendimento na fila');
                             }
                         }
