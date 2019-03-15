@@ -3,7 +3,7 @@
     <body>
       <trans-unit id="0">
         <source>module.name</source>
-        <target>Tratamiento</target>
+        <target>Atención</target>
         
       </trans-unit>
       <trans-unit id="1">
@@ -53,6 +53,7 @@
       </trans-unit>
       <trans-unit id="10">
         <source>label.services.available.empty</source>
+        <target>Ningún servicio disponible</target>
         
       </trans-unit>
       <trans-unit id="11">
@@ -102,12 +103,12 @@
       </trans-unit>
       <trans-unit id="20">
         <source>button.redirect</source>
-        <target>Cerrar o redireccionar la atención</target>
+        <target>Terminar y redirigir el servicio</target>
         
       </trans-unit>
       <trans-unit id="20-1">
         <source>button.back</source>
-        <target>Voltar</target>
+        <target>Volver</target>
         
       </trans-unit>
       <trans-unit id="21">
@@ -172,11 +173,12 @@
       </trans-unit>
       <trans-unit id="33">
         <source>modal.redirect.button.finish</source>
+        <target>Terminar y redireccionar</target>
         
       </trans-unit>
       <trans-unit id="34">
         <source>modal.error.text</source>
-        <target>Por favor selecione os serviços realizados primeiro.</target>
+        <target>Por favor,  seleccione primero los servicios realizados</target>
         
       </trans-unit>
       <trans-unit id="35">
@@ -186,6 +188,7 @@
       </trans-unit>
       <trans-unit id="36">
         <source>modal.search.placeholder</source>
+        <target>Contraseña completa, sigla o número</target>
         
       </trans-unit>
       <trans-unit id="37">
@@ -225,6 +228,7 @@
       </trans-unit>
       <trans-unit id="44">
         <source>MM/DD/YYYY HH:mm:ss</source>
+        <target>DD/MM/YYYY hh:mm:ss</target>
         
       </trans-unit>
       <trans-unit id="45">
@@ -289,10 +293,12 @@
       </trans-unit>
       <trans-unit id="57">
         <source>error.attendance.redirect</source>
+        <target>Error al redireccionar el servicio %atendimento% para el servicio %servico%</target>
         
       </trans-unit>
       <trans-unit id="58">
         <source>error.attendance.change_status</source>
+        <target>Error al cambiar el estado del servicio %atendimento% para cerrarlo</target>
         
       </trans-unit>
       <trans-unit id="59">
@@ -302,6 +308,7 @@
       </trans-unit>
       <trans-unit id="60">
         <source>error.unknown</source>
+        <target>Error desconocido</target>
         
       </trans-unit>
       <trans-unit id="61">
@@ -316,71 +323,63 @@
       </trans-unit>
       <trans-unit id="63">
         <source>label.schedule</source>
+        <target>Programación</target>
         
       </trans-unit>
       <trans-unit id="64">
         <source>label.notes</source>
-        <target>Observação</target>
         
       </trans-unit>
       <trans-unit id="64-1">
         <source>label.resolution</source>
-        <target>Resolução</target>
         
       </trans-unit>
       <trans-unit id="64-2">
         <source>label.resolution_solved</source>
-        <target>Resolvido</target>
         
       </trans-unit>
       <trans-unit id="64-3">
         <source>label.resolution_pending</source>
-        <target>Pendente</target>
         
       </trans-unit>
       <trans-unit id="65">
         <source>label.redirect.new_user</source>
-        <target>Atendente (opcional)</target>
         
       </trans-unit>
       <trans-unit id="66">
         <source>error.place_number</source>
-        <target>Número inválido</target>
         
       </trans-unit>
       <trans-unit id="67">
         <source>error.queue_type</source>
-        <target>Tipo inválido</target>
         
       </trans-unit>
       <trans-unit id="68">
         <source>modal.error</source>
-        <target>Erro</target>
+        <target>Error</target>
         
       </trans-unit>
       <trans-unit id="69">
         <source>label.yes</source>
-        <target>Sim</target>
+        <target>Si</target>
         
       </trans-unit>
       <trans-unit id="70">
         <source>label.no</source>
-        <target>Não</target>
+        <target>No</target>
         
       </trans-unit>
       <trans-unit id="71">
         <source>alert.title</source>
-        <target>Atenção</target>
+        <target>Atención</target>
         
       </trans-unit>
       <trans-unit id="72">
         <source>alert.finish.text</source>
-        <target>Deseja realmente encerrar o atendimento?</target>
         
       </trans-unit>
       <trans-unit id="73">
         <source>alert.no_show.text</source>
-        <target>Deseja realmente marcar como não compareceu?</target>
         
       </trans-unit>
     </body>

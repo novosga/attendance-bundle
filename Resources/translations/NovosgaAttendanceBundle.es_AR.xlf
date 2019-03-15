@@ -108,7 +108,7 @@
       </trans-unit>
       <trans-unit id="20-1">
         <source>button.back</source>
-        <target>Voltar</target>
+        <target>Volver</target>
         
       </trans-unit>
       <trans-unit id="21">
@@ -323,71 +323,72 @@
       </trans-unit>
       <trans-unit id="63">
         <source>label.schedule</source>
+        <target>Agendar</target>
         
       </trans-unit>
       <trans-unit id="64">
         <source>label.notes</source>
-        <target>Observação</target>
+        <target>Observación</target>
         
       </trans-unit>
       <trans-unit id="64-1">
         <source>label.resolution</source>
-        <target>Resolução</target>
+        <target>Resolución</target>
         
       </trans-unit>
       <trans-unit id="64-2">
         <source>label.resolution_solved</source>
-        <target>Resolvido</target>
+        <target>Resuelto</target>
         
       </trans-unit>
       <trans-unit id="64-3">
         <source>label.resolution_pending</source>
-        <target>Pendente</target>
+        <target>Pendiente</target>
         
       </trans-unit>
       <trans-unit id="65">
         <source>label.redirect.new_user</source>
-        <target>Atendente (opcional)</target>
+        <target>Atendido (opcional)</target>
         
       </trans-unit>
       <trans-unit id="66">
         <source>error.place_number</source>
-        <target>Número inválido</target>
+        <target>Número no válido</target>
         
       </trans-unit>
       <trans-unit id="67">
         <source>error.queue_type</source>
-        <target>Tipo inválido</target>
+        <target>Tipo no válido</target>
         
       </trans-unit>
       <trans-unit id="68">
         <source>modal.error</source>
-        <target>Erro</target>
+        <target>Error</target>
         
       </trans-unit>
       <trans-unit id="69">
         <source>label.yes</source>
-        <target>Sim</target>
+        <target>Sí</target>
         
       </trans-unit>
       <trans-unit id="70">
         <source>label.no</source>
-        <target>Não</target>
+        <target>No</target>
         
       </trans-unit>
       <trans-unit id="71">
         <source>alert.title</source>
-        <target>Atenção</target>
+        <target>Atención</target>
         
       </trans-unit>
       <trans-unit id="72">
         <source>alert.finish.text</source>
-        <target>Deseja realmente encerrar o atendimento?</target>
+        <target>Desea realmente cerrar la atención?</target>
         
       </trans-unit>
       <trans-unit id="73">
         <source>alert.no_show.text</source>
-        <target>Deseja realmente marcar como não compareceu?</target>
+        <target>Desea realmente marcar como no presente?</target>
         
       </trans-unit>
     </body>

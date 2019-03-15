@@ -1,347 +1,364 @@
 <?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="pt-PT">
+  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="en-US">
     <body>
       <trans-unit id="0">
         <source>module.name</source>
-        <target>Atendimento</target>
+        <target>Attendance</target>
         
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>
-        <target>Atendimento</target>
+        <target>Attendance</target>
         
       </trans-unit>
       <trans-unit id="2">
         <source>label.attendance</source>
-        <target>Atendimento</target>
+        <target>Attendance</target>
         
       </trans-unit>
       <trans-unit id="3">
         <source>label.ticket</source>
-        <target>Senha</target>
+        <target>Ticket</target>
         
       </trans-unit>
       <trans-unit id="4">
         <source>label.service</source>
-        <target>Serviço</target>
+        <target>Service</target>
         
       </trans-unit>
       <trans-unit id="5">
         <source>label.priority</source>
-        <target>Prioridade</target>
+        <target>Priority</target>
         
       </trans-unit>
       <trans-unit id="6">
         <source>label.customer</source>
-        <target>Cliente</target>
+        <target>Customer </target>
         
       </trans-unit>
       <trans-unit id="7">
         <source>label.customer.name</source>
-        <target>Nome</target>
+        <target>Name</target>
         
       </trans-unit>
       <trans-unit id="8">
         <source>label.customer.id</source>
-        <target>Documento</target>
+        <target>ID</target>
         
       </trans-unit>
       <trans-unit id="9">
         <source>label.services.available</source>
-        <target>Serviços disponíveis</target>
+        <target>Available Services</target>
         
       </trans-unit>
       <trans-unit id="10">
         <source>label.services.available.empty</source>
+        <target>No service available </target>
         
       </trans-unit>
       <trans-unit id="11">
         <source>label.services.executed</source>
-        <target>Serviços realizados</target>
+        <target>Executed services</target>
         
       </trans-unit>
       <trans-unit id="12">
         <source>label.services.executed.empty</source>
-        <target>Nenhum serviço seleccionado</target>
+        <target>No service selected</target>
         
       </trans-unit>
       <trans-unit id="13">
         <source>label.remove</source>
-        <target>Eliminar</target>
+        <target>Remove</target>
         
       </trans-unit>
       <trans-unit id="14">
         <source>button.call_next</source>
-        <target>Chamar próximo</target>
+        <target>Call next</target>
         
       </trans-unit>
       <trans-unit id="15">
         <source>button.call_again</source>
-        <target>Chamar novamente</target>
+        <target>Call again</target>
         
       </trans-unit>
       <trans-unit id="16">
         <source>button.start</source>
-        <target>Iniciar atendimento</target>
+        <target>Start service</target>
         
       </trans-unit>
       <trans-unit id="17">
         <source>button.not_show</source>
-        <target>Não compareceu</target>
+        <target>Not showed up</target>
         
       </trans-unit>
       <trans-unit id="18">
         <source>button.finish</source>
-        <target>Encerrar atendimento</target>
+        <target>End service</target>
         
       </trans-unit>
       <trans-unit id="19">
         <source>button.error</source>
-        <target>Erro de triagem</target>
+        <target>Screening error</target>
         
       </trans-unit>
       <trans-unit id="20">
         <source>button.redirect</source>
+        <target>End and redirect service</target>
         
       </trans-unit>
       <trans-unit id="20-1">
         <source>button.back</source>
-        <target>Voltar</target>
+        <target>Come back</target>
         
       </trans-unit>
       <trans-unit id="21">
         <source>label.my_queue</source>
-        <target>A minha fila</target>
+        <target>My queue </target>
         
       </trans-unit>
       <trans-unit id="22">
         <source>label.my_queue.empty</source>
-        <target>Fila vazia</target>
+        <target>Empty queue</target>
         
       </trans-unit>
       <trans-unit id="23">
         <source>button.find_ticket</source>
-        <target>Consultar senha</target>
+        <target>Find ticket</target>
         
       </trans-unit>
       <trans-unit id="24">
         <source>button.enable_notification</source>
-        <target>Ativar notificações</target>
+        <target>Enable notification </target>
         
       </trans-unit>
       <trans-unit id="25">
         <source>modal.place</source>
-        <target>Balcão</target>
+        <target>Ticket window</target>
         
       </trans-unit>
       <trans-unit id="26">
         <source>button.add</source>
-        <target>Adicionar</target>
+        <target>Add</target>
         
       </trans-unit>
       <trans-unit id="27">
         <source>button.change</source>
-        <target>Alterar</target>
+        <target>Change</target>
         
       </trans-unit>
       <trans-unit id="28">
         <source>label.place.number</source>
-        <target>Número</target>
+        <target>Number</target>
         
       </trans-unit>
       <trans-unit id="29">
         <source>button.save</source>
-        <target>Guardar</target>
+        <target>Save</target>
         
       </trans-unit>
       <trans-unit id="30">
         <source>modal.redirect</source>
-        <target>Redirecionar</target>
+        <target>Redirect</target>
         
       </trans-unit>
       <trans-unit id="31">
         <source>label.redirect.new_service</source>
-        <target>Novo Serviço</target>
+        <target>New Service</target>
         
       </trans-unit>
       <trans-unit id="32">
         <source>modal.redirect.button.redirect</source>
-        <target>Redirecionar</target>
+        <target>Redirect</target>
         
       </trans-unit>
       <trans-unit id="33">
         <source>modal.redirect.button.finish</source>
+        <target>Finish and redirect </target>
         
       </trans-unit>
       <trans-unit id="34">
         <source>modal.error.text</source>
+        <target>Please, select first the services executed.</target>
         
       </trans-unit>
       <trans-unit id="35">
         <source>modal.search</source>
-        <target>Pesquisa</target>
+        <target>Find</target>
         
       </trans-unit>
       <trans-unit id="36">
         <source>modal.search.placeholder</source>
+        <target>Complete ticket, letters or number</target>
         
       </trans-unit>
       <trans-unit id="37">
         <source>label.ticket.number</source>
-        <target>Número</target>
+        <target>Number</target>
         
       </trans-unit>
       <trans-unit id="38">
         <source>label.ticket.arrival_date</source>
-        <target>Data chegada</target>
+        <target>Arrival date</target>
         
       </trans-unit>
       <trans-unit id="39">
         <source>label.ticket.start_date</source>
-        <target>Data início</target>
+        <target>Initial date</target>
         
       </trans-unit>
       <trans-unit id="40">
         <source>label.ticket.end_date</source>
-        <target>Data fim</target>
+        <target>Final date</target>
         
       </trans-unit>
       <trans-unit id="41">
         <source>label.triage</source>
-        <target>Triagem</target>
+        <target>Screening</target>
         
       </trans-unit>
       <trans-unit id="42">
         <source>label.ticket.user</source>
-        <target>Atendente</target>
+        <target>Operator</target>
         
       </trans-unit>
       <trans-unit id="43">
         <source>label.status</source>
-        <target>Situação</target>
+        <target>Status</target>
         
       </trans-unit>
       <trans-unit id="44">
         <source>MM/DD/YYYY HH:mm:ss</source>
+        <target>MM/DD/YYYY hh:mm:ss</target>
         
       </trans-unit>
       <trans-unit id="45">
         <source>label.ticket.wait_time</source>
-        <target>Tempo de espera</target>
+        <target>Waiting time</target>
         
       </trans-unit>
       <trans-unit id="46">
         <source>alert.ticket_error.text</source>
-        <target>Deseja realmente marcar como erro de triagem?</target>
+        <target>Do you really want to set as screening error?</target>
         
       </trans-unit>
       <trans-unit id="47">
         <source>label.attendance.type</source>
-        <target>Tipo de Atendimento</target>
+        <target>Type of Service</target>
         
       </trans-unit>
       <trans-unit id="48">
         <source>label.choose</source>
-        <target>Seleccione</target>
+        <target>Select</target>
         
       </trans-unit>
       <trans-unit id="49">
         <source>modal.search.button.submit</source>
-        <target>Consultar</target>
+        <target>Search</target>
         
       </trans-unit>
       <trans-unit id="50">
         <source>label.all</source>
-        <target>Todos</target>
+        <target>All</target>
         
       </trans-unit>
       <trans-unit id="51">
         <source>label.no_priority</source>
-        <target>Convencional</target>
+        <target>Regular</target>
         
       </trans-unit>
       <trans-unit id="52">
         <source>label.priority</source>
-        <target>Prioridade</target>
+        <target>Priority</target>
         
       </trans-unit>
       <trans-unit id="53">
         <source>error.queue.empty</source>
-        <target>Fila vazia</target>
+        <target>Empty queue</target>
         
       </trans-unit>
       <trans-unit id="54">
         <source>error.attendance.in_process</source>
-        <target>Já existe um atendimento em andamento</target>
+        <target>There is already an ongoing service</target>
         
       </trans-unit>
       <trans-unit id="55">
         <source>error.attendance.no_service</source>
-        <target>Nenhum serviço seleccionado</target>
+        <target>No service selected</target>
         
       </trans-unit>
       <trans-unit id="56">
         <source>error.attendance.not_in_process</source>
-        <target>Nenhum atendimento em andamento</target>
+        <target>No service in progress</target>
         
       </trans-unit>
       <trans-unit id="57">
         <source>error.attendance.redirect</source>
+        <target>Error Redirecting 1%atendimento% Attendance to Service 2%servico%</target>
         
       </trans-unit>
       <trans-unit id="58">
         <source>error.attendance.change_status</source>
+        <target>Error changing status from %atendimento% to closed</target>
         
       </trans-unit>
       <trans-unit id="59">
         <source>error.attendance.invalid</source>
-        <target>Atendimento inválido</target>
+        <target>Invalid service</target>
         
       </trans-unit>
       <trans-unit id="60">
         <source>error.unknown</source>
+        <target>Unknown error</target>
         
       </trans-unit>
       <trans-unit id="61">
         <source>error.attendance.empty</source>
-        <target>Nenhum atendimento disponível</target>
+        <target>No service available</target>
         
       </trans-unit>
       <trans-unit id="62">
         <source>server.datetime</source>
-        <target>Data e hora no servidor</target>
+        <target>Date and time on server</target>
         
       </trans-unit>
       <trans-unit id="63">
         <source>label.schedule</source>
+        <target>Scheduling</target>
         
       </trans-unit>
       <trans-unit id="64">
         <source>label.notes</source>
+        <target>Note</target>
         
       </trans-unit>
       <trans-unit id="64-1">
         <source>label.resolution</source>
+        <target>Solution</target>
         
       </trans-unit>
       <trans-unit id="64-2">
         <source>label.resolution_solved</source>
+        <target>Solved</target>
         
       </trans-unit>
       <trans-unit id="64-3">
         <source>label.resolution_pending</source>
+        <target>Pending</target>
         
       </trans-unit>
       <trans-unit id="65">
         <source>label.redirect.new_user</source>
+        <target>Attendant (optional)</target>
         
       </trans-unit>
       <trans-unit id="66">
         <source>error.place_number</source>
+        <target>Invalid number</target>
         
       </trans-unit>
       <trans-unit id="67">
         <source>error.queue_type</source>
+        <target>Invalid type</target>
         
       </trans-unit>
       <trans-unit id="68">
@@ -351,15 +368,17 @@
       </trans-unit>
       <trans-unit id="69">
         <source>label.yes</source>
+        <target>Yes</target>
         
       </trans-unit>
       <trans-unit id="70">
         <source>label.no</source>
+        <target>No</target>
         
       </trans-unit>
       <trans-unit id="71">
         <source>alert.title</source>
-        <target>Atenção</target>
+        <target>Attention!</target>
         
       </trans-unit>
       <trans-unit id="72">
