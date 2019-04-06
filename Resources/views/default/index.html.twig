@@ -15,6 +15,11 @@
                             {{ numeroLocal }}
                         </span>
                     </a>
+                    <div class="text-center p-3">
+                        <i class="fa fa-user"></i>
+                        {{app.user.nomeCompleto}}<br>
+                        ({{app.user.username}})
+                    </div>
                 </div>
                 <div class="attendance-panel col-sm-9 col-md-10">
                     <div class="row" v-if="atendimento && atendimento.status!=='encerrando'">
