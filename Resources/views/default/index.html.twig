@@ -7,14 +7,14 @@
         <div id="atendimento" v-if="usuario.numeroLocal">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
-                    <div id="local">
-                        <span class="numero" v-text="usuario.numeroLocal">
+                    <a href="#dialog-local" data-toggle="modal" id="local">
+                        <span class="local" v-text="usuario.local.nome">
                             {{ local }}
                         </span>
-                        <a href="#dialog-local" data-toggle="modal">
-                            {{ 'button.change'|trans }}
-                        </a>
-                    </div>
+                        <span class="numero" v-text="usuario.numeroLocal">
+                            {{ numeroLocal }}
+                        </span>
+                    </a>
                 </div>
                 <div class="attendance-panel col-sm-9 col-md-10">
                     <div class="row" v-if="atendimento && atendimento.status!=='encerrando'">
@@ -227,7 +227,7 @@
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.call_next'|trans }}"
-                                    v-bind:disabled="atendimentos.length===0"
+                                    v-bind:disabled="busy || atendimentos.length===0"
                                     v-on:click="chamar">
                                 <i class="fa fa-bullhorn"></i>
                                 <span>{{ 'button.call_next'|trans }}</span>
@@ -238,6 +238,7 @@
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{{ 'button.call_again'|trans }}"
+                                    v-bind:disabled="busy"
                                     v-on:click="chamar">
                                 <i class="fa fa-bullhorn"></i>
                                 <span>{{ 'button.call_again'|trans }}</span>
@@ -248,6 +249,7 @@
                             <button type="button"
                                     class="btn btn-primary btn-block btn-control iniciar"
                                     title="{{ 'button.start'|trans }}"
+                                    v-bind:disabled="busy"
                                     v-on:click="iniciar">
                                 <i class="fa fa-play"></i>
                                 <span>{{ 'button.start'|trans }}</span>
@@ -258,6 +260,7 @@
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{{ 'button.not_show'|trans }}"
+                                    v-bind:disabled="busy"
                                     v-on:click="naoCompareceu">
                                 <i class="fa fa-user-times"></i>
                                 <span>{{ 'button.not_show'|trans }}</span>
@@ -268,6 +271,7 @@
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.finish'|trans }}"
+                                    v-bind:disabled="busy"
                                     v-on:click="preparaEncerrar">
                                 <i class="fa fa-stop"></i>
                                 <span>{{ 'button.finish'|trans }}</span>
@@ -278,6 +282,7 @@
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{{ 'button.error'|trans }}"
+                                    v-bind:disabled="busy"
                                     v-on:click="erroTriagem">
                                 <i class="fa fa-exclamation-triangle"></i>
                                 <span>{{ 'button.error'|trans }}</span>
@@ -287,8 +292,9 @@
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
-                                    v-on:click="encerrar(false)"
-                                    title="{{ 'button.finish'|trans }}">
+                                    title="{{ 'button.finish'|trans }}"
+                                    v-bind:disabled="busy"
+                                    v-on:click="encerrar(false)">
                                 <i class="fa fa-stop"></i>
                                 <span>{{ 'button.finish'|trans }}</span>
                             </button>
@@ -297,8 +303,9 @@
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
-                                    v-on:click="encerrarRedirecionar"
-                                    title="{{ 'button.redirect'|trans }}">
+                                    title="{{ 'button.redirect'|trans }}"
+                                    v-bind:disabled="busy"
+                                    v-on:click="encerrarRedirecionar">
                                 <i class="fa fa-stop"></i>
                                 <span>{{ 'button.redirect'|trans }}</span>
                             </button>
@@ -307,8 +314,9 @@
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
-                                    v-on:click="encerrarVoltar"
-                                    title="{{ 'button.redirect'|trans }}">
+                                    title="{{ 'button.redirect'|trans }}"
+                                    v-bind:disabled="busy"
+                                    v-on:click="encerrarVoltar">
                                 <i class="fa fa-chevron-left"></i>
                                 <span>{{ 'button.back'|trans }}</span>
                             </button>
@@ -373,9 +381,19 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label" title="{{ 'label.attendance.type'|trans }}">{{ 'label.attendance'|trans }}</label>
-                                        <select class="form-control" v-model="novoLocal.tipoAtendimento">
+                                        <select class="form-control" v-model="novoLocal.tipoAtendimento" required>
                                             {% for v,l in tiposAtendimento %}
                                                 <option value="{{ v }}" {% if tipoAtendimento == v %}selected="selected"{% endif %}>{{ l }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="control-label">{{ 'label.place'|trans }}</label>
+                                        <select class="form-control" v-model="novoLocal.local" required>
+                                            {% for l in locais %}
+                                                <option value="{{ l.id }}" {% if local and local.id == l.id %}selected="selected"{% endif %}>{{ l.nome }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -614,7 +632,8 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        var local              = {{ local ? local : 'null' }},
+        var local              = {{ local|json_encode|raw }},
+            numeroLocal        = {{ numeroLocal ? numeroLocal : 'null' }},
             usuario            = {{ usuario|json_encode()|raw }},
             unidade            = {{ unidade|json_encode()|raw }},
             atendimento        = {{ atendimento|json_encode()|raw }},

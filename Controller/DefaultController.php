@@ -15,6 +15,7 @@ use App\Service\SecurityService;
 use DateTime;
 use Exception;
 use Novosga\Entity\Atendimento;
+use Novosga\Entity\Local;
 use Novosga\Entity\Servico;
 use Novosga\Entity\ServicoUnidade;
 use Novosga\Entity\ServicoUsuario;
@@ -63,8 +64,18 @@ class DefaultController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $local = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-        $tipo  = $this->getTipoAtendimento($usuarioService, $usuario);
+        $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+        $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $tipo        = $this->getTipoAtendimento($usuarioService, $usuario);
+        $local       = null;
+
+        if ($localId > 0) {
+            $local = $em->find(Local::class, $localId);
+        }
+
+        $locais = $em
+            ->getRepository(Local::class)
+            ->findBy([], ['nome' => 'ASC']);
         
         $tiposAtendimento = [
             FilaService::TIPO_TODOS       => $translator->trans('label.all', [], self::DOMAIN),
@@ -96,7 +107,9 @@ class DefaultController extends AbstractController
             'servicos'              => $servicos,
             'servicosIndisponiveis' => $servicosIndisponiveis,
             'tiposAtendimento'      => $tiposAtendimento,
+            'locais'                => $locais,
             'local'                 => $local,
+            'numeroLocal'           => $numeroLocal,
             'tipoAtendimento'       => $tipo,
             'wsSecret'              => $securityService->getWebsocketSecret(),
         ]);
@@ -118,19 +131,36 @@ class DefaultController extends AbstractController
         $envelope = new Envelope();
         
         try {
-            $data   = json_decode($request->getContent());
-            $numero = isset($data->numeroLocal) ? (int) $data->numeroLocal : 0;
-            $tipo   = isset($data->tipoAtendimento) ? $data->tipoAtendimento : FilaService::TIPO_TODOS;
+            $data    = json_decode($request->getContent());
+            $localId = (int) ($data->local ?? 0);
+            $numero  = (int) ($data->numeroLocal ?? 0);
+            $tipo    = ($data->tipoAtendimento ?? FilaService::TIPO_TODOS);
             
             if ($numero <= 0) {
                 throw new Exception(
                     $translator->trans('error.place_number', [], self::DOMAIN)
                 );
             }
+
+            $tipos = [
+                FilaService::TIPO_TODOS, FilaService::TIPO_NORMAL, 
+                FilaService::TIPO_PRIORIDADE, FilaService::TIPO_AGENDAMENTO,
+            ];
             
-            if ($numero <= 0) {
+            if (!in_array($tipo, $tipos)) {
                 throw new Exception(
                     $translator->trans('error.queue_type', [], self::DOMAIN)
+                );
+            }
+
+            $local = $this
+                ->getDoctrine()
+                ->getRepository(Local::class)
+                ->find($localId);
+            
+            if (!$local) {
+                throw new Exception(
+                    $translator->trans('error.place', [], self::DOMAIN)
                 );
             }
 
@@ -139,22 +169,24 @@ class DefaultController extends AbstractController
 
             $dispatcher->createAndDispatch(
                 'novosga.attendance.pre-setlocal',
-                [$unidade, $usuario, $numero, $tipo],
+                [$unidade, $usuario, $local, $numero, $tipo],
                 true
             );
 
-            $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $numero);
-            $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
+            $m1 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL, $localId);
+            $m2 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_NUM_LOCAL, $numero);
+            $m3 = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_TIPO, $tipo);
 
             $dispatcher->createAndDispatch(
                 'novosga.attendance.setlocal',
-                [$unidade, $usuario, $numero, $tipo],
+                [$unidade, $usuario, $local, $numero, $tipo],
                 true
             );
 
             $envelope->setData([
-                'numero' => $m1,
-                'tipo'   => $m2,
+                'local'  => $local,
+                'numero' => $numero,
+                'tipo'   => $tipo,
             ]);
         } catch (Exception $e) {
             $envelope->exception($e);
@@ -175,11 +207,17 @@ class DefaultController extends AbstractController
         FilaService $filaService,
         UsuarioService $usuarioService
     ) {
-        $envelope = new Envelope();
-        $usuario  = $this->getUser();
-        $unidade  = $usuario->getLotacao()->getUnidade();
-        $local    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-        $tipo     = $this->getTipoAtendimento($usuarioService, $usuario);
+        $envelope    = new Envelope();
+        $usuario     = $this->getUser();
+        $unidade     = $usuario->getLotacao()->getUnidade();
+        $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+        $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $tipo        = $this->getTipoAtendimento($usuarioService, $usuario);
+        
+        $local = $this
+            ->getDoctrine()
+            ->getRepository(Local::class)
+            ->find($localId);
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
         $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo);
@@ -188,7 +226,8 @@ class DefaultController extends AbstractController
         $data = [
             'atendimentos' => $atendimentos,
             'usuario'      => [
-                'numeroLocal'     => $local,
+                'local'           => $local,
+                'numeroLocal'     => $numeroLocal,
                 'tipoAtendimento' => $tipo,
             ],
         ];
@@ -228,15 +267,21 @@ class DefaultController extends AbstractController
             $success = true;
             $proximo = $atual;
         } else {
-            $local    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-            $servicos = $usuarioService->servicos($usuario, $unidade);
+            $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+            $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+            $servicos    = $usuarioService->servicos($usuario, $unidade);
+
+            $local = $this
+                ->getDoctrine()
+                ->getRepository(Local::class)
+                ->find($localId);
 
             do {
                 $tipo         = $this->getTipoAtendimento($usuarioService, $usuario);
                 $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo, 1);
                 if (count($atendimentos)) {
                     $proximo = $atendimentos[0];
-                    $success = $atendimentoService->chamar($proximo, $usuario, $local);
+                    $success = $atendimentoService->chamar($proximo, $usuario, $local, $numeroLocal);
                     if (!$success) {
                         usleep(100);
                     }
@@ -570,9 +615,17 @@ class DefaultController extends AbstractController
         return $query->execute() > 0;
     }
 
+    private function getLocalAtendimento(UsuarioService $usuarioService, Usuario $usuario)
+    {
+        $localMeta = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL);
+        $numero = $localMeta ? (int) $localMeta->getValue() : null;
+        
+        return $numero;
+    }
+
     private function getNumeroLocalAtendimento(UsuarioService $usuarioService, Usuario $usuario)
     {
-        $numeroLocalMeta = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_LOCAL);
+        $numeroLocalMeta = $usuarioService->meta($usuario, UsuarioService::ATTR_ATENDIMENTO_NUM_LOCAL);
         $numero = $numeroLocalMeta ? (int) $numeroLocalMeta->getValue() : null;
         
         return $numero;

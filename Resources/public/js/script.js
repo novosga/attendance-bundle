@@ -12,15 +12,18 @@ var App = App || {};
     var app = new Vue({
         el: '#attendance',
         data: {
+            busy: false,
             tiposAtendimento: tiposAtendimento,
             servicosRealizados: [],
             servicosUsuario: JSON.parse(JSON.stringify(servicosUsuario)),
             usuario: {
-                numeroLocal: local,
+                local: local,
+                numeroLocal: numeroLocal,
                 tipoAtendimento: tipoAtendimento
             },
             novoLocal: {
-                numeroLocal: local,
+                local: local ? local.id  : null,
+                numeroLocal: numeroLocal,
                 tipoAtendimento: tipoAtendimento
             },
             atendimento: null,
@@ -128,9 +131,12 @@ var App = App || {};
                     data: self.novoLocal,
                     success: function (response) {
                         Vue.set(self.usuario, 'numeroLocal', response.data.numero.value);
-                        self.usuario.tipoAtendimento   = response.data.tipo.value;
-                        self.novoLocal.numeroLocal     = response.data.numero.value;
-                        self.novoLocal.tipoAtendimento = response.data.tipo.value;
+                        self.usuario.local             = response.data.local;
+                        self.usuario.numeroLocal       = response.data.numero;
+                        self.usuario.tipoAtendimento   = response.data.tipo;
+                        self.novoLocal.local           = response.data.local.id;
+                        self.novoLocal.numeroLocal     = response.data.numero;
+                        self.novoLocal.tipoAtendimento = response.data.tipo;
                         self.atendimentos              = [];
                         self.update();
                         $('#dialog-local').modal('hide');
@@ -140,6 +146,7 @@ var App = App || {};
             
             chamar: function (e) {
                 var self = this;
+                self.busy = true;
                 
                 if (!e.target.disabled) {
                     e.target.disabled = true;
@@ -157,8 +164,9 @@ var App = App || {};
                         },
                         complete: function () {
                             setTimeout(function () {
+                                self.busy = false;
                                 e.target.disabled = false;
-                            }, 5 * 1000);
+                            }, 3 * 1000);
                         }
                     });
                 }

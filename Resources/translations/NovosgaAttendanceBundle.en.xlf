@@ -146,6 +146,11 @@
         <target>Edit</target>
         
       </trans-unit>
+      <trans-unit id="28-2">
+        <source>label.place</source>
+        <target>Place</target>
+        
+      </trans-unit>
       <trans-unit id="28">
         <source>label.place.number</source>
         <target>Number</target>

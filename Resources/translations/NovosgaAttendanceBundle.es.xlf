@@ -146,6 +146,11 @@
         <target>Modificar</target>
         
       </trans-unit>
+      <trans-unit id="28-2">
+        <source>label.place</source>
+        <target>Local</target>
+        
+      </trans-unit>
       <trans-unit id="28">
         <source>label.place.number</source>
         <target>Número</target>

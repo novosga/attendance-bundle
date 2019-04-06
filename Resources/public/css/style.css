@@ -18,16 +18,26 @@
 /* local */
 
 #atendimento #local {
+    color: #000;
     min-width: 130px;
     height: 150px;
     background-color: #F8CA00;
     border-bottom: 3px solid #333;
+    display: block;
+}
+
+#atendimento #local .local {
+    font-size: 20px;
+    line-height: 20px;
+    text-align: center;
+    display: block;
+    padding: .5rem 0;
 }
 
 #atendimento #local .numero {
     font-size: 80px;
     line-height: 80px;
-    padding: 1rem 0;
+    padding: .8rem 0;
     font-weight: bold;
     text-align: center;
     display: block;
