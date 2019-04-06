@@ -136,40 +136,39 @@
                                         <div class="card-header">
                                             {{ 'label.services.available'|trans }}
                                         </div>
-                                        <div class="card-body">
-                                            <p class="text-muted" v-if="servicosUsuario.length===0">
+                                        <div class="card-body" v-if="servicosUsuario.length===0">
+                                            <p class="text-muted">
                                                 {{ 'label.services.available.empty'|trans }}
                                             </p>
-
-                                            <ul class="list-group">
-                                                <li class="list-group-item"
-                                                    v-for="su in servicosUsuario"
-                                                    v-if="servicosRealizados.indexOf(su.servico)===-1">
-                                                    <span v-if="su.subServicos.length">
-                                                        {%- verbatim -%}
-                                                            {{ su.servico.nome }}
-                                                        {%- endverbatim -%}
-                                                    </span>
-                                                    <ul v-if="su.subServicos.length">
-                                                        <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
-                                                            <a href="#" title="{{ 'button.add'|trans }}"
-                                                               v-on:click.prevent="addServicoRealizado(sub)">
-                                                                {%- verbatim -%}
-                                                                    {{ sub.nome }}
-                                                                {%- endverbatim -%}
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                    <a href="#" title="{{ 'button.add'|trans }}"
-                                                       v-if="su.subServicos.length===0"
-                                                       v-on:click.prevent="addServicoRealizado(su.servico)">
-                                                        {%- verbatim -%}
-                                                            {{ su.servico.nome }}
-                                                        {%- endverbatim -%}
-                                                    </a>
-                                                </li>
-                                            </ul>
                                         </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"
+                                                v-for="su in servicosUsuario"
+                                                v-if="servicosRealizados.indexOf(su.servico)===-1">
+                                                <span v-if="su.subServicos.length">
+                                                    {%- verbatim -%}
+                                                        {{ su.servico.nome }}
+                                                    {%- endverbatim -%}
+                                                </span>
+                                                <ul v-if="su.subServicos.length">
+                                                    <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
+                                                        <a href="#" title="{{ 'button.add'|trans }}"
+                                                            v-on:click.prevent="addServicoRealizado(sub)">
+                                                            {%- verbatim -%}
+                                                                {{ sub.nome }}
+                                                            {%- endverbatim -%}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <a href="#" title="{{ 'button.add'|trans }}"
+                                                    v-if="su.subServicos.length===0"
+                                                    v-on:click.prevent="addServicoRealizado(su.servico)">
+                                                    {%- verbatim -%}
+                                                        {{ su.servico.nome }}
+                                                    {%- endverbatim -%}
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -177,24 +176,23 @@
                                         <div class="card-header">
                                             {{ 'label.services.executed'|trans }}
                                         </div>
-                                        <div class="card-body">
-                                            <p class="text-muted" v-if="servicosRealizados.length===0">
+                                        <div class="card-body" v-if="servicosRealizados.length===0">
+                                            <p class="text-muted">
                                                 {{ 'label.services.executed.empty'|trans }}
                                             </p>
-
-                                            <ul class="list-group">
-                                                <li class="list-group-item"
-                                                    v-for="servico in servicosRealizados">
-                                                    <a href="#"
-                                                       title="{{ 'label.remove'|trans }}"
-                                                       v-on:click.prevent="removeServicoRealizado(servico)">
-                                                        {% verbatim %}
-                                                            {{ servico.nome }}
-                                                        {% endverbatim %}
-                                                    </a>
-                                                </li>
-                                            </ul>
                                         </div>
+                                        <ul class="list-group">
+                                            <li class="list-group-item"
+                                                v-for="servico in servicosRealizados">
+                                                <a href="#"
+                                                    title="{{ 'label.remove'|trans }}"
+                                                    v-on:click.prevent="removeServicoRealizado(servico)">
+                                                    {% verbatim %}
+                                                        {{ servico.nome }}
+                                                    {% endverbatim %}
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
