@@ -389,7 +389,7 @@ var App = App || {};
     
     app.init(atendimento);
     
-    if (!local) {
+    if (!local || !numeroLocal) {
         $('#dialog-local').modal('show');
     }
 })();
