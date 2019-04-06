@@ -7,11 +7,11 @@
     },
     "require": {
         "php": "^7.1.3",
-        "novosga/core": "^2.0"
+        "novosga/core": "^2.1"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "2.1-dev"
         }
     }
 }
