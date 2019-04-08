@@ -14,6 +14,11 @@
                         <span class="numero" v-text="usuario.numeroLocal">
                             {{ numeroLocal }}
                         </span>
+                        <span class="tipo-atendimento" v-bind:class="'tipo-' + usuario.tipoAtendimento">
+                            {% verbatim %}
+                                {{ tiposAtendimento[usuario.tipoAtendimento] }}
+                            {% endverbatim %}
+                        </span>
                     </a>
                     <div class="text-center p-3">
                         <i class="fa fa-user"></i>
@@ -230,7 +235,7 @@
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.call_next'|trans }}"
-                                    v-bind:disabled="busy || atendimentos.length===0"
+                                    v-bind:disabled="busy || total===0"
                                     v-on:click="chamar">
                                 <i class="fa fa-bullhorn"></i>
                                 <span>{{ 'button.call_next'|trans }}</span>
@@ -327,16 +332,36 @@
                     </div>
                 </div>
             </div>
-            <div id="fila" class="card">
+            <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}" v-for="fila in filas" v-if="fila.atendimentos.length>0">
                 <h5 class="card-header">
-                    {{ 'label.my_queue'|trans }}  (<span v-bind:class="'tipo-' + usuario.tipoAtendimento">{% verbatim %}{{ tiposAtendimento[usuario.tipoAtendimento] }}{% endverbatim %}</span>)
+                    <span v-if="!fila.servico">Todos serviços</span>
+                    <span v-if="fila.servico">
+                        {% verbatim %}
+                            {{fila.servico.servico.nome}}
+                        {% endverbatim %}
+                    </span>
                 </h5>
                 <div class="card-body">
                     <ul>
                         <li>
-                            <i class="fa fa-users"></i>
+                            <button class="btn btn-outline-primary"
+                                title="{{ 'button.call_next'|trans }}"
+                                v-bind:disabled="busy || fila.atendimentos.length===0"
+                                v-on:click="chamar"
+                                v-if="!fila.servico">
+                                <i class="fa fa-bullhorn"></i>
+                                Chamar
+                            </button>
+                            <button class="btn btn-outline-primary"
+                                title="{{ 'button.call_next'|trans }}"
+                                v-bind:disabled="busy || fila.atendimentos.length===0"
+                                v-on:click="chamarServico(fila.servico.servico)"
+                                v-if="fila.servico">
+                                <i class="fa fa-bullhorn"></i>
+                                Chamar
+                            </button>
                         </li>
-                        <li v-for="(atendimento, index) in atendimentos">
+                        <li v-for="(atendimento, index) in fila.atendimentos">
                             <a href="#"
                                v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
                                v-on:click.prevent="infoSenha(atendimento)"
@@ -346,7 +371,7 @@
                                 {%- endverbatim -%}
                             </a>
                         </li>
-                        <li class="empty" v-if="atendimentos.length===0">
+                        <li class="empty" v-if="fila.atendimentos.length===0">
                             {{ 'label.my_queue.empty'|trans }}
                         </li>
                     </ul>
@@ -615,6 +640,14 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="modal-footer" v-if="atendimentoInfo">
+                        <button type="button" class="btn btn-primary"
+                                v-bind:disabled="busy"
+                                v-on:click="chamarServico(atendimentoInfo.servico)"
+                                v-if="atendimentoInfo.status === 'emitida'">
+                            Chamar
+                        </button>
                     </div>
                 </div>
             </div>

@@ -221,11 +221,26 @@ class DefaultController extends AbstractController
         
         $servicos     = $usuarioService->servicos($usuario, $unidade);
         $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo);
+        $total        = count($atendimentos);
+
+        $filas   = [];
+        $filas[] = [
+            'atendimentos' => $atendimentos,
+        ];
+
+        foreach ($servicos as $servico) {
+            $atendimentos = $filaService->filaAtendimento($unidade, $usuario, [ $servico ], $tipo);
+            $filas[] = [
+                'servico'      => $servico,
+                'atendimentos' => $atendimentos,
+            ];
+        }
         
         // fila de atendimento do atendente atual
         $data = [
-            'atendimentos' => $atendimentos,
-            'usuario'      => [
+            'total'    => $total,
+            'filas'    => $filas,
+            'usuario'  => [
                 'local'           => $local,
                 'numeroLocal'     => $numeroLocal,
                 'tipoAtendimento' => $tipo,
@@ -270,6 +285,89 @@ class DefaultController extends AbstractController
             $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
             $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
             $servicos    = $usuarioService->servicos($usuario, $unidade);
+
+            $local = $this
+                ->getDoctrine()
+                ->getRepository(Local::class)
+                ->find($localId);
+
+            do {
+                $tipo         = $this->getTipoAtendimento($usuarioService, $usuario);
+                $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo, 1);
+                if (count($atendimentos)) {
+                    $proximo = $atendimentos[0];
+                    $success = $atendimentoService->chamar($proximo, $usuario, $local, $numeroLocal);
+                    if (!$success) {
+                        usleep(100);
+                    }
+                    --$attempts;
+                } else {
+                    // nao existe proximo
+                    break;
+                }
+            } while (!$success && $attempts > 0);
+        }
+        
+        // response
+        if (!$success) {
+            if (!$proximo) {
+                throw new Exception(
+                    $translator->trans('error.queue.empty', [], self::DOMAIN)
+                );
+            } else {
+                throw new Exception(
+                    $translator->trans('error.attendance.in_process', [], self::DOMAIN)
+                );
+            }
+        }
+
+        $atendimentoService->chamarSenha($unidade, $proximo);
+
+        $data = $proximo->jsonSerialize();
+        $envelope->setData($data);
+
+        return $this->json($envelope);
+    }
+
+    /**
+     * Chama ou rechama o próximo da fila.
+     *
+     * @param Novosga\Request $request
+     *
+     * @Route("/chamar/servico/{id}", name="novosga_attendance_chamar_servico", methods={"POST"})
+     */
+    public function chamarServico(
+        Request $request,
+        AtendimentoService $atendimentoService,
+        FilaService $filaService,
+        UsuarioService $usuarioService,
+        TranslatorInterface $translator,
+        Servico $servico
+    ) {
+        $envelope = new Envelope();
+        
+        $attempts = 5;
+        $proximo = null;
+        $success = false;
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        
+        // verifica se ja esta atendendo alguem
+        $atual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+
+        // se ja existe um atendimento em andamento (chamando senha novamente)
+        if ($atual) {
+            $success = true;
+            $proximo = $atual;
+        } else {
+            $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+            $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+            $servicoUsuario = $usuarioService->servico($usuario, $servico, $unidade);
+            $servicos       = [ $servicoUsuario ];
+
+            if (!$servicoUsuario) {
+                throw new \Exception('Serviço não disponível para o atendente atual');
+            }
 
             $local = $this
                 ->getDoctrine()

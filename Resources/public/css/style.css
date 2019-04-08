@@ -20,7 +20,6 @@
 #atendimento #local {
     color: #000;
     min-width: 130px;
-    height: 150px;
     background-color: #F8CA00;
     border-bottom: 3px solid #333;
     display: block;
@@ -43,6 +42,19 @@
     display: block;
 }
 
+#atendimento #local .tipo-atendimento {
+    font-size: 14px;
+    line-height: 14px;
+    padding: .4rem 0;
+    text-align: center;
+    font-weight: bold;
+    display: block;
+}
+
+#atendimento #local .tipo-atendimento.tipo-normal { color: blue; }
+#atendimento #local .tipo-atendimento.tipo-prioridade { color: red; }
+#atendimento #local .tipo-atendimento.tipo-agendamento { color: darkorange; }
+
 #atendimento #local a {
     color: #666;
     bottom: 10px;
@@ -62,40 +74,39 @@
 
 /* fila */
 
-#atendimento #fila {
+#atendimento .fila {
     clear: both;
 }
 
-#atendimento #fila h4 span {
-    padding-left: 5px;
+#atendimento .fila .card-header {
+    font-size: 14px;
 }
 
-#atendimento #fila span.tipo-todos { }
-#atendimento #fila span.tipo-normal { color: blue; }
-#atendimento #fila span.tipo-prioridade { color: red; }
-#atendimento #fila span.tipo-agendamento { color: darkorange; }
+#atendimento .fila .card-body {
+    padding-top: 0 !important;
+}
 
-#atendimento #fila ul {
+#atendimento .fila ul {
     padding: 0;
     margin: 0;
 }
 
-#atendimento #fila ul li {
+#atendimento .fila ul li {
     list-style: none;
     display: inline;
     padding: 12px 6px 0 6px;
     display: inline-block;
 }
 
-#atendimento #fila ul li .proximo {
+#atendimento .fila ul li .proximo {
     font-size: 20px;
 }
 
-#atendimento #fila ul li .prioridade {
+#atendimento .fila ul li .prioridade {
     color: #ff3300;
 }
 
-#atendimento #fila ul li.empty {
+#atendimento .fila ul li.empty {
     color: #999;
     font-style: italic;
     padding-top: 15px;
