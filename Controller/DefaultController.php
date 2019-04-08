@@ -360,8 +360,8 @@ class DefaultController extends AbstractController
             $success = true;
             $proximo = $atual;
         } else {
-            $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
-            $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+            $localId        = $this->getLocalAtendimento($usuarioService, $usuario);
+            $numeroLocal    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
             $servicoUsuario = $usuarioService->servico($usuario, $servico, $unidade);
             $servicos       = [ $servicoUsuario ];
 
