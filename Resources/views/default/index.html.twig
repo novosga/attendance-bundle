@@ -332,7 +332,7 @@
                     </div>
                 </div>
             </div>
-            <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}" v-for="fila in filas" v-if="fila.atendimentos.length>0">
+            <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}" v-for="fila in filas" v-if="!fila.servico || fila.atendimentos.length>0">
                 <h5 class="card-header">
                     <span v-if="!fila.servico">Todos serviços</span>
                     <span v-if="fila.servico">
