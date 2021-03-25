@@ -9,7 +9,7 @@ var App = App || {};
     
     var defaultTitle = document.title;
     
-    var app = new Vue({
+    new Vue({
         el: '#attendance',
         data: {
             busy: false,
@@ -19,6 +19,7 @@ var App = App || {};
             servicosRealizados: [],
             servicosUsuario: JSON.parse(JSON.stringify(servicosUsuario)),
             usuario: {
+                id: (usuario.id),
                 local: local,
                 numeroLocal: numeroLocal,
                 tipoAtendimento: tipoAtendimento
@@ -28,7 +29,8 @@ var App = App || {};
                 numeroLocal: numeroLocal,
                 tipoAtendimento: tipoAtendimento
             },
-            atendimento: null,
+            atendimento: (atendimento || null),
+            unidade: (unidade || {}),
             atendimentoInfo: null,
             atendimentos: [],
             redirecionarAoEncerrar: false,
@@ -39,55 +41,6 @@ var App = App || {};
             novoUsuario: null,
         },
         methods: {
-            init: function (atendimento) {
-                var self = this;
-                
-                this.atendimento = atendimento;
-                
-                if (!App.Notification.allowed()) {
-                    $('#notification').show();
-                }
-
-                App.Websocket.connect();
-
-                App.Websocket.on('connect', function () {
-                    App.Websocket.emit('register user', {
-                        secret: wsSecret,
-                        user: usuario.id,
-                        unity: unidade.id
-                    });
-                });
-
-                // ajax polling fallback
-                App.Websocket.on('reconnect_failed', function () {
-                    App.Websocket.connect();
-                    console.log('ws timeout, ajax polling fallback');
-                    self.update();
-                });
-
-                App.Websocket.on('error', function () {
-                    console.log('error');
-                });
-
-                App.Websocket.on('register ok', function () {
-                    console.log('registered!');
-                });
-
-                App.Websocket.on('update queue', function () {
-                    console.log('update queue: do update!');
-                    self.update();
-                });
-
-                App.Websocket.on('change user', function () {
-                    console.log('change user: do update!');
-                    self.update();
-                });
-                
-                if (self.usuario.numeroLocal) {
-                    self.update();
-                }
-            },
-
             update: function () {
                 var self = this;
                 App.ajax({
@@ -160,11 +113,6 @@ var App = App || {};
                         type: 'post',
                         success: function (response) {
                             self.atendimento = response.data;
-                            App.Websocket.emit('call ticket', {
-                                unity: unidade.id,
-                                service: self.atendimento.servico.id,
-                                hash: self.atendimento.hash
-                            });
                         },
                         complete: function () {
                             setTimeout(function () {
@@ -185,11 +133,6 @@ var App = App || {};
                     type: 'post',
                     success: function (response) {
                         self.atendimento = response.data;
-                        App.Websocket.emit('call ticket', {
-                            unity: unidade.id,
-                            service: self.atendimento.servico.id,
-                            hash: self.atendimento.hash
-                        });
                     },
                     complete: function () {
                         setTimeout(function () {
@@ -411,10 +354,33 @@ var App = App || {};
                     }
                 });
             }
+        },
+        mounted() {
+            if (!App.Notification.allowed()) {
+                $('#notification').show();
+            }
+
+            if (self.usuario.numeroLocal) {
+                self.update();
+            }
+
+            App.SSE.connect([
+                `/unidades/${this.unidade.id}/fila`,
+                `/usuarios/${this.usuario.id}/fila`,
+            ]);
+
+            App.SSE.onmessage = (e, data) => {
+                this.update();
+            };
+
+            // ajax polling fallback
+            App.SSE.ondisconnect = () => {
+                this.update();
+            };
+            
+            this.update();
         }
     });
-    
-    app.init(atendimento);
     
     if (!local) {
         $('#dialog-local').modal('show');

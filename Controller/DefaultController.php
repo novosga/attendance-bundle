@@ -207,23 +207,23 @@ class DefaultController extends AbstractController
         FilaService $filaService,
         UsuarioService $usuarioService
     ) {
-        $envelope    = new Envelope();
-        $usuario     = $this->getUser();
-        $unidade     = $usuario->getLotacao()->getUnidade();
-        $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+        $envelope = new Envelope();
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $localId = $this->getLocalAtendimento($usuarioService, $usuario);
         $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-        $tipo        = $this->getTipoAtendimento($usuarioService, $usuario);
+        $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
         
         $local = $this
             ->getDoctrine()
             ->getRepository(Local::class)
             ->find($localId);
         
-        $servicos     = $usuarioService->servicos($usuario, $unidade);
+        $servicos = $usuarioService->servicos($usuario, $unidade);
         $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo);
-        $total        = count($atendimentos);
+        $total = count($atendimentos);
 
-        $filas   = [];
+        $filas = [];
         $filas[] = [
             'atendimentos' => $atendimentos,
         ];
@@ -231,18 +231,19 @@ class DefaultController extends AbstractController
         foreach ($servicos as $servico) {
             $atendimentos = $filaService->filaAtendimento($unidade, $usuario, [ $servico ], $tipo);
             $filas[] = [
-                'servico'      => $servico,
+                'servico' => $servico,
                 'atendimentos' => $atendimentos,
             ];
         }
         
         // fila de atendimento do atendente atual
         $data = [
-            'total'    => $total,
-            'filas'    => $filas,
-            'usuario'  => [
-                'local'           => $local,
-                'numeroLocal'     => $numeroLocal,
+            'total' => $total,
+            'filas' => $filas,
+            'usuario' => [
+                'id' => $usuario->getId(),
+                'local' => $local,
+                'numeroLocal' => $numeroLocal,
                 'tipoAtendimento' => $tipo,
             ],
         ];
@@ -292,7 +293,7 @@ class DefaultController extends AbstractController
                 ->find($localId);
 
             do {
-                $tipo         = $this->getTipoAtendimento($usuarioService, $usuario);
+                $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
                 $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo, 1);
                 if (count($atendimentos)) {
                     $proximo = $atendimentos[0];
@@ -360,10 +361,10 @@ class DefaultController extends AbstractController
             $success = true;
             $proximo = $atual;
         } else {
-            $localId        = $this->getLocalAtendimento($usuarioService, $usuario);
-            $numeroLocal    = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+            $localId = $this->getLocalAtendimento($usuarioService, $usuario);
+            $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
             $servicoUsuario = $usuarioService->servico($usuario, $servico, $unidade);
-            $servicos       = [ $servicoUsuario ];
+            $servicos = [ $servicoUsuario ];
 
             if (!$servicoUsuario) {
                 throw new \Exception('Serviço não disponível para o atendente atual');
@@ -375,7 +376,7 @@ class DefaultController extends AbstractController
                 ->find($localId);
 
             do {
-                $tipo         = $this->getTipoAtendimento($usuarioService, $usuario);
+                $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
                 $atendimentos = $filaService->filaAtendimento($unidade, $usuario, $servicos, $tipo, 1);
                 if (count($atendimentos)) {
                     $proximo = $atendimentos[0];
