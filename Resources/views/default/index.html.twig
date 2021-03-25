@@ -673,17 +673,16 @@
             usuario            = {{ usuario|json_encode()|raw }},
             unidade            = {{ unidade|json_encode()|raw }},
             atendimento        = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento    = '{{ tipoAtendimento ? tipoAtendimento : 'null' }}',
+            tipoAtendimento    = "{{ tipoAtendimento ? tipoAtendimento : 'null' }}",
             tiposAtendimento   = {{ tiposAtendimento|json_encode()|raw }},
             servicosUsuario    = {{ servicos|json_encode()|raw }},
-            labelSim           = '{{ 'label.yes'|trans }}',
-            labelNao           = '{{ 'label.no'|trans }}',
-            dateTimeFormat     = '{{ 'MM/DD/YYYY HH:mm:ss'|trans }}',
-            alertTitle         = '{{ 'alert.title'|trans }}',
-            alertRedirecionar  = '{{ 'alert.ticket_error.text'|trans }}',
-            alertNaoCompareceu = '{{ 'alert.no_show.text'|trans }}',
-            alertEncerrar      = '{{ 'alert.finish.text'|trans }}',
-            wsSecret           = '{{ wsSecret }}';
+            labelSim           = "{{ 'label.yes'|trans }}",
+            labelNao           = "{{ 'label.no'|trans }}",
+            dateTimeFormat     = "{{ 'MM/DD/YYYY HH:mm:ss'|trans }}",
+            alertTitle         = "{{ 'alert.title'|trans }}",
+            alertRedirecionar  = "{{ 'alert.ticket_error.text'|trans }}",
+            alertNaoCompareceu = "{{ 'alert.no_show.text'|trans }}",
+            alertEncerrar      = "{{ 'alert.finish.text'|trans }}";
     
         App.Clock.init("novosga-clock", {{ time }});
     </script>

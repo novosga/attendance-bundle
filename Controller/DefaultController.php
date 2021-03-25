@@ -11,7 +11,6 @@
 
 namespace Novosga\AttendanceBundle\Controller;
 
-use App\Service\SecurityService;
 use DateTime;
 use Exception;
 use Novosga\Entity\Atendimento;
@@ -52,8 +51,7 @@ class DefaultController extends AbstractController
         AtendimentoService $atendimentoService,
         UsuarioService $usuarioService,
         ServicoService $servicoService,
-        TranslatorInterface $translator,
-        SecurityService $securityService
+        TranslatorInterface $translator
     ) {
         $em       = $this->getDoctrine()->getManager();
         $usuario  = $this->getUser();
@@ -111,7 +109,6 @@ class DefaultController extends AbstractController
             'local'                 => $local,
             'numeroLocal'           => $numeroLocal,
             'tipoAtendimento'       => $tipo,
-            'wsSecret'              => $securityService->getWebsocketSecret(),
         ]);
     }
 
