@@ -71,6 +71,10 @@
         <target>Suprimir</target>
         
       </trans-unit>
+      <trans-unit id="button.call">
+        <source>button.call</source>
+        <target>Llamar</target>
+      </trans-unit>
       <trans-unit id="14">
         <source>button.call_next</source>
         <target>Llamar al siguiente</target>
@@ -386,6 +390,10 @@
       <trans-unit id="73">
         <source>alert.no_show.text</source>
         
+      </trans-unit>
+      <trans-unit id="modal.customer">
+        <source>modal.customer</source>
+        <target>Editar cliente</target>
       </trans-unit>
     </body>
   </file>

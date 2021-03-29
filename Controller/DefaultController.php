@@ -11,9 +11,11 @@
 
 namespace Novosga\AttendanceBundle\Controller;
 
+use App\Form\ClienteType;
 use DateTime;
 use Exception;
 use Novosga\Entity\Atendimento;
+use Novosga\Entity\Cliente;
 use Novosga\Entity\Local;
 use Novosga\Entity\Servico;
 use Novosga\Entity\ServicoUnidade;
@@ -28,6 +30,7 @@ use Novosga\Service\UsuarioService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -110,6 +113,72 @@ class DefaultController extends AbstractController
             'numeroLocal'           => $numeroLocal,
             'tipoAtendimento'       => $tipo,
         ]);
+    }
+
+    /**
+     * @Route("/atendimento", name="novosga_attendance_atendimento", methods={"GET"})
+     */
+    public function atendimentoAtual(Request $request, AtendimentoService $atendimentoService)
+    {
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $atendimentoAtual = $atendimentoService->atendimentoAndamento($usuario->getId(), $unidade);
+
+        return $this->json(new Envelope($atendimentoAtual));
+    }
+
+    /**
+     * @Route("/customer/{id}", name="novosga_attendance_customer", methods={"GET", "POST"})
+     */
+    public function customerForm(Request $request, Atendimento $atendimento)
+    {
+        if (!$atendimento->getDataInicio()) {
+            throw $this->createNotFoundException();
+        }
+
+        $response = new Response();
+        $em = $this->getDoctrine()->getManager();
+
+        if (!$atendimento->getCliente()) {
+            $novoCliente = null;
+
+            if ($request->isMethod('POST')) {
+                $data = $request->get('cliente');
+                if (is_array($data) && key_exists('documento', $data)) {
+                    $novoCliente = $em
+                        ->getRepository(Cliente::class)
+                        ->findOneBy([ 'documento' => $data['documento'] ]);
+                }
+            }
+            
+            if (!$novoCliente) {
+                $novoCliente = new Cliente();
+            }
+            
+            $atendimento->setCliente($novoCliente);
+        }
+
+        $cliente = $atendimento->getCliente();
+        $form = $this
+            ->createForm(ClienteType::class, $cliente, [
+                'csrf_protection' => false,
+            ])
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            } else {
+                $em->persist($atendimento);
+                $em->flush();
+
+                $this->addFlash('success', 'Cliente salvo com sucesso');
+            }
+        }
+
+        return $this->render('@NovosgaAttendance/default/customer.html.twig', [
+            'form' => $form->createView(),
+        ], $response);
     }
 
     /**

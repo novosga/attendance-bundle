@@ -9,7 +9,7 @@ var App = App || {};
     
     var defaultTitle = document.title;
     
-    new Vue({
+    const app = new Vue({
         el: '#attendance',
         data: {
             busy: false,
@@ -56,9 +56,10 @@ var App = App || {};
                         if (self.total > 0) {
                             document.title = "(" + self.total + ") " + defaultTitle;
                             if (estavaVazio) {
-                                var audio = document.getElementById("alert");
-                                if (audio) {
-                                    audio.play();
+                                try {
+                                    document.getElementById('alert').play()
+                                } catch (e) {
+                                    console.error(e)
                                 }
                                 App.Notification.show('Atendimento', 'Novo atendimento na fila');
                             }
@@ -353,6 +354,47 @@ var App = App || {};
                         self.searchResult = response.data;
                     }
                 });
+            },
+
+            getItemFilaStyle(atendimento) {
+                let styles = []
+                if (atendimento.prioridade.cor) {
+                    styles.push(`color: ${atendimento.prioridade.cor}`)
+                }
+                return styles.join(';')
+            },
+
+            async loadCustomer() {
+                const modal = $('#dialog-customer .modal-body')
+                modal.html('')
+                const url = `${this.$el.dataset.baseUrl}customer/${this.atendimento.id}`
+                const resp = await fetch(url)
+                if (resp.ok) {
+                    const html = await resp.text()
+                    modal.html(html)
+                }
+            },
+
+            recarregar() {
+                App.ajax({
+                    url: App.url('/novosga.attendance/atendimento'),
+                    success: (response) => {
+                        this.atendimento = response.data;
+                    }
+                })
+            },
+
+            saveCustomer() {
+                const url = `${this.$el.dataset.baseUrl}customer/${this.atendimento.id}`
+                const modal = $('#dialog-customer .modal-body')
+                const data = modal.parent('form').serialize()
+                modal.find(':input').attr('disabled', true)
+                $.post(url, data, (response, textStatus, jqXHR) => {
+                    if (jqXHR.status === 200) {
+                        this.recarregar()
+                    }
+                    modal.html(response)
+                });
             }
         },
         mounted() {
@@ -385,4 +427,9 @@ var App = App || {};
     if (!local) {
         $('#dialog-local').modal('show');
     }
+
+
+    $('#dialog-customer').on('shown.bs.modal', () => {
+        app.loadCustomer()
+    })
 })();

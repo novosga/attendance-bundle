@@ -103,7 +103,7 @@
 }
 
 #atendimento .fila ul li .prioridade {
-    color: #ff3300;
+    font-weight: bold;
 }
 
 #atendimento .fila ul li.empty {

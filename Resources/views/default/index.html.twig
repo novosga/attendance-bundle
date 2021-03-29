@@ -3,7 +3,7 @@
 {% trans_default_domain 'NovosgaAttendanceBundle' %}
 
 {% block body %}
-    <div id="attendance" v-cloak>
+    <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
         <div id="atendimento" v-if="usuario.numeroLocal">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
@@ -38,7 +38,7 @@
                                         <th>
                                             {{ 'label.ticket'|trans }}
                                         </th>
-                                        <td>
+                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
                                             {%- verbatim -%}
                                                 {{ atendimento.senha.format }}
                                             {%- endverbatim -%}
@@ -48,7 +48,7 @@
                                         <th>
                                             {{ 'label.service'|trans }}
                                         </th>
-                                        <td>
+                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
                                             {%- verbatim -%}
                                                 {{ atendimento.servico.nome }}
                                             {%- endverbatim -%}
@@ -58,7 +58,7 @@
                                         <th>
                                             {{ 'label.priority'|trans }}
                                         </th>
-                                        <td>
+                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
                                             {%- verbatim -%}
                                                 {{ atendimento.prioridade.nome }}
                                             {%- endverbatim -%}
@@ -71,6 +71,9 @@
                             <div class="card">
                                 <div class="card-header">
                                     {{ 'label.customer'|trans }}
+                                    <a href="#dialog-customer" data-toggle="modal" v-if="atendimento.status !== 'chamado'" class="pull-right">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
                                 </div>
                                 <table class="table">
                                     <tr>
@@ -110,24 +113,27 @@
                                             <div class="row">
                                                 <div class="col-4 text-center">
                                                     <strong>{{ 'label.ticket'|trans }}</strong>
-                                                    <br>
-                                                    {%- verbatim -%}
-                                                        {{ atendimento.senha.format }}
-                                                    {%- endverbatim -%}
+                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                                                        {%- verbatim -%}
+                                                            {{ atendimento.senha.format }}
+                                                        {%- endverbatim -%}
+                                                    </p>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <strong>{{ 'label.service'|trans }}</strong>
-                                                    <br>
-                                                    {%- verbatim -%}
-                                                        {{ atendimento.servico.nome }}
-                                                    {%- endverbatim -%}
+                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                                                        {%- verbatim -%}
+                                                            {{ atendimento.servico.nome }}
+                                                        {%- endverbatim -%}
+                                                    </p>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <strong>{{ 'label.priority'|trans }}</strong>
-                                                    <br>
-                                                    {%- verbatim -%}
-                                                        {{ atendimento.prioridade.nome }}
-                                                    {%- endverbatim -%}
+                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                                                        {%- verbatim -%}
+                                                            {{ atendimento.prioridade.nome }}
+                                                        {%- endverbatim -%}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -299,23 +305,23 @@
 
                         <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
-                                    class="btn btn-primary btn-block"
-                                    title="{{ 'button.finish'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="encerrar(false)">
-                                <i class="fa fa-stop"></i>
-                                <span>{{ 'button.finish'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
-                            <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{{ 'button.redirect'|trans }}"
                                     v-bind:disabled="busy"
                                     v-on:click="encerrarRedirecionar">
                                 <i class="fa fa-stop"></i>
                                 <span>{{ 'button.redirect'|trans }}</span>
+                            </button>
+                        </div>
+
+                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
+                            <button type="button"
+                                    class="btn btn-primary btn-block"
+                                    title="{{ 'button.finish'|trans }}"
+                                    v-bind:disabled="busy"
+                                    v-on:click="encerrar(false)">
+                                <i class="fa fa-stop"></i>
+                                <span>{{ 'button.finish'|trans }}</span>
                             </button>
                         </div>
 
@@ -346,24 +352,25 @@
                         <li>
                             <button class="btn btn-outline-primary"
                                 title="{{ 'button.call_next'|trans }}"
-                                v-bind:disabled="busy || fila.atendimentos.length===0"
+                                v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
                                 v-on:click="chamar"
                                 v-if="!fila.servico">
                                 <i class="fa fa-bullhorn"></i>
-                                Chamar
+                                {{ 'button.call'|trans }}
                             </button>
                             <button class="btn btn-outline-primary"
                                 title="{{ 'button.call_next'|trans }}"
-                                v-bind:disabled="busy || fila.atendimentos.length===0"
+                                v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
                                 v-on:click="chamarServico(fila.servico.servico)"
                                 v-if="fila.servico">
                                 <i class="fa fa-bullhorn"></i>
-                                Chamar
+                                {{ 'button.call'|trans }}
                             </button>
                         </li>
                         <li v-for="(atendimento, index) in fila.atendimentos">
                             <a href="#"
                                v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
+                               v-bind:style="getItemFilaStyle(atendimento)"
                                v-on:click.prevent="infoSenha(atendimento)"
                                v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
                                 {%- verbatim -%}
@@ -427,6 +434,27 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                {{ 'button.save'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="dialog-customer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form
+                        v-on:submit.prevent="saveCustomer">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ 'modal.customer'|trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">
@@ -526,6 +554,7 @@
                                     <tr>
                                         <th>{{ 'label.ticket.number'|trans }}</th>
                                         <th>{{ 'label.service'|trans }}</th>
+                                        <th>{{ 'label.priority'|trans }}</th>
                                         <th>{{ 'label.ticket.arrival_date'|trans }}</th>
                                         <th>{{ 'label.ticket.start_date'|trans }}</th>
                                         <th>{{ 'label.ticket.end_date'|trans }}</th>
@@ -542,6 +571,11 @@
                                             </td>
                                             <td>
                                                 {{atendimento.servico.nome}}
+                                            </td>
+                                            <td>
+                                                <span v-bind:style="{ 'color': atendimento.prioridade.cor, 'font-weight':  atendimento.prioridade.peso > 0 ? 'bold' : 'normal' }">
+                                                    {{atendimento.prioridade.nome}}
+                                                </span>
                                             </td>
                                             <td>
                                                 <span v-if="atendimento.dataChegada">
@@ -646,7 +680,7 @@
                                 v-bind:disabled="busy"
                                 v-on:click="chamarServico(atendimentoInfo.servico)"
                                 v-if="atendimentoInfo.status === 'emitida'">
-                            Chamar
+                            <span>{{ 'button.call'|trans }}</span>
                         </button>
                     </div>
                 </div>
