@@ -4,7 +4,7 @@
 
 {% block body %}
     <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
-        <div id="atendimento" v-if="usuario.numeroLocal">
+        <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
                     <a href="#dialog-local" data-toggle="modal" id="local">
