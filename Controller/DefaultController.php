@@ -276,7 +276,7 @@ class DefaultController extends AbstractController
         $envelope = new Envelope();
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $localId = $this->getLocalAtendimento($usuarioService, $usuario);
+        $localId = $this->getLocalAtendimento($usuarioService, $usuario) ?? 0;
         $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
         $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
         
