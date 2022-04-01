@@ -6,7 +6,7 @@
         "psr-4": { "Novosga\\AttendanceBundle\\": "" }
     },
     "require": {
-        "php": ">=7.2.5",
+        "php": ">=8.0.2",
         "novosga/core": "^2.2"
     },
     "extra": {
