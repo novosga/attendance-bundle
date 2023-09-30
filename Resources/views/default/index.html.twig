@@ -72,7 +72,7 @@
                                 <div class="card-header">
                                     {{ 'label.customer'|trans }}
                                     <a href="#dialog-customer" data-toggle="modal" v-if="atendimento.status !== 'chamado'" class="pull-right">
-                                        <i class="fa fa-edit"></i>
+                                        Editar <i class="fa fa-edit"></i>
                                     </a>
                                 </div>
                                 <table class="table">
@@ -674,14 +674,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="modal-footer" v-if="atendimentoInfo">
-                        <button type="button" class="btn btn-primary"
-                                v-bind:disabled="busy"
-                                v-on:click="chamarServico(atendimentoInfo.servico)"
-                                v-if="atendimentoInfo.status === 'emitida'">
-                            <span>{{ 'button.call'|trans }}</span>
-                        </button>
                     </div>
                 </div>
             </div>
