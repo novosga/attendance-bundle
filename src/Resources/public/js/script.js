@@ -4,11 +4,13 @@
  */
 var App = App || {};
 
+const customerModal = new bootstrap.Modal('#dialog-customer');
+
 (function () {
     'use strict'
     
     var defaultTitle = document.title;
-    
+
     const app = new Vue({
         el: '#attendance',
         data: {
@@ -74,11 +76,11 @@ var App = App || {};
                     url: App.url('/novosga.attendance/info_senha/') + atendimento.id,
                     success: function (response) {
                         self.atendimentoInfo = response.data;
-                        $('#dialog-senha').modal('show');
+                        new bootstrap.Modal('#dialog-senha').show();
                     }
                 });
             },
-            
+
             setLocal: function () {
                 var self = this;
                 
@@ -87,6 +89,7 @@ var App = App || {};
                     type: 'post',
                     data: self.novoLocal,
                     success: function (response) {
+                        new bootstrap.Modal(app.$refs.localModal).hide();
                         Vue.set(self.usuario, 'numeroLocal', response.data.numero.value);
                         self.usuario.local             = response.data.local;
                         self.usuario.numeroLocal       = response.data.numero;
@@ -97,7 +100,6 @@ var App = App || {};
                         self.filas                     = [];
                         self.total                     = 0;
                         self.update();
-                        $('#dialog-local').modal('hide');
                     }
                 });
             },
@@ -399,7 +401,7 @@ var App = App || {};
         },
         mounted() {
             if (!App.Notification.allowed()) {
-                $('#notification').show();
+                document.getElementById('notification').style.display = 'block';
             }
 
             if (self.usuario.numeroLocal) {
@@ -423,13 +425,12 @@ var App = App || {};
             this.update();
         }
     });
-    
+
     if (!local) {
-        $('#dialog-local').modal('show');
+        new bootstrap.Modal(app.$refs.localModal).show();
     }
 
-
-    $('#dialog-customer').on('shown.bs.modal', () => {
-        app.loadCustomer()
-    })
+    customerModal._element.addEventListener('shown.bs.modal', (event) => {
+        app.loadCustomer();
+    });
 })();

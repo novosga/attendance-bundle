@@ -7,7 +7,7 @@
         <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
-                    <a href="#dialog-local" data-toggle="modal" id="local">
+                    <a href="#dialog-local" data-bs-toggle="modal" id="local">
                         <span class="local" v-text="usuario.local.nome">
                             {{ local }}
                         </span>
@@ -23,7 +23,7 @@
                     <div class="text-center p-3">
                         <i class="fa fa-user"></i>
                         {{app.user.nomeCompleto}}<br>
-                        ({{app.user.username}})
+                        ({{app.user.userIdentifier}})
                     </div>
                 </div>
                 <div class="attendance-panel col-sm-9 col-md-10">
@@ -71,9 +71,16 @@
                             <div class="card">
                                 <div class="card-header">
                                     {{ 'label.customer'|trans }}
-                                    <a href="#dialog-customer" data-toggle="modal" v-if="atendimento.status !== 'chamado'" class="pull-right">
-                                        Editar <i class="fa fa-edit"></i>
-                                    </a>
+                                    <span class="pull-right" title="{{ 'label.edit_customer_info'|trans }}">
+                                        <button
+                                            :disabled="atendimento.status === 'chamado'"
+                                            type="button"
+                                            class="btn btn-outline-secondary"
+                                            data-bs-target="#dialog-customer"
+                                            data-bs-toggle="modal">
+                                            Editar <i class="fa fa-edit"></i>
+                                        </button>
+                                    </span>
                                 </div>
                                 <table class="table">
                                     <tr>
@@ -215,7 +222,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="col-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="resolucao">{{ 'label.resolution'|trans }}</label>
                                             <select id="resolucao" class="form-control" v-model="atendimento.resolucao">
                                                 <option value="resolvido">{{ 'label.resolution_solved'|trans }}</option>
@@ -224,7 +231,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="observacao">{{ 'label.notes'|trans }}</label>
                                             <textarea id="observacao" class="form-control" v-model="atendimento.observacao" rows="8"></textarea>
                                         </div>
@@ -237,7 +244,7 @@
                     <hr>
 
                     <div class="row controls">
-                        <div class="col-md-4" v-if="!atendimento">
+                        <div class="col-md-4 d-grid" v-if="!atendimento">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.call_next'|trans }}"
@@ -248,7 +255,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && (atendimento.status==='chamado' || atendimento.status==='iniciado')">
+                        <div class="col-md-4 d-grid" v-if="atendimento && (atendimento.status==='chamado' || atendimento.status==='iniciado')">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{{ 'button.call_again'|trans }}"
@@ -259,7 +266,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-primary btn-block btn-control iniciar"
                                     title="{{ 'button.start'|trans }}"
@@ -270,7 +277,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='chamado'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='chamado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{{ 'button.not_show'|trans }}"
@@ -281,7 +288,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.finish'|trans }}"
@@ -292,7 +299,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='iniciado'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='iniciado'">
                             <button type="button"
                                     class="btn btn-danger btn-block"
                                     title="{{ 'button.error'|trans }}"
@@ -303,7 +310,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{{ 'button.redirect'|trans }}"
@@ -314,7 +321,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-primary btn-block"
                                     title="{{ 'button.finish'|trans }}"
@@ -325,7 +332,7 @@
                             </button>
                         </div>
 
-                        <div class="col-md-4" v-if="atendimento && atendimento.status==='encerrando'">
+                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
                             <button type="button"
                                     class="btn btn-secondary btn-block"
                                     title="{{ 'button.redirect'|trans }}"
@@ -387,7 +394,7 @@
         </div>
 
         <p class="links">
-            <a href="#dialog-busca" class="btn btn-secondary" data-toggle="modal">
+            <a href="#dialog-busca" class="btn btn-secondary" data-bs-toggle="modal">
                 <i class="fa fa-search"></i>&nbsp;
                 {{ 'button.find_ticket'|trans }}
             </a>
@@ -397,24 +404,24 @@
             </button>
         </p>
 
-        <div id="dialog-local" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div id="dialog-local" ref="localModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form v-on:submit.prevent="setLocal">
                         <div class="modal-header">
                             <h5 class="modal-title">{{ 'modal.place'|trans }}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label class="control-label">{{ 'label.place.number'|trans }}</label>
                                         <input type="number" maxlength="3" class="form-control" v-model.number="novoLocal.numeroLocal" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label class="control-label" title="{{ 'label.attendance.type'|trans }}">{{ 'label.attendance'|trans }}</label>
                                         <select class="form-control" v-model="novoLocal.tipoAtendimento" required>
                                             {% for v,l in tiposAtendimento %}
@@ -424,7 +431,7 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label class="control-label">{{ 'label.place'|trans }}</label>
                                         <select class="form-control" v-model="novoLocal.local" required>
                                             {% for l in locais %}
@@ -452,7 +459,7 @@
                         v-on:submit.prevent="saveCustomer">
                         <div class="modal-header">
                             <h5 class="modal-title">{{ 'modal.customer'|trans }}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                         </div>
@@ -472,10 +479,10 @@
                 <div class="modal-content" v-if="atendimento">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ 'modal.redirect'|trans }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>{{ 'label.redirect.new_service'|trans }}</label>
                             <select class="form-control" v-model="servicoRedirecionar" v-on:change="changeServicoRedirecionar">
                                 <option value="">{{ 'label.choose'|trans }}</option>
@@ -484,7 +491,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>{{ 'label.redirect.new_user'|trans }}</label>
                             <select class="form-control" v-model="novoUsuario">
                                 <option v-bind:value="u.id" v-for="u in usuarios">
@@ -515,7 +522,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ 'modal.error'|trans }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p>
@@ -532,7 +539,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ 'modal.search'|trans }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form class="row" role="form" v-on:submit.prevent="consultar">
@@ -617,7 +624,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ 'label.ticket'|trans }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" v-if="atendimentoInfo">
                         <table class="table table-bordered">

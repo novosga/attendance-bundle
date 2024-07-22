@@ -383,6 +383,10 @@
         <source>modal.customer</source>
         <target>Editar cliente</target>
       </trans-unit>
+      <trans-unit id="label.edit_customer_info">
+        <source>label.edit_customer_info</source>
+        <target>Para editar o cliente primeiro precisa iniciar o atendimento</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
