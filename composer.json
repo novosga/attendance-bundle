@@ -1,7 +1,7 @@
 {
     "name": "novosga/attendance-bundle",
     "license": "MIT",
-    "type": "novosga-module",
+    "type": "symfony-module",
     "autoload": {
         "psr-4": { "Novosga\\AttendanceBundle\\": "src/" }
     },
