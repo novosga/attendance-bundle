@@ -452,7 +452,7 @@
             </div>
         </div>
 
-        <div id="dialog-customer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div ref="customerModal" id="dialog-customer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <form
@@ -474,7 +474,7 @@
         </div>
 
         {# dialog redirecionar #}
-        <div id="dialog-redirecionar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div ref="redirecionarModal" id="dialog-redirecionar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content" v-if="atendimento">
                     <div class="modal-header">
@@ -512,22 +512,6 @@
                                 v-if="atendimento.status === 'encerrando'">
                             {{ 'modal.redirect.button.finish'|trans }}
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="dialog-erro-encerrar" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{ 'modal.error'|trans }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            {{ 'modal.error.text'|trans }}
-                        </p>
                     </div>
                 </div>
             </div>
@@ -701,21 +685,23 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        var local              = {{ local|json_encode|raw }},
-            numeroLocal        = {{ numeroLocal ? numeroLocal : 'null' }},
-            usuario            = {{ usuario|json_encode()|raw }},
-            unidade            = {{ unidade|json_encode()|raw }},
-            atendimento        = {{ atendimento|json_encode()|raw }},
-            tipoAtendimento    = "{{ tipoAtendimento ? tipoAtendimento : 'null' }}",
-            tiposAtendimento   = {{ tiposAtendimento|json_encode()|raw }},
-            servicosUsuario    = {{ servicos|json_encode()|raw }},
-            labelSim           = "{{ 'label.yes'|trans }}",
-            labelNao           = "{{ 'label.no'|trans }}",
-            dateTimeFormat     = "{{ 'MM/DD/YYYY HH:mm:ss'|trans }}",
-            alertTitle         = "{{ 'alert.title'|trans }}",
-            alertRedirecionar  = "{{ 'alert.ticket_error.text'|trans }}",
-            alertNaoCompareceu = "{{ 'alert.no_show.text'|trans }}",
-            alertEncerrar      = "{{ 'alert.finish.text'|trans }}";
+        const local = {{ local|json_encode|raw }};
+        const numeroLocal = {{ numeroLocal ? numeroLocal : 'null' }};
+        const usuario = {{ usuario|json_encode()|raw }};
+        const unidade = {{ unidade|json_encode()|raw }};
+        const atendimento = {{ atendimento|json_encode()|raw }};
+        const tipoAtendimento = "{{ tipoAtendimento ? tipoAtendimento : 'null' }}";
+        const tiposAtendimento = {{ tiposAtendimento|json_encode()|raw }};
+        const servicosUsuario = {{ servicos|json_encode()|raw }};
+        const labelSim = "{{ 'label.yes'|trans }}";
+        const labelNao = "{{ 'label.no'|trans }}";
+        const dateTimeFormat = "{{ 'MM/DD/YYYY HH:mm:ss'|trans }}";
+        const alertTitle = "{{ 'alert.title'|trans }}";
+        const alertRedirecionar = "{{ 'alert.ticket_error.text'|trans }}";
+        const alertNaoCompareceu = "{{ 'alert.no_show.text'|trans }}";
+        const alertEncerrar = "{{ 'alert.finish.text'|trans }}";
+        const modalErrorTitle = "{{ 'modal.error'|trans }}"
+        const modalErrorText = "{{ 'modal.error.text'|trans }}";
     
         App.Clock.init("novosga-clock", {{ time }});
     </script>

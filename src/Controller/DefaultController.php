@@ -320,28 +320,23 @@ class DefaultController extends AbstractController
         TranslatorInterface $translator
     ): Response {
         $envelope = new Envelope();
-        $proximo = null;
-        $success = false;
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
 
         // verifica se ja esta atendendo alguem
-        $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
+        $atendimento = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
         // se ja existe um atendimento em andamento (chamando senha novamente)
-        if ($atual) {
-            $success = true;
-            $proximo = $atual;
-        } else {
-            $localId     = $this->getLocalAtendimento($usuarioService, $usuario);
+        if (!$atendimento) {
+            $localId = $this->getLocalAtendimento($usuarioService, $usuario);
             $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-            $servicos    = $usuarioService->getServicosUnidade($usuario, $unidade);
+            $servicos = $usuarioService->getServicosUnidade($usuario, $unidade);
 
             $local = $localRepository->find($localId);
             $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
 
-            $success = $atendimentoService->chamarProximo(
+            $atendimento = $atendimentoService->chamarProximo(
                 $unidade,
                 $usuario,
                 $local,
@@ -351,22 +346,15 @@ class DefaultController extends AbstractController
             );
         }
 
-        // response
-        if (!$success) {
-            if (!$proximo) {
-                throw new Exception(
-                    $translator->trans('error.queue.empty', [], NovosgaAttendanceBundle::getDomain())
-                );
-            } else {
-                throw new Exception(
-                    $translator->trans('error.attendance.in_process', [], NovosgaAttendanceBundle::getDomain())
-                );
-            }
+        if (!$atendimento) {
+            throw new Exception(
+                $translator->trans('error.queue.empty', [], NovosgaAttendanceBundle::getDomain())
+            );
         }
 
-        $atendimentoService->chamarSenha($unidade, $proximo);
+        $atendimentoService->chamarSenha($atendimento, $usuario);
 
-        $data = $proximo->jsonSerialize();
+        $data = $atendimento->jsonSerialize();
         $envelope->setData($data);
 
         return $this->json($envelope);
@@ -390,53 +378,49 @@ class DefaultController extends AbstractController
         }
 
         $envelope = new Envelope();
-        $proximo = null;
-        $success = false;
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
 
         // verifica se ja esta atendendo alguem
-        $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
+        $atendimento = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
-        // se ja existe um atendimento em andamento (chamando senha novamente)
-        if ($atual) {
-            $success = true;
-            $proximo = $atual;
-        } else {
-            $localId = $this->getLocalAtendimento($usuarioService, $usuario);
-            $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
-            $servicoUsuario = $usuarioService->getServicoUsuario($usuario, $servico, $unidade);
-            $servicos = [ $servicoUsuario ];
-
-            if (!$servicoUsuario) {
-                throw new \Exception('Serviço não disponível para o atendente atual');
-            }
-
-            $local = $localRepository->find($localId);
-            $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
-
-            $success = $atendimentoService->chamarProximo(
-                $unidade,
-                $usuario,
-                $local,
-                $tipo,
-                $servicos,
-                $numeroLocal,
-            );
-        }
-
-        // response
-        if (!$success) {
-            $message = $proximo ? 'error.attendance.in_process' : 'error.queue.empty';
+        if ($atendimento) {
             throw new Exception(
-                $translator->trans($message, [], NovosgaAttendanceBundle::getDomain())
+                $translator->trans('error.attendance.in_process', [], NovosgaAttendanceBundle::getDomain())
             );
         }
 
-        $atendimentoService->chamarSenha($unidade, $proximo);
+        $localId = $this->getLocalAtendimento($usuarioService, $usuario);
+        $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
+        $servicoUsuario = $usuarioService->getServicoUsuario($usuario, $servico, $unidade);
+        $servicos = [ $servicoUsuario ];
 
-        $data = $proximo->jsonSerialize();
+        if (!$servicoUsuario) {
+            throw new Exception('Serviço não disponível para o atendente atual');
+        }
+
+        $local = $localRepository->find($localId);
+        $tipo = $this->getTipoAtendimento($usuarioService, $usuario);
+
+        $atendimento = $atendimentoService->chamarProximo(
+            $unidade,
+            $usuario,
+            $local,
+            $tipo,
+            $servicos,
+            $numeroLocal,
+        );
+
+        if (!$atendimento) {
+            throw new Exception(
+                $translator->trans('error.queue.empty', [], NovosgaAttendanceBundle::getDomain())
+            );
+        }
+
+        $atendimentoService->chamarSenha($atendimento, $usuario);
+
+        $data = $atendimento->jsonSerialize();
         $envelope->setData($data);
 
         return $this->json($envelope);
@@ -550,7 +534,7 @@ class DefaultController extends AbstractController
             $atual->setObservacao($data->observacao);
         }
 
-        $atendimentoService->encerrar($atual, $unidade, $data->servicos, $servicoRedirecionado, $novoUsuario);
+        $atendimentoService->encerrar($atual, $usuario, $data->servicos, $servicoRedirecionado, $novoUsuario);
 
         return $this->json($envelope);
     }
@@ -578,7 +562,7 @@ class DefaultController extends AbstractController
             );
         }
 
-        $redirecionado = $atendimentoService->redirecionar($atual, $unidade, $data->servico, $data->usuario);
+        $redirecionado = $atendimentoService->redirecionar($atual, $usuario, $data->servico, $data->usuario);
         if (!$redirecionado->getId()) {
             throw new Exception(
                 $translator->trans(

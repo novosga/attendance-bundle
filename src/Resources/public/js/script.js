@@ -4,8 +4,6 @@
  */
 var App = App || {};
 
-const customerModal = new bootstrap.Modal('#dialog-customer');
-
 (function () {
     'use strict'
     
@@ -41,9 +39,11 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
             searchResult: [],
             usuarios: [],
             novoUsuario: null,
+            redirecionarModal: null,
+            customerModal: null,
         },
         methods: {
-            update: function () {
+            update() {
                 var self = this;
                 App.ajax({
                     url: App.url('/novosga.attendance/ajax_update'),
@@ -70,7 +70,7 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                 });
             },
             
-            infoSenha: function (atendimento) {
+            infoSenha(atendimento) {
                 var self = this;
                 App.ajax({
                     url: App.url('/novosga.attendance/info_senha/') + atendimento.id,
@@ -81,7 +81,7 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                 });
             },
 
-            setLocal: function () {
+            setLocal() {
                 var self = this;
                 
                 App.ajax({
@@ -104,7 +104,7 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                 });
             },
             
-            chamar: function (e) {
+            chamar(e) {
                 var self = this;
                 self.busy = true;
                 
@@ -187,7 +187,7 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
             erroTriagem: function () {
                 this.novoUsuario = null;
                 this.servicoRedirecionar = null;
-                $('#dialog-redirecionar').modal('show');
+                this.redirecionarModal.show();
             },
             
             preparaEncerrar: function () {
@@ -216,35 +216,41 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                 });
                 
                 if (servicos.length === 0) {
-                    $('#dialog-erro-encerrar').modal('show');
+                    swal({
+                        type: "error",
+                        title: modalErrorTitle,
+                        text: modalErrorText,
+                    });
                     return;
                 }
                 
                 var data = {
+                    servicos,
                     redirecionar: false,
-                    servicos: servicos.join(','),
                     resolucao: this.atendimento.resolucao,
                     observacao: this.atendimento.observacao
                 };
-                
+
                 // se foi submetido via modal de redirecionamento
                 if (isRedirect) {
                     if (!this.servicoRedirecionar) {
-                        $('#dialog-erro-encerrar').modal('show');
+                        swal({
+                            type: "error",
+                            title: modalErrorTitle,
+                            text: modalErrorText,
+                        });
                         return;
                     }
                     data.redirecionar = true;
                     data.novoServico = this.servicoRedirecionar;
                     data.novoUsuario = this.novoUsuario;
-                } else {
-                    if (this.redirecionarAoEncerrar) {
-                        this.novoUsuario = null;
-                        this.servicoRedirecionar = null;
-                        $('#dialog-redirecionar').modal('show');
-                        return;
-                    }
+                } else if (this.redirecionarAoEncerrar) {
+                    this.novoUsuario = null;
+                    this.servicoRedirecionar = null;
+                    this.redirecionarModal.show();
+                    return;
                 }
-                
+
                 swal({
                     title: alertTitle,
                     text: alertEncerrar,
@@ -264,26 +270,26 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                         url: App.url('/novosga.attendance/encerrar'),
                         type: 'post',
                         data: data,
-                        success: function () {
+                        success() {
                             self.atendimento = null;
                             self.redirecionarAoEncerrar = false;
-                            $('.modal').modal('hide');
+                            App.Modal.closeAll();
                         }
                     });
                 });
             },
             
-            encerrar: function(isRedirect) {
+            encerrar(isRedirect) {
                 this.redirecionarAoEncerrar = false;
                 this.fazEncerrar(isRedirect);
             },
             
-            encerrarRedirecionar: function() {
+            encerrarRedirecionar() {
                 this.redirecionarAoEncerrar = true;
                 this.fazEncerrar(false);
             },
             
-            changeServicoRedirecionar: function () {
+            changeServicoRedirecionar() {
                 var servico = this.servicoRedirecionar,
                     self = this;
             
@@ -328,7 +334,7 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
                             },
                             success: function () {
                                 self.atendimento = null;
-                                $('.modal').modal('hide');
+                                App.Modal.closeAll();
                             }
                         });
                     });
@@ -367,13 +373,12 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
             },
 
             async loadCustomer() {
-                const modal = $('#dialog-customer .modal-body')
-                modal.html('')
+                const body = this.$refs.customerModal.querySelector('.modal-body')
+                body.innerHTML = '';
                 const url = `${this.$el.dataset.baseUrl}customer/${this.atendimento.id}`
                 const resp = await fetch(url)
                 if (resp.ok) {
-                    const html = await resp.text()
-                    modal.html(html)
+                    body.innerHTML = await resp.text();
                 }
             },
 
@@ -387,25 +392,38 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
             },
 
             saveCustomer() {
-                const url = `${this.$el.dataset.baseUrl}customer/${this.atendimento.id}`
-                const modal = $('#dialog-customer .modal-body')
-                const data = modal.parent('form').serialize()
-                modal.find(':input').attr('disabled', true)
-                $.post(url, data, (response, textStatus, jqXHR) => {
-                    if (jqXHR.status === 200) {
-                        this.recarregar()
-                    }
-                    modal.html(response)
+                const url = `${this.$el.dataset.baseUrl}customer/${this.atendimento.id}`;
+                const body = this.$refs.customerModal.querySelector('.modal-body');
+                const form = this.$refs.customerModal.querySelector('form');
+                const data = new FormData(form);
+                const submitButton = form.querySelector('button[type=submit]');
+                submitButton.disabled = true;
+                fetch(url, {
+                    method: 'post',
+                    body: data,
+                }).then(async (resp) => {
+                    this.recarregar();
+                    body.innerHTML = await resp.text();
+                    submitButton.disabled = false;
+                }).catch(() => {
+                    alert('Erro ao salvar cliente');
+                    submitButton.disabled = false;
                 });
             }
         },
         mounted() {
+            this.redirecionarModal = new bootstrap.Modal(this.$refs.redirecionarModal);
+            this.customerModal = new bootstrap.Modal(this.$refs.customerModal);
+            this.$refs.customerModal.addEventListener('shown.bs.modal', (event) => {
+                this.loadCustomer();
+            });
+
             if (!App.Notification.allowed()) {
-                document.getElementById('notification').style.display = 'block';
+                document.getElementById('notification').style.display = 'inline';
             }
 
-            if (self.usuario.numeroLocal) {
-                self.update();
+            if (this.usuario.numeroLocal) {
+                this.update();
             }
 
             App.SSE.connect([
@@ -429,8 +447,4 @@ const customerModal = new bootstrap.Modal('#dialog-customer');
     if (!local) {
         new bootstrap.Modal(app.$refs.localModal).show();
     }
-
-    customerModal._element.addEventListener('shown.bs.modal', (event) => {
-        app.loadCustomer();
-    });
 })();
