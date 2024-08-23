@@ -518,7 +518,7 @@ class DefaultController extends AbstractController
         if ($data->redirecionar) {
             $servicoRedirecionado = $servicoRepository->find($data->novoServico);
             if (isset($data->novoUsuario)) {
-                $novoUsuario = $usuarioRepository->find($data->novoServico);
+                $novoUsuario = $usuarioRepository->find($data->novoUsuario);
             }
         }
 
