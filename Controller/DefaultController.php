@@ -589,7 +589,7 @@ class DefaultController extends AbstractController
             if (isset($data->novoUsuario)) {
                 $novoUsuario = $em
                     ->getRepository(Usuario::class)
-                    ->find($data->novoServico);
+                    ->find($data->novoUsuario);
             }
         }
         
