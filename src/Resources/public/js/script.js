@@ -64,6 +64,8 @@
                                 }
                                 App.Notification.show('Atendimento', 'Novo atendimento na fila');
                             }
+                        } else {
+                            document.title = defaultTitle;
                         }
                     }
                 });
