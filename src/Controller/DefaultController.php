@@ -134,7 +134,10 @@ class DefaultController extends AbstractController
         $unidade = $usuario->getLotacao()->getUnidade();
         $atendimentoAtual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
-        return $this->json(new Envelope($atendimentoAtual));
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimentoAtual,
+        ));
     }
 
     #[Route("/customer/{id}", name: "customer", methods: ["GET", "POST"])]
@@ -205,7 +208,12 @@ class DefaultController extends AbstractController
         EventDispatcherInterface $dispatcher,
         #[MapRequestPayload()] SetLocalDto $data,
     ): Response {
-        $envelope = new Envelope();
+        /** @var UsuarioInterface */
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $envelope = new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+        );
 
         try {
             $tipo = ($data->tipoAtendimento ?? FilaServiceInterface::TIPO_TODOS);
@@ -243,10 +251,6 @@ class DefaultController extends AbstractController
                 );
             }
 
-            /** @var UsuarioInterface */
-            $usuario = $this->getUser();
-            $unidade = $usuario->getLotacao()->getUnidade();
-
             $dispatcher->dispatch(new PreUserSetLocalEvent($unidade, $usuario, $local, $data->numeroLocal, $tipo));
 
             $usuarioService->meta($usuario, UsuarioServiceInterface::ATTR_ATENDIMENTO_LOCAL, $data->local);
@@ -273,7 +277,6 @@ class DefaultController extends AbstractController
         FilaServiceInterface $filaService,
         UsuarioServiceInterface $usuarioService
     ): Response {
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -312,9 +315,10 @@ class DefaultController extends AbstractController
             ],
         ];
 
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $data,
+        ));
     }
 
     /**
@@ -326,7 +330,6 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         UsuarioServiceInterface $usuarioService,
     ): Response {
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -361,10 +364,10 @@ class DefaultController extends AbstractController
 
         $atendimentoService->chamarSenha($atendimento, $usuario);
 
-        $data = $atendimento->jsonSerialize();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimento->jsonSerialize(),
+        ));
     }
 
     /**
@@ -383,7 +386,6 @@ class DefaultController extends AbstractController
             throw new Exception('Chamar senha por serviço não é permitido');
         }
 
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -425,10 +427,10 @@ class DefaultController extends AbstractController
 
         $atendimentoService->chamarSenha($atendimento, $usuario);
 
-        $data = $atendimento->jsonSerialize();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimento->jsonSerialize(),
+        ));
     }
 
     /**
@@ -447,7 +449,6 @@ class DefaultController extends AbstractController
             throw new Exception('Chamar senha fora de ordem serviço não é permitido');
         }
 
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -479,10 +480,10 @@ class DefaultController extends AbstractController
 
         $atendimentoService->chamarSenha($atendimento, $usuario);
 
-        $data = $atendimento->jsonSerialize();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimento->jsonSerialize(),
+        ));
     }
 
     /**
@@ -504,11 +505,10 @@ class DefaultController extends AbstractController
 
         $atendimentoService->iniciarAtendimento($atual, $usuario);
 
-        $data     = $atual->jsonSerialize();
-        $envelope = new Envelope();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atual->jsonSerialize(),
+        ));
     }
 
     /**
@@ -530,11 +530,10 @@ class DefaultController extends AbstractController
 
         $atendimentoService->naoCompareceu($atual, $usuario);
 
-        $data = $atual->jsonSerialize();
-        $envelope = new Envelope();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atual->jsonSerialize(),
+        ));
     }
 
     /**
@@ -547,12 +546,10 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         #[MapRequestPayload] EncerrarAtendimentoDto $data,
     ): Response {
-        $envelope = new Envelope();
-
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $atual   = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
+        $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
         if (!$atual) {
             throw new Exception(
@@ -589,8 +586,10 @@ class DefaultController extends AbstractController
         }
 
         $atendimentoService->encerrar($atual, $usuario, $data->servicos, $servicoRedirecionado, $novoUsuario);
-
-        return $this->json($envelope);
+        
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+        ));
     }
 
     /**
@@ -602,8 +601,6 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         #[MapRequestPayload] RedirecionarAtendimentoDto $data,
     ): Response {
-        $envelope = new Envelope();
-
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -629,7 +626,9 @@ class DefaultController extends AbstractController
             );
         }
 
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+        ));
     }
 
     #[Route("/info_senha/{id}", name: "infosenha", methods: ["GET"])]
@@ -637,7 +636,6 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         int $id,
     ): Response {
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -649,24 +647,25 @@ class DefaultController extends AbstractController
             );
         }
 
-        $data = $atendimento->jsonSerialize();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimento->jsonSerialize(),
+        ));
     }
 
     #[Route("/consulta_senha", name: "consultasenha", methods: ["GET"])]
     public function consultaSenha(Request $request, AtendimentoServiceInterface $atendimentoService): Response
     {
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         $numero = $request->get('numero', '');
         $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
-        $envelope->setData($atendimentos);
 
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $atendimentos,
+        ));
     }
 
     /**
@@ -678,7 +677,6 @@ class DefaultController extends AbstractController
         ServicoUnidadeRepositoryInterface $servicoUnidadeRepository,
         int $servicoId
     ): Response {
-        $envelope = new Envelope();
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -692,9 +690,10 @@ class DefaultController extends AbstractController
 
         $usuarios = $usuarioRepository->findByServicoUnidade($servicoUnidade);
 
-        $envelope->setData($usuarios);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $usuarios,
+        ));
     }
 
     private function getLocalAtendimento(UsuarioServiceInterface $usuarioService, UsuarioInterface $usuario): ?int
