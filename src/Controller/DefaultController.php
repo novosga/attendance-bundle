@@ -586,7 +586,7 @@ class DefaultController extends AbstractController
         }
 
         $atendimentoService->encerrar($atual, $usuario, $data->servicos, $servicoRedirecionado, $novoUsuario);
-        
+
         return $this->json(new Envelope(
             timezone: $unidade->getDateTimeZone(),
         ));
