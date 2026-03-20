@@ -108,7 +108,7 @@ class DefaultController extends AbstractController
         }, $servicosUsuario);
 
         $servicosIndisponiveis = $servicoService->servicosIndisponiveis($unidade, $usuario);
-        $settings = $this->settingsService->loadBehaviorSettings();
+        $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
 
         return $this->render('@NovosgaAttendance/default/index.html.twig', [
             'time' => time() * 1000,
@@ -381,14 +381,14 @@ class DefaultController extends AbstractController
         UsuarioServiceInterface $usuarioService,
         int $id,
     ): Response {
-        $settings = $this->settingsService->loadBehaviorSettings();
-        if (!$settings->callTicketByService) {
-            throw new Exception('Chamar senha por serviço não é permitido');
-        }
-
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
+
+        $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
+        if (!$settings->callTicketByService) {
+            throw new Exception('Chamar senha por serviço não é permitido');
+        }
 
         // verifica se ja esta atendendo alguem
         $this->checkAtendimentoEmAndamento($atendimentoService, $usuario, $unidade);
@@ -444,14 +444,14 @@ class DefaultController extends AbstractController
         UsuarioServiceInterface $usuarioService,
         int $id,
     ): Response {
-        $settings = $this->settingsService->loadBehaviorSettings();
-        if (!$settings->callTicketOutOfOrder) {
-            throw new Exception('Chamar senha fora de ordem serviço não é permitido');
-        }
-
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
+
+        $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
+        if (!$settings->callTicketOutOfOrder) {
+            throw new Exception('Chamar senha fora de ordem serviço não é permitido');
+        }
 
         // verifica se ja esta atendendo alguem
         $this->checkAtendimentoEmAndamento($atendimentoService, $usuario, $unidade);
