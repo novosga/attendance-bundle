@@ -68,8 +68,8 @@ class DefaultController extends AbstractController
         UsuarioServiceInterface $usuarioService,
         ServicoServiceInterface $servicoService,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()?->getUnidade();
 
         if (!$unidade) {
@@ -129,8 +129,8 @@ class DefaultController extends AbstractController
     #[Route("/atendimento", name: "atendimento", methods: ["GET"])]
     public function atendimentoAtual(AtendimentoServiceInterface $atendimentoService): Response
     {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atendimentoAtual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
@@ -208,8 +208,8 @@ class DefaultController extends AbstractController
         EventDispatcherInterface $dispatcher,
         #[MapRequestPayload()] SetLocalDto $data,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $envelope = new Envelope(
             timezone: $unidade->getDateTimeZone(),
@@ -284,8 +284,8 @@ class DefaultController extends AbstractController
         FilaServiceInterface $filaService,
         UsuarioServiceInterface $usuarioService
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $localId = $this->getLocalAtendimento($usuarioService, $usuario) ?? 0;
         $numeroLocal = $this->getNumeroLocalAtendimento($usuarioService, $usuario);
@@ -337,8 +337,8 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         UsuarioServiceInterface $usuarioService,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
 
         // verifica se ja esta atendendo alguem
@@ -388,8 +388,8 @@ class DefaultController extends AbstractController
         UsuarioServiceInterface $usuarioService,
         int $id,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
 
         $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
@@ -451,8 +451,8 @@ class DefaultController extends AbstractController
         UsuarioServiceInterface $usuarioService,
         int $id,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
 
         $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
@@ -499,8 +499,8 @@ class DefaultController extends AbstractController
     #[Route("/iniciar", name: "iniciar", methods: ["POST"])]
     public function iniciar(AtendimentoServiceInterface $atendimentoService): Response
     {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
@@ -524,8 +524,8 @@ class DefaultController extends AbstractController
     #[Route("/nao_compareceu", name: "naocompareceu", methods: ["POST"])]
     public function naoCompareceu(AtendimentoServiceInterface $atendimentoService): Response
     {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atual   = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
@@ -553,8 +553,8 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         #[MapRequestPayload] EncerrarAtendimentoDto $data,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
@@ -608,8 +608,8 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         #[MapRequestPayload] RedirecionarAtendimentoDto $data,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atual = $atendimentoService->getAtendimentoAndamento($usuario->getId(), $unidade);
 
@@ -643,8 +643,8 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         int $id,
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $atendimento = $atendimentoService->buscaAtendimento($unidade, $id);
 
@@ -663,8 +663,8 @@ class DefaultController extends AbstractController
     #[Route("/consulta_senha", name: "consultasenha", methods: ["GET"])]
     public function consultaSenha(Request $request, AtendimentoServiceInterface $atendimentoService): Response
     {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $numero = $request->get('numero', '');
         $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
@@ -684,8 +684,8 @@ class DefaultController extends AbstractController
         ServicoUnidadeRepositoryInterface $servicoUnidadeRepository,
         int $servicoId
     ): Response {
-        /** @var UsuarioInterface */
         $usuario = $this->getUser();
+        assert($usuario instanceof UsuarioInterface);
         $unidade = $usuario->getLotacao()->getUnidade();
         $servicoUnidade = $servicoUnidadeRepository->get($unidade, $servicoId);
 
