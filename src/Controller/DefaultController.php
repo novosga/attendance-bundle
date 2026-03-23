@@ -216,7 +216,14 @@ class DefaultController extends AbstractController
         );
 
         try {
-            $tipo = ($data->tipoAtendimento ?? FilaServiceInterface::TIPO_TODOS);
+            $settings = $this->settingsService->loadUserBehaviorSettings($usuario);
+            if ($settings->changeTicketType) {
+                $tipo = $data->tipoAtendimento;
+            } else {
+                $tipo = $usuarioService->meta($usuario, UsuarioServiceInterface::ATTR_ATENDIMENTO_TIPO)?->getValue();
+            }
+            $tipo ??= FilaServiceInterface::TIPO_TODOS;
+
             if ($data->numeroLocal <= 0) {
                 throw new Exception(
                     $this->translator->trans(
