@@ -163,7 +163,7 @@ class DefaultController extends AbstractController
         if (!$atendimento->getCliente()) {
             $novoCliente = null;
             if ($request->isMethod('POST')) {
-                $data = $request->get('cliente');
+                $data = $request->request->get('cliente');
                 if (is_array($data) && key_exists('documento', $data)) {
                     $novoCliente = $clienteRepository->findOneBy([
                         'documento' => $data['documento'],
@@ -666,7 +666,7 @@ class DefaultController extends AbstractController
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        $numero = $request->get('numero', '');
+        $numero = $request->query->get('numero', '');
         $atendimentos = $atendimentoService->buscaAtendimentos($unidade, $numero);
 
         return $this->json(new Envelope(
