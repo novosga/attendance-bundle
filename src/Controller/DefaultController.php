@@ -163,8 +163,8 @@ class DefaultController extends AbstractController
         if (!$atendimento->getCliente()) {
             $novoCliente = null;
             if ($request->isMethod('POST')) {
-                $data = $request->request->get('cliente');
-                if (is_array($data) && key_exists('documento', $data)) {
+                $data = $request->request->all('cliente');
+                if (key_exists('documento', $data)) {
                     $novoCliente = $clienteRepository->findOneBy([
                         'documento' => $data['documento'],
                     ]);
