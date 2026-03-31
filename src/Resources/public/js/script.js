@@ -41,6 +41,9 @@
             customerModal: null,
             senhaModal: null,
             localModal: null,
+            config: {
+                exibirNomeCliente: false
+            },
         },
         methods: {
             update() {
@@ -397,6 +400,25 @@
                     alert('Erro ao salvar cliente');
                     submitButton.disabled = false;
                 });
+            },
+
+            saveConfig() {
+                App.Storage.set('novosga.attendance', JSON.stringify(this.config));
+            },
+
+            loadConfig() {
+                try {
+                    const json = App.Storage.get('novosga.attendance');
+                    const config = (JSON.parse(json) || {});
+
+                    if (config.exibirNomeCliente === undefined) {
+                        config.exibirNomeCliente = false;
+                    }
+
+                    this.config.exibirNomeCliente = config.exibirNomeCliente;
+                } catch (e) {
+                    // do nothing
+                }
             }
         },
         mounted() {
@@ -431,6 +453,7 @@
                 this.update();
             };
             
+            this.loadConfig();
             this.update();
 
             if (!local) {

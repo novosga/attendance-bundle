@@ -4,6 +4,14 @@
 
 {% block body %}
     <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
+        <div class="d-flex">
+            <div class="ms-auto mt-3">
+                <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
+                    <i class="fa fa-cog"></i>&nbsp;
+                    {% trans %}Configuração{% endtrans %}
+                </a>
+            </div>
+        </div>
         <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
@@ -355,7 +363,7 @@
                     </span>
                 </h5>
                 <div class="card-body">
-                    <ul>
+                    <ul v-bind:style="{ display: config.exibirNomeCliente ? 'grid' : 'inline' }">
                         <li>
                             <button class="btn btn-outline-primary"
                                 title="{{ 'button.call_next'|trans }}"
@@ -384,6 +392,7 @@
                                v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
                                 {%- verbatim -%}
                                     {{ atendimento.senha.format }}
+                                    <span v-if="config.exibirNomeCliente && atendimento.cliente"> - {{ atendimento.cliente?.nome }}</span>
                                 {%- endverbatim -%}
                             </a>
                         </li>
@@ -704,6 +713,33 @@
                             </button>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# dialog de atendimento #}
+        <div id="dialog-atendimento-config" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{% trans %}Configuração{% endtrans %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <fieldset>
+                                    <legend>{% trans %}Fila de Senhas{% endtrans %}</legend>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" v-model="config.exibirNomeCliente" v-on:change="saveConfig"> 
+                                            {% trans %}Exibir nome do cliente{% endtrans %}
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
