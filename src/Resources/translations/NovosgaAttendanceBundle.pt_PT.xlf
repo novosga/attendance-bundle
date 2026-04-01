@@ -387,6 +387,26 @@
         <source>label.edit_customer_info</source>
         <target>Para editar o cliente primeiro precisa iniciar o atendimento</target>
       </trans-unit>
+      <trans-unit id="label.configuration">
+        <source>label.configuration</source>
+        <target>Configuração</target>
+      </trans-unit>
+      <trans-unit id="label.configuration.select_display_format_label">
+        <source>label.configuration.select_display_format_label</source>
+        <target>Formato de exibição da fila</target>
+      </trans-unit>
+      <trans-unit id="label.configuration.option_ticket">
+        <source>label.configuration.option_ticket</source>
+        <target>Número da senha</target>
+      </trans-unit>
+      <trans-unit id="label.configuration.option_client_name">
+        <source>label.configuration.option_client_name</source>
+        <target>Nome do cliente</target>
+      </trans-unit>
+      <trans-unit id="label.configuration.option_ticket_client_name">
+        <source>label.configuration.option_ticket_client_name</source>
+        <target>Número da senha e nome do cliente</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

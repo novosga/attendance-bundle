@@ -41,6 +41,9 @@
             customerModal: null,
             senhaModal: null,
             localModal: null,
+            config: {
+                formatoExibicaoFila: null
+            },
         },
         methods: {
             update() {
@@ -360,6 +363,23 @@
                 return styles.join(';')
             },
 
+            getAtendimentoLabel(atendimento) {
+                const formato = this.config.formatoExibicaoFila;
+                const temCliente = !!atendimento.cliente;
+                const senha = atendimento.senha.format;
+                const nome = temCliente ? atendimento.cliente.nome : '';
+
+                if (formato === 'client_name' && temCliente) {
+                    return nome;
+                }
+
+                if (formato === 'ticket_client_name' && temCliente) {
+                    return `${senha} - ${nome}`;
+                }
+
+                return senha;
+            },
+
             async loadCustomer() {
                 const body = this.$refs.customerModal.querySelector('.modal-body')
                 body.innerHTML = '';
@@ -397,6 +417,25 @@
                     alert('Erro ao salvar cliente');
                     submitButton.disabled = false;
                 });
+            },
+
+            saveConfig() {
+                App.Storage.set('novosga.attendance', JSON.stringify(this.config));
+            },
+
+            loadConfig() {
+                try {
+                    const json = App.Storage.get('novosga.attendance');
+                    const config = (JSON.parse(json) || {});
+
+                    if (config.formatoExibicaoFila === undefined) {
+                        config.formatoExibicaoFila = 'ticket';
+                    }
+
+                    this.config.formatoExibicaoFila = config.formatoExibicaoFila;
+                } catch (e) {
+                    // do nothing
+                }
             }
         },
         mounted() {
@@ -431,6 +470,7 @@
                 this.update();
             };
             
+            this.loadConfig();
             this.update();
 
             if (!local) {

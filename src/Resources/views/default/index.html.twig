@@ -4,6 +4,14 @@
 
 {% block body %}
     <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
+        <div class="d-flex">
+            <div class="ms-auto mt-3">
+                <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
+                    <i class="fa fa-cog"></i>&nbsp;
+                    {% trans %}Configuração{% endtrans %}
+                </a>
+            </div>
+        </div>
         <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
@@ -345,52 +353,56 @@
                     </div>
                 </div>
             </div>
-            <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}" v-for="fila in filas" v-if="!fila.servico || fila.atendimentos.length>0">
-                <h5 class="card-header">
-                    <span v-if="!fila.servico">Todos serviços</span>
-                    <span v-if="fila.servico">
-                        {% verbatim %}
-                            {{fila.servico.servico.nome}}
-                        {% endverbatim %}
-                    </span>
-                </h5>
-                <div class="card-body">
-                    <ul>
-                        <li>
-                            <button class="btn btn-outline-primary"
-                                title="{{ 'button.call_next'|trans }}"
-                                v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
-                                v-on:click="chamar"
-                                v-if="!fila.servico">
-                                <i class="fa fa-bullhorn"></i>
-                                {{ 'button.call'|trans }}
-                            </button>
-                            {% if settings.callTicketByService %}
-                                <button class="btn btn-outline-primary"
-                                    title="{{ 'button.call_next'|trans }}"
-                                    v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
-                                    v-on:click="chamarServico(fila.servico.servico)"
-                                    v-if="fila.servico">
-                                    <i class="fa fa-bullhorn"></i>
-                                    {{ 'button.call'|trans }}
-                                </button>
-                            {% endif %}
-                        </li>
-                        <li v-for="(atendimento, index) in fila.atendimentos">
-                            <a href="#"
-                               v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
-                               v-bind:style="getItemFilaStyle(atendimento)"
-                               v-on:click.prevent="infoSenha(atendimento)"
-                               v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
-                                {%- verbatim -%}
-                                    {{ atendimento.senha.format }}
-                                {%- endverbatim -%}
-                            </a>
-                        </li>
-                        <li class="empty" v-if="fila.atendimentos.length===0">
-                            {{ 'label.my_queue.empty'|trans }}
-                        </li>
-                    </ul>
+            <div class="row">
+                <div v-bind:class="{ 'col-12': true, 'col-md-6': config.formatoExibicaoFila !== 'ticket' }" v-for="fila in filas" v-if="!fila.servico || fila.atendimentos.length>0">
+                    <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}">
+                        <h5 class="card-header">
+                            <span v-if="!fila.servico">Todos serviços</span>
+                            <span v-if="fila.servico">
+                                {% verbatim %}
+                                    {{fila.servico.servico.nome}}
+                                {% endverbatim %}
+                            </span>
+                        </h5>
+                        <div class="card-body">
+                            <ul v-bind:style="{ display: config.formatoExibicaoFila !== 'ticket' ? 'grid' : 'inline' }">
+                                <li>
+                                    <button class="btn btn-outline-primary"
+                                        title="{{ 'button.call_next'|trans }}"
+                                        v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
+                                        v-on:click="chamar"
+                                        v-if="!fila.servico">
+                                        <i class="fa fa-bullhorn"></i>
+                                        {{ 'button.call'|trans }}
+                                    </button>
+                                    {% if settings.callTicketByService %}
+                                        <button class="btn btn-outline-primary"
+                                            title="{{ 'button.call_next'|trans }}"
+                                            v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
+                                            v-on:click="chamarServico(fila.servico.servico)"
+                                            v-if="fila.servico">
+                                            <i class="fa fa-bullhorn"></i>
+                                            {{ 'button.call'|trans }}
+                                        </button>
+                                    {% endif %}
+                                </li>
+                                <li v-for="(atendimento, index) in fila.atendimentos">
+                                    <a href="#"
+                                    v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
+                                    v-bind:style="getItemFilaStyle(atendimento)"
+                                    v-on:click.prevent="infoSenha(atendimento)"
+                                    v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
+                                        {%- verbatim -%}
+                                            <span>{{ getAtendimentoLabel(atendimento) }}</span>
+                                        {%- endverbatim -%}
+                                    </a>
+                                </li>
+                                <li class="empty" v-if="fila.atendimentos.length===0">
+                                    {{ 'label.my_queue.empty'|trans }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -704,6 +716,32 @@
                             </button>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# dialog de atendimento #}
+        <div id="dialog-atendimento-config" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ 'label.configuration'|trans }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="mb-3">
+                                    <label>{{ 'label.configuration.select_display_format_label'|trans }}</label>
+                                    <select class="form-select" v-on:change="saveConfig" v-model="config.formatoExibicaoFila">
+                                        <option value="ticket" selected>{{ 'label.configuration.option_ticket'|trans }}</option>
+                                        <option value="client_name">{{ 'label.configuration.option_client_name'|trans }}</option>
+                                        <option value="ticket_client_name">{{ 'label.configuration.option_ticket_client_name'|trans }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

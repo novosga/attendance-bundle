@@ -395,6 +395,31 @@
         <source>modal.customer</source>
         <target>Editar cliente</target>
       </trans-unit>
+
+      <trans-unit id="label.configuration">
+        <source>label.configuration</source>
+        <target>Configuración</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.select_display_format_label">
+        <source>label.configuration.select_display_format_label</source>
+        <target>Formato de visualización de la fila</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_ticket">
+        <source>label.configuration.option_ticket</source>
+        <target>Número de turno</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_client_name">
+        <source>label.configuration.option_client_name</source>
+        <target>Nombre del cliente</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_ticket_client_name">
+        <source>label.configuration.option_ticket_client_name</source>
+        <target>Número de turno y nombre del cliente</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
