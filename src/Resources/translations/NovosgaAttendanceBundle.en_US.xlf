@@ -402,6 +402,31 @@
         <source>modal.customer</source>
         <target>Edit customer</target>
       </trans-unit>
+
+      <trans-unit id="label.configuration">
+        <source>label.configuration</source>
+        <target>Configuration</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.select_display_format_label">
+        <source>label.configuration.select_display_format_label</source>
+        <target>Queue display format</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_ticket">
+        <source>label.configuration.option_ticket</source>
+        <target>Ticket number</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_client_name">
+        <source>label.configuration.option_client_name</source>
+        <target>Customer name</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.option_ticket_client_name">
+        <source>label.configuration.option_ticket_client_name</source>
+        <target>Ticket number and customer name</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

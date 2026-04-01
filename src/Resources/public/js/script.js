@@ -42,7 +42,7 @@
             senhaModal: null,
             localModal: null,
             config: {
-                exibirNomeCliente: false
+                formatoExibicaoFila: null
             },
         },
         methods: {
@@ -363,6 +363,23 @@
                 return styles.join(';')
             },
 
+            getAtendimentoLabel(atendimento) {
+                const formato = this.config.formatoExibicaoFila;
+                const temCliente = !!atendimento.cliente;
+                const senha = atendimento.senha.format;
+                const nome = temCliente ? atendimento.cliente.nome : '';
+
+                if (formato === 'client_name' && temCliente) {
+                    return nome;
+                }
+
+                if (formato === 'ticket_client_name' && temCliente) {
+                    return `${senha} - ${nome}`;
+                }
+
+                return senha;
+            },
+
             async loadCustomer() {
                 const body = this.$refs.customerModal.querySelector('.modal-body')
                 body.innerHTML = '';
@@ -411,11 +428,11 @@
                     const json = App.Storage.get('novosga.attendance');
                     const config = (JSON.parse(json) || {});
 
-                    if (config.exibirNomeCliente === undefined) {
-                        config.exibirNomeCliente = false;
+                    if (config.formatoExibicaoFila === undefined) {
+                        config.formatoExibicaoFila = 'ticket';
                     }
 
-                    this.config.exibirNomeCliente = config.exibirNomeCliente;
+                    this.config.formatoExibicaoFila = config.formatoExibicaoFila;
                 } catch (e) {
                     // do nothing
                 }
