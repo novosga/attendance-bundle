@@ -4,14 +4,6 @@
 
 {% block body %}
     <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
-        <div class="d-flex">
-            <div class="ms-auto mt-3">
-                <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
-                    <i class="fa fa-cog"></i>&nbsp;
-                    {% trans %}Configuração{% endtrans %}
-                </a>
-            </div>
-        </div>
         <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
             <div class="row">
                 <div class="col-sm-3 col-md-2">
@@ -32,6 +24,12 @@
                         <i class="fa fa-user"></i>
                         {{app.user.nomeCompleto}}<br>
                         ({{app.user.userIdentifier}})
+                    </div>
+                    <div class="text-center">
+                        <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
+                            <i class="fa fa-cog"></i>&nbsp;
+                            {% trans %}Configuração{% endtrans %}
+                        </a>
                     </div>
                 </div>
                 <div class="attendance-panel col-sm-9 col-md-10">
@@ -353,19 +351,26 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div v-bind:class="{ 'col-12': true, 'col-md-6': config.formatoExibicaoFila !== 'ticket' }" v-for="fila in filas" v-if="!fila.servico || fila.atendimentos.length>0">
-                    <div v-bind:class="{'fila card mb-3':true, 'border-dark': !fila.servico}">
-                        <h5 class="card-header">
-                            <span v-if="!fila.servico">Todos serviços</span>
+            <div :class="queuesStyleClass()">
+                <div v-for="fila in filas" v-if="showQueue(fila)" :class="queueOuterStyleClass(fila)">
+                    <div :class="queueInnerStyleClass(fila)">
+                        <div class="card-header">
                             <span v-if="fila.servico">
                                 {% verbatim %}
                                     {{fila.servico.servico.nome}}
                                 {% endverbatim %}
                             </span>
-                        </h5>
+                            <span v-else>
+                                {{ 'label.all_services'|trans }}
+                            </span>
+                            <span class="badge badge-pill bg-secondary float-end">
+                                {% verbatim %}
+                                    {{fila.atendimentos.length}}
+                                {% endverbatim %}
+                            </span>
+                        </div>
                         <div class="card-body">
-                            <ul v-bind:style="{ display: config.formatoExibicaoFila !== 'ticket' ? 'grid' : 'inline' }">
+                            <ul>
                                 <li>
                                     <button class="btn btn-outline-primary"
                                         title="{{ 'button.call_next'|trans }}"
@@ -731,10 +736,29 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-12">
+                                <div class="mb-3 form-check">
+                                    <input id="show-all-services" type="checkbox" class="form-check-input" v-model="config.exibirTodosServicos" v-on:change="saveConfig">
+                                    <label for="show-all-services">{{ 'label.configuration.show_all_services'|trans }}</label>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input id="show-empty-queue" type="checkbox" class="form-check-input" v-model="config.exibirFilaVazia" v-on:change="saveConfig">
+                                    <label for="show-empty-queue">{{ 'label.configuration.show_empty_queue'|trans }}</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label>{{ 'label.configuration.queue_layout'|trans }}</label>
+                                    <select class="form-select" v-on:change="saveConfig" v-model="config.layoutFila">
+                                        <option value="horizontal">{{ 'label.configuration.queue_layout.horizontal'|trans }}</option>
+                                        <option value="vertical">{{ 'label.configuration.queue_layout.vertical'|trans }}</option>
+                                    </select>
+                                </div>
+                                <div v-if="config.layoutFila === 'vertical'" class="mb-3">
+                                    <label>{{ 'label.configuration.number_of_columns'|trans }}</label>
+                                    <input type="number" class="form-control" min="1" max="6" v-model="config.numeroColunas" v-on:change="saveConfig">
+                                </div>
                                 <div class="mb-3">
                                     <label>{{ 'label.configuration.select_display_format_label'|trans }}</label>
-                                    <select class="form-select" v-on:change="saveConfig" v-model="config.formatoExibicaoFila">
-                                        <option value="ticket" selected>{{ 'label.configuration.option_ticket'|trans }}</option>
+                                    <select class="form-select" v-model="config.formatoExibicaoSenha" v-on:change="saveConfig">
+                                        <option value="ticket">{{ 'label.configuration.option_ticket'|trans }}</option>
                                         <option value="client_name">{{ 'label.configuration.option_client_name'|trans }}</option>
                                         <option value="ticket_client_name">{{ 'label.configuration.option_ticket_client_name'|trans }}</option>
                                     </select>

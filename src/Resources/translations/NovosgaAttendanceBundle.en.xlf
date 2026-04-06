@@ -410,7 +410,7 @@
 
       <trans-unit id="label.configuration.select_display_format_label">
         <source>label.configuration.select_display_format_label</source>
-        <target>Queue display format</target>
+        <target>Ticket display format</target>
       </trans-unit>
 
       <trans-unit id="label.configuration.option_ticket">
@@ -426,6 +426,41 @@
       <trans-unit id="label.configuration.option_ticket_client_name">
         <source>label.configuration.option_ticket_client_name</source>
         <target>Ticket number and customer name</target>
+      </trans-unit>
+
+      <trans-unit id="label.all_services">
+        <source>label.all_services</source>
+        <target>All services</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.show_all_services">
+        <source>label.configuration.show_all_services</source>
+        <target>Show all services</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.show_empty_queue">
+        <source>label.configuration.show_empty_queue</source>
+        <target>Show empty queue</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout">
+        <source>label.configuration.queue_layout</source>
+        <target>Queue layout</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout.horizontal">
+        <source>label.configuration.queue_layout.horizontal</source>
+        <target>Horizontal</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout.vertical">
+        <source>label.configuration.queue_layout.vertical</source>
+        <target>Vertical</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.number_of_columns">
+        <source>label.configuration.number_of_columns</source>
+        <target>Number of columns</target>
       </trans-unit>
     </body>
   </file>
