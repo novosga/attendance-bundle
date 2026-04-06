@@ -466,6 +466,7 @@
 
             queuesStyleClass() {
                 return {
+                    'mt-4': true,
                     [`row row-cols-${this.config.numeroColunas}`]: this.config.layoutFila === 'vertical',
                 }
             },
