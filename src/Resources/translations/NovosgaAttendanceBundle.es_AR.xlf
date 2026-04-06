@@ -429,6 +429,41 @@
         <source>label.configuration.option_ticket_client_name</source>
         <target>Número de turno y nombre del cliente</target>
       </trans-unit>
+
+      <trans-unit id="label.all_services">
+        <source>label.all_services</source>
+        <target>Todos los servicios</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.show_all_services">
+        <source>label.configuration.show_all_services</source>
+        <target>Mostrar todos los servicios</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.show_empty_queue">
+        <source>label.configuration.show_empty_queue</source>
+        <target>Mostrar fila vacía</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout">
+        <source>label.configuration.queue_layout</source>
+        <target>Diseño de la fila</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout.horizontal">
+        <source>label.configuration.queue_layout.horizontal</source>
+        <target>Horizontal</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.queue_layout.vertical">
+        <source>label.configuration.queue_layout.vertical</source>
+        <target>Vertical</target>
+      </trans-unit>
+
+      <trans-unit id="label.configuration.number_of_columns">
+        <source>label.configuration.number_of_columns</source>
+        <target>Número de columnas</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

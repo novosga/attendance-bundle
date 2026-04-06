@@ -428,15 +428,62 @@
                     const json = App.Storage.get('novosga.attendance');
                     const config = (JSON.parse(json) || {});
 
+                    if (config.exibirTodosServicos === undefined) {
+                        config.exibirTodosServicos = true;
+                    }
+
+                    if (config.exibirFilaVazia === undefined) {
+                        config.exibirFilaVazia = false;
+                    }
+
                     if (config.formatoExibicaoFila === undefined) {
                         config.formatoExibicaoFila = 'ticket';
                     }
 
-                    this.config.formatoExibicaoFila = config.formatoExibicaoFila;
+                    if (config.layoutFila === undefined) {
+                        config.layoutFila = 'horizontal';
+                    }
+
+                    if (config.numeroColunas === undefined) {
+                        config.numeroColunas = 1;
+                    }
+
+                    this.config = { ...config };
                 } catch (e) {
                     // do nothing
                 }
-            }
+            },
+
+            showQueue(fila) {
+                if (!fila.servico) {
+                    return this.config.exibirTodosServicos;
+                }
+                if (fila.atendimentos.length === 0) {
+                    return this.config.exibirFilaVazia;
+                }
+                return true;
+            },
+
+            queuesStyleClass() {
+                return {
+                    [`row row-cols-${this.config.numeroColunas}`]: this.config.layoutFila === 'vertical',
+                }
+            },
+
+            queueOuterStyleClass(fila) {
+                return {
+                    'fila': true,
+                    [this.config.layoutFila]: true,
+                    'col': this.config.layoutFila === 'vertical',
+                }
+            },
+
+            queueInnerStyleClass(fila) {
+                return {
+                    'card mb-3':true,
+                    'border-dark': !fila.servico,
+                }
+            },
         },
         mounted() {
             this.redirecionarModal = new bootstrap.Modal(this.$refs.redirecionarModal);

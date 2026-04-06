@@ -93,9 +93,16 @@
 
 #atendimento .fila ul li {
     list-style: none;
+}
+
+#atendimento .fila.horizontal ul li {
     display: inline;
     padding: 12px 6px 0 6px;
     display: inline-block;
+}
+
+#atendimento .fila.vertical ul li {
+    padding: 12px 6px 0 6px;
 }
 
 #atendimento .fila ul li .proximo {
