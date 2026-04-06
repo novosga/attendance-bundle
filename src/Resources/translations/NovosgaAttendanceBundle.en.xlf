@@ -410,7 +410,7 @@
 
       <trans-unit id="label.configuration.select_display_format_label">
         <source>label.configuration.select_display_format_label</source>
-        <target>Queue display format</target>
+        <target>Ticket display format</target>
       </trans-unit>
 
       <trans-unit id="label.configuration.option_ticket">

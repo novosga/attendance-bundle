@@ -403,7 +403,7 @@
 
       <trans-unit id="label.configuration.select_display_format_label">
         <source>label.configuration.select_display_format_label</source>
-        <target>Formato de visualización de la fila</target>
+        <target>Formato de visualización del turno</target>
       </trans-unit>
 
       <trans-unit id="label.configuration.option_ticket">

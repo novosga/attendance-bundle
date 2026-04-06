@@ -42,7 +42,7 @@
             senhaModal: null,
             localModal: null,
             config: {
-                formatoExibicaoFila: null
+                formatoExibicaoSenha: null
             },
         },
         methods: {
@@ -364,7 +364,7 @@
             },
 
             getAtendimentoLabel(atendimento) {
-                const formato = this.config.formatoExibicaoFila;
+                const formato = this.config.formatoExibicaoSenha;
                 const temCliente = !!atendimento.cliente;
                 const senha = atendimento.senha.format;
                 const nome = temCliente ? atendimento.cliente.nome : '';
@@ -436,8 +436,8 @@
                         config.exibirFilaVazia = false;
                     }
 
-                    if (config.formatoExibicaoFila === undefined) {
-                        config.formatoExibicaoFila = 'ticket';
+                    if (config.formatoExibicaoSenha === undefined) {
+                        config.formatoExibicaoSenha = 'ticket';
                     }
 
                     if (config.layoutFila === undefined) {
