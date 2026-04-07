@@ -31,4 +31,19 @@ class NovosgaAttendanceBundle extends BaseModule
     {
         return 'novosga_attendance_index';
     }
+
+    public function getDescription(): ?string
+    {
+        return 'module.description';
+    }
+
+    public function getWebsite(): ?string
+    {
+        return 'https://novosga.org';
+    }
+
+    public function getAuthor(): ?string
+    {
+        return 'NovoSGA';
+    }
 }

@@ -1,10 +1,13 @@
 <?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="en">
     <body>
-      <trans-unit id="0">
+      <trans-unit id="module.name">
         <source>module.name</source>
         <target>Attending</target>
-        
+      </trans-unit>
+      <trans-unit id="module.description">
+        <source>module.description</source>
+        <target>Atendimento</target>
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>
