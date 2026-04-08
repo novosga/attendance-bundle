@@ -7,7 +7,7 @@
       </trans-unit>
       <trans-unit id="module.description">
         <source>module.description</source>
-        <target>Atendimento</target>
+        <target>Public service desk management, including ticket calling and service recording</target>
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>

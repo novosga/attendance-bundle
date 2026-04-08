@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="module.description">
         <source>module.description</source>
-        <target>Atendimento</target>
+        <target>Gerenciamento do atendimento ao público, incluindo chamada de senhas e registro de serviços realizados</target>
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>

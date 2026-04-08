@@ -7,7 +7,7 @@
       </trans-unit>
       <trans-unit id="module.description">
         <source>module.description</source>
-        <target>Atendimento</target>
+        <target>Gestión de la atención al público, incluyendo llamada de turnos y registro de servicios realizados</target>
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>
