@@ -438,6 +438,54 @@
         <source>label.configuration.number_of_columns</source>
         <target>Número de colunas</target>
       </trans-unit>
+      <trans-unit id="label.customer.email">
+        <source>label.customer.email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="label.customer.phone">
+        <source>label.customer.phone</source>
+        <target>Telefone</target>
+      </trans-unit>
+      <trans-unit id="label.no_current_attendance">
+        <source>label.no_current_attendance</source>
+        <target>Nenhuma senha em atendimento</target>
+      </trans-unit>
+      <trans-unit id="label.call_to_start">
+        <source>label.call_to_start</source>
+        <target>Clique em Chamar para iniciar o atendimento</target>
+      </trans-unit>
+      <trans-unit id="button.edit">
+        <source>button.edit</source>
+        <target>Editar</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_solved_partially">
+        <source>label.resolution_solved_partially</source>
+        <target>Resolvido parcialmente</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_forwarded">
+        <source>label.resolution_forwarded</source>
+        <target>Encaminhado</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_not_solved">
+        <source>label.resolution_not_solved</source>
+        <target>Não resolvido</target>
+      </trans-unit>
+      <trans-unit id="label.redirect_attendance">
+        <source>label.redirect_attendance</source>
+        <target>Redirecionar atendimento</target>
+      </trans-unit>
+      <trans-unit id="label.waiting_queues">
+        <source>label.waiting_queues</source>
+        <target>Filas de espera</target>
+      </trans-unit>
+      <trans-unit id="label.notification.new_attendance">
+        <source>label.notification.new_attendance</source>
+        <target>Novo atendimento na fila</target>
+      </trans-unit>
+      <trans-unit id="error.save_customer">
+        <source>error.save_customer</source>
+        <target>Erro ao guardar cliente</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -4,158 +4,188 @@
 
 {% block body %}
     <div id="attendance" v-cloak data-base-url="{{ path('novosga_attendance_index') }}">
-        <div id="atendimento" v-if="usuario.numeroLocal && usuario.local">
-            <div class="row">
-                <div class="col-sm-3 col-md-2">
-                    <a href="#dialog-local" data-bs-toggle="modal" id="local">
-                        <span class="local" v-text="usuario.local.nome">
-                            {{ local }}
-                        </span>
-                        <span class="numero" v-text="usuario.numeroLocal">
-                            {{ numeroLocal }}
-                        </span>
-                        <span class="tipo-atendimento" v-bind:class="'tipo-' + usuario.tipoAtendimento">
-                            {% verbatim %}
-                                {{ tiposAtendimento[usuario.tipoAtendimento] }}
-                            {% endverbatim %}
-                        </span>
-                    </a>
-                    <div class="text-center p-3">
-                        <i class="fa fa-user"></i>
-                        {{app.user.nomeCompleto}}<br>
-                        ({{app.user.userIdentifier}})
-                    </div>
-                    <div class="text-center">
-                        <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
-                            <i class="fa fa-cog"></i>&nbsp;
-                            {% trans %}Configuração{% endtrans %}
-                        </a>
-                    </div>
-                </div>
-                <div class="attendance-panel col-sm-9 col-md-10">
-                    <div class="row" v-if="atendimento && atendimento.status!=='encerrando'">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    {{ 'label.attendance'|trans }}
+        <div class="d-flex align-items-center">
+            <div>
+                <h1>
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    {{ 'title'|trans }}
+                </h1>
+            </div>
+            <div class="ms-auto">
+                <a href="#dialog-busca" class="btn btn-outline-secondary" data-bs-toggle="modal">
+                    <i class="fa fa-search me-1"></i>
+                    {{ 'button.find_ticket'|trans }}
+                </a>
+                <a href="#dialog-atendimento-config" class="btn btn-outline-secondary" data-bs-toggle="modal">
+                    <i class="fa fa-cog me-1"></i>
+                    {{ 'label.configuration'|trans }}
+                </a>
+            </div>
+        </div>
+        <div id="atendimento" v-if="usuario.numeroLocal && usuario.local" class="py-3">
+            <div class="top">
+                <div class="row">
+                    <div class="col-12 col-md-2">
+                        <div id="local" class="card">
+                            <a href="#dialog-local" data-bs-toggle="modal">
+                                <i class="fa fa-cog"></i>
+                            </a>
+                            <div class="local" v-text="usuario.local.nome">
+                                {{ local }}
+                            </div>
+                            <div class="numero" v-text="usuario.numeroLocal">
+                                {{ numeroLocal }}
+                            </div>
+                            <div class="tipo-atendimento" v-bind:class="'tipo-' + usuario.tipoAtendimento">
+                                <span>
+                                    {% verbatim %}
+                                        {{ tiposAtendimento[usuario.tipoAtendimento] }}
+                                    {% endverbatim %}
+                                </span>
+                            </div>
+                            <hr>
+                            <div class="user d-flex">
+                                <i class="fa fa-user my-2 mx-3"></i>
+                                <div>
+                                    <span class="name">{{app.user.nomeCompleto}}</span>
+                                    <span class="username">{{app.user.userIdentifier}}</span>
                                 </div>
-                                <table class="table">
-                                    <tr>
-                                        <th>
-                                            {{ 'label.ticket'|trans }}
-                                        </th>
-                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-10 ps-3">
+                        <div class="attendance-panel">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 controls">
+                                <div class="col d-grid">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            title="{{ 'button.call_next'|trans }}"
+                                            v-bind:disabled="busy || total === 0 || (atendimento && (atendimento.status !== 'chamado'))"
+                                            v-on:click="chamar">
+                                        <i class="fa fa-bullhorn"></i>
+                                        <span v-if="atendimento">{{ 'button.call_again'|trans }}</span>
+                                        <span v-else>{{ 'button.call_next'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="col d-grid">
+                                    <button type="button"
+                                            class="btn btn-success btn-control iniciar"
+                                            title="{{ 'button.start'|trans }}"
+                                            v-bind:disabled="busy || !atendimento || (atendimento && atendimento.status !== 'chamado')"
+                                            v-on:click="iniciar">
+                                        <i class="fa fa-play"></i>
+                                        <span>{{ 'button.start'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="col d-grid">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            title="{{ 'button.finish'|trans }}"
+                                            v-bind:disabled="busy || !atendimento || (atendimento && atendimento.status !== 'iniciado')"
+                                            v-on:click="preparaEncerrar">
+                                        <i class="fa fa-stop"></i>
+                                        <span>{{ 'button.finish'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="col d-grid">
+                                    <button type="button"
+                                            class="btn btn-danger"
+                                            title="{{ 'button.not_show'|trans }}"
+                                            v-bind:disabled="busy || !atendimento || (atendimento && atendimento.status !== 'chamado')"
+                                            v-on:click="naoCompareceu">
+                                        <i class="fa fa-user-times"></i>
+                                        <span>{{ 'button.not_show'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="col d-grid">
+                                    <button type="button"
+                                            class="btn btn-warning"
+                                            title="{{ 'button.error'|trans }}"
+                                            v-bind:disabled="busy || !atendimento || (atendimento && atendimento.status !== 'iniciado')"
+                                            v-on:click="erroTriagem">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        <span>{{ 'button.error'|trans }}</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div v-if="!atendimento" class="text-center text-muted my-3 py-5 border rounded">
+                                <i class="fa fa-bullhorn fa-2x d-block mb-2"></i>
+                                <p class="mb-2">
+                                    <b>{{ 'label.no_current_attendance'|trans }}</b><br>
+                                    {{ 'label.call_to_start'|trans }}
+                                </p>
+                            </div>
+
+                            <div v-if="atendimento" class="card my-3 px-3 ticket-info" :style="{ 'border-color': atendimento.prioridade.cor }">
+                                <div class="d-flex justify-content-between py-3">
+                                    <div class="d-flex align-items-center">
+                                        <h4 title="{{ 'label.ticket'|trans }}" class="ticket" :style="{ 'color': atendimento.prioridade.cor }">
                                             {%- verbatim -%}
                                                 {{ atendimento.senha.format }}
                                             {%- endverbatim -%}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ 'label.service'|trans }}
-                                        </th>
-                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                                        </h4>
+                                        <span title="{{ 'label.service'|trans }}" class="service">
                                             {%- verbatim -%}
                                                 {{ atendimento.servico.nome }}
                                             {%- endverbatim -%}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ 'label.priority'|trans }}
-                                        </th>
-                                        <td :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span title="{{ 'label.ticket.wait_time'|trans }}" class="badge rounded-pill text-bg-light">
+                                            <i class="fa fa-clock-o me-2"></i>
+                                            {%- verbatim -%}
+                                                {{ atendimento.tempoEspera }}
+                                            {%- endverbatim -%}
+                                        </span>
+                                        <span title="{{ 'label.priority'|trans }}" :style="{ backgroundColor: atendimento.prioridade.cor }" class="priority badge rounded-pill">
                                             {%- verbatim -%}
                                                 {{ atendimento.prioridade.nome }}
                                             {%- endverbatim -%}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    {{ 'label.customer'|trans }}
-                                    <span class="pull-right" title="{{ 'label.edit_customer_info'|trans }}">
-                                        <button
-                                            :disabled="atendimento.status === 'chamado'"
-                                            type="button"
-                                            class="btn btn-outline-secondary"
-                                            data-bs-target="#dialog-customer"
-                                            data-bs-toggle="modal">
-                                            Editar <i class="fa fa-edit"></i>
-                                        </button>
-                                    </span>
+                                        </span>
+                                    </div>
                                 </div>
-                                <table class="table">
-                                    <tr>
-                                        <th>
-                                            {{ 'label.customer.name'|trans }}
-                                        </th>
-                                        <td>
-                                            {%- verbatim -%}
-                                                {{ atendimento.cliente ? atendimento.cliente.nome : '' }}
-                                            {%- endverbatim -%}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ 'label.customer.id'|trans }}
-                                        </th>
-                                        <td>
-                                            {%- verbatim -%}
-                                                {{ atendimento.cliente ? atendimento.cliente.documento : '' }}
-                                            {%- endverbatim -%}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" v-if="atendimento && atendimento.status==='encerrando'">
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            {{ 'label.attendance'|trans }}
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label>{{ 'label.customer.name'|trans }}</label>
+                                            <input type="text" class="form-control" :value="atendimento.cliente?.nome" disabled>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-4 text-center">
-                                                    <strong>{{ 'label.ticket'|trans }}</strong>
-                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
-                                                        {%- verbatim -%}
-                                                            {{ atendimento.senha.format }}
-                                                        {%- endverbatim -%}
-                                                    </p>
-                                                </div>
-                                                <div class="col-4 text-center">
-                                                    <strong>{{ 'label.service'|trans }}</strong>
-                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
-                                                        {%- verbatim -%}
-                                                            {{ atendimento.servico.nome }}
-                                                        {%- endverbatim -%}
-                                                    </p>
-                                                </div>
-                                                <div class="col-4 text-center">
-                                                    <strong>{{ 'label.priority'|trans }}</strong>
-                                                    <p :style="{ color: atendimento.prioridade.cor }" class="font-weight-bold">
-                                                        {%- verbatim -%}
-                                                            {{ atendimento.prioridade.nome }}
-                                                        {%- endverbatim -%}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label>{{ 'label.customer.id'|trans }}</label>
+                                            <input type="text" class="form-control" :value="atendimento.cliente?.documento" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label>{{ 'label.customer.email'|trans }}</label>
+                                            <input type="text" class="form-control" :value="atendimento.cliente?.email" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label>{{ 'label.customer.phone'|trans }}</label>
+                                            <input type="text" class="form-control" :value="atendimento.cliente?.telefone" disabled>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="text-end pb-3">
+                                    <button
+                                        :disabled="atendimento.status === 'chamado'"
+                                        type="button"
+                                        class="btn btn-outline-secondary"
+                                        data-bs-target="#dialog-customer"
+                                        data-bs-toggle="modal">
+                                        <i class="fa fa-edit me-1"></i>
+                                        {{ 'button.edit'|trans }}
+                                    </button>
+                                </div>
                             </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-6">
+
+                            <div class="row" v-if="atendimento && atendimento.status==='encerrando'">
+                                <div class="card-group">
                                     <div class="card">
                                         <div class="card-header">
                                             {{ 'label.services.available'|trans }}
@@ -176,17 +206,16 @@
                                                 </span>
                                                 <ul v-if="su.subServicos.length">
                                                     <li v-for="sub in su.subServicos" v-if="sub.disabled!==true">
-                                                        <a href="#" title="{{ 'button.add'|trans }}"
-                                                            v-on:click.prevent="addServicoRealizado(sub)">
+                                                        <a href="#" title="{{ 'button.add'|trans }}" v-on:click.prevent="addServicoRealizado(sub)">
+                                                            <i class="fa fa-plus me-2"></i>
                                                             {%- verbatim -%}
                                                                 {{ sub.nome }}
                                                             {%- endverbatim -%}
                                                         </a>
                                                     </li>
                                                 </ul>
-                                                <a href="#" title="{{ 'button.add'|trans }}"
-                                                    v-if="su.subServicos.length===0"
-                                                    v-on:click.prevent="addServicoRealizado(su.servico)">
+                                                <a href="#" title="{{ 'button.add'|trans }}" v-if="su.subServicos.length===0" v-on:click.prevent="addServicoRealizado(su.servico)">
+                                                    <i class="fa fa-plus me-2"></i>
                                                     {%- verbatim -%}
                                                         {{ su.servico.nome }}
                                                     {%- endverbatim -%}
@@ -194,8 +223,6 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
-                                <div class="col-6">
                                     <div class="card">
                                         <div class="card-header">
                                             {{ 'label.services.executed'|trans }}
@@ -205,12 +232,10 @@
                                                 {{ 'label.services.executed.empty'|trans }}
                                             </p>
                                         </div>
-                                        <ul class="list-group">
-                                            <li class="list-group-item"
-                                                v-for="servico in servicosRealizados">
-                                                <a href="#"
-                                                    title="{{ 'label.remove'|trans }}"
-                                                    v-on:click.prevent="removeServicoRealizado(servico)">
+                                        <ul class="list-group list-group-flush servicos-realizados">
+                                            <li class="list-group-item" v-for="servico in servicosRealizados">
+                                                <a href="#" title="{{ 'label.remove'|trans }}" v-on:click.prevent="removeServicoRealizado(servico)">
+                                                    <i class="fa fa-minus me-2"></i>
                                                     {% verbatim %}
                                                         {{ servico.nome }}
                                                     {% endverbatim %}
@@ -218,210 +243,124 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    {{ 'label.resolution'|trans }}
-                                </div>
-                                <div class="card-body">
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <label for="resolucao">{{ 'label.resolution'|trans }}</label>
-                                            <select id="resolucao" class="form-control" v-model="atendimento.resolucao">
-                                                <option value="resolvido">{{ 'label.resolution_solved'|trans }}</option>
-                                                <option value="pendente">{{ 'label.resolution_pending'|trans }}</option>
-                                            </select>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            {{ 'label.resolution'|trans }}
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="resolucao">{{ 'label.resolution'|trans }}</label>
+                                                <select id="resolucao" class="form-control" v-model="atendimento.resolucao">
+                                                    <option value="resolvido">{{ 'label.resolution_solved'|trans }}</option>
+                                                    <option value="resolvido_parcialmente">{{ 'label.resolution_solved_partially'|trans }}</option>
+                                                    <option value="pendente">{{ 'label.resolution_pending'|trans }}</option>
+                                                    <option value="encaminhado">{{ 'label.resolution_forwarded'|trans }}</option>
+                                                    <option value="nao_resolvido">{{ 'label.resolution_not_solved'|trans }}</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="observacao">{{ 'label.notes'|trans }}</label>
+                                                <textarea id="observacao" class="form-control" v-model="atendimento.observacao" rows="8"></textarea>
+                                            </div>
+                                            <div class="form-check">
+                                                <input id="redirecionar-check" class="form-check-input" type="checkbox" v-model="redirecionarAoEncerrar">
+                                                <label class="form-check-label" for="redirecionar-check">
+                                                    {{ 'label.redirect_attendance'|trans }}
+                                                </label>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex justify-content-between">
+                                                <button type="button"
+                                                        class="btn btn-primary"
+                                                        title="{{ 'button.finish'|trans }}"
+                                                        v-bind:disabled="busy"
+                                                        v-on:click="encerrar(false)">
+                                                    <i class="fa fa-stop"></i>
+                                                    <span>{{ 'button.finish'|trans }}</span>
+                                                </button>
+                                                <button type="button"
+                                                        class="btn"
+                                                        title="{{ 'button.redirect'|trans }}"
+                                                        v-bind:disabled="busy"
+                                                        v-on:click="encerrarVoltar">
+                                                    <i class="fa fa-chevron-left"></i>
+                                                    <span>{{ 'button.back'|trans }}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <label for="observacao">{{ 'label.notes'|trans }}</label>
-                                            <textarea id="observacao" class="form-control" v-model="atendimento.observacao" rows="8"></textarea>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row controls">
-                        <div class="col-md-4 d-grid" v-if="!atendimento">
-                            <button type="button"
-                                    class="btn btn-primary btn-block"
-                                    title="{{ 'button.call_next'|trans }}"
-                                    v-bind:disabled="busy || total===0"
-                                    v-on:click="chamar">
-                                <i class="fa fa-bullhorn"></i>
-                                <span>{{ 'button.call_next'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && (atendimento.status==='chamado' || atendimento.status==='iniciado')">
-                            <button type="button"
-                                    class="btn btn-secondary btn-block"
-                                    title="{{ 'button.call_again'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="chamar">
-                                <i class="fa fa-bullhorn"></i>
-                                <span>{{ 'button.call_again'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='chamado'">
-                            <button type="button"
-                                    class="btn btn-primary btn-block btn-control iniciar"
-                                    title="{{ 'button.start'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="iniciar">
-                                <i class="fa fa-play"></i>
-                                <span>{{ 'button.start'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='chamado'">
-                            <button type="button"
-                                    class="btn btn-danger btn-block"
-                                    title="{{ 'button.not_show'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="naoCompareceu">
-                                <i class="fa fa-user-times"></i>
-                                <span>{{ 'button.not_show'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='iniciado'">
-                            <button type="button"
-                                    class="btn btn-primary btn-block"
-                                    title="{{ 'button.finish'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="preparaEncerrar">
-                                <i class="fa fa-stop"></i>
-                                <span>{{ 'button.finish'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='iniciado'">
-                            <button type="button"
-                                    class="btn btn-danger btn-block"
-                                    title="{{ 'button.error'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="erroTriagem">
-                                <i class="fa fa-exclamation-triangle"></i>
-                                <span>{{ 'button.error'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
-                            <button type="button"
-                                    class="btn btn-secondary btn-block"
-                                    title="{{ 'button.redirect'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="encerrarRedirecionar">
-                                <i class="fa fa-stop"></i>
-                                <span>{{ 'button.redirect'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
-                            <button type="button"
-                                    class="btn btn-primary btn-block"
-                                    title="{{ 'button.finish'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="encerrar(false)">
-                                <i class="fa fa-stop"></i>
-                                <span>{{ 'button.finish'|trans }}</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-grid" v-if="atendimento && atendimento.status==='encerrando'">
-                            <button type="button"
-                                    class="btn btn-secondary btn-block"
-                                    title="{{ 'button.redirect'|trans }}"
-                                    v-bind:disabled="busy"
-                                    v-on:click="encerrarVoltar">
-                                <i class="fa fa-chevron-left"></i>
-                                <span>{{ 'button.back'|trans }}</span>
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div :class="queuesStyleClass()">
-                <div v-for="fila in filas" v-if="showQueue(fila)" :class="queueOuterStyleClass(fila)">
-                    <div :class="queueInnerStyleClass(fila)">
-                        <div class="card-header">
-                            <span v-if="fila.servico">
-                                {% verbatim %}
-                                    {{fila.servico.servico.nome}}
-                                {% endverbatim %}
-                            </span>
-                            <span v-else>
-                                {{ 'label.all_services'|trans }}
-                            </span>
-                            <span class="badge badge-pill bg-secondary float-end">
-                                {% verbatim %}
-                                    {{fila.atendimentos.length}}
-                                {% endverbatim %}
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                <li>
-                                    <button class="btn btn-outline-primary"
-                                        title="{{ 'button.call_next'|trans }}"
-                                        v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
-                                        v-on:click="chamar"
-                                        v-if="!fila.servico">
-                                        <i class="fa fa-bullhorn"></i>
-                                        {{ 'button.call'|trans }}
-                                    </button>
-                                    {% if settings.callTicketByService %}
+            <div class="bottom">
+                <h6>{{ 'label.waiting_queues'|trans }}</h6>
+                <div :class="queuesStyleClass()">
+                    <div v-for="fila in filas" v-if="showQueue(fila)" :class="queueOuterStyleClass(fila)">
+                        <div :class="queueInnerStyleClass(fila)">
+                            <div class="card-header">
+                                <span v-if="fila.servico">
+                                    {% verbatim %}
+                                        {{fila.servico.servico.nome}}
+                                    {% endverbatim %}
+                                </span>
+                                <span v-else>
+                                    {{ 'label.all_services'|trans }}
+                                </span>
+                                <span class="badge badge-pill bg-secondary float-end">
+                                    {% verbatim %}
+                                        {{fila.atendimentos.length}}
+                                    {% endverbatim %}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>
                                         <button class="btn btn-outline-primary"
                                             title="{{ 'button.call_next'|trans }}"
                                             v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
-                                            v-on:click="chamarServico(fila.servico.servico)"
-                                            v-if="fila.servico">
+                                            v-on:click="chamar"
+                                            v-if="!fila.servico">
                                             <i class="fa fa-bullhorn"></i>
                                             {{ 'button.call'|trans }}
                                         </button>
-                                    {% endif %}
-                                </li>
-                                <li v-for="(atendimento, index) in fila.atendimentos">
-                                    <a href="#"
-                                    v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
-                                    v-bind:style="getItemFilaStyle(atendimento)"
-                                    v-on:click.prevent="infoSenha(atendimento)"
-                                    v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
-                                        {%- verbatim -%}
-                                            <span>{{ getAtendimentoLabel(atendimento) }}</span>
-                                        {%- endverbatim -%}
-                                    </a>
-                                </li>
-                                <li class="empty" v-if="fila.atendimentos.length===0">
-                                    {{ 'label.my_queue.empty'|trans }}
-                                </li>
-                            </ul>
+                                        {% if settings.callTicketByService %}
+                                            <button class="btn btn-outline-primary"
+                                                title="{{ 'button.call_next'|trans }}"
+                                                v-bind:disabled="busy || fila.atendimentos.length===0 || atendimento"
+                                                v-on:click="chamarServico(fila.servico.servico)"
+                                                v-if="fila.servico">
+                                                <i class="fa fa-bullhorn"></i>
+                                                {{ 'button.call'|trans }}
+                                            </button>
+                                        {% endif %}
+                                    </li>
+                                    <li v-for="(atendimento, index) in fila.atendimentos">
+                                        <a href="#"
+                                        v-bind:class="{ prioridade: atendimento.prioridade.peso, proximo: index===0 }"
+                                        v-bind:style="getItemFilaStyle(atendimento)"
+                                        v-on:click.prevent="infoSenha(atendimento)"
+                                        v-bind:title="atendimento.servico.nome + ' (' + atendimento.tempoEspera + ')'">
+                                            {%- verbatim -%}
+                                                <span>{{ getAtendimentoLabel(atendimento) }}</span>
+                                            {%- endverbatim -%}
+                                        </a>
+                                    </li>
+                                    <li class="empty" v-if="fila.atendimentos.length===0">
+                                        {{ 'label.my_queue.empty'|trans }}
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <p class="links">
-            <a href="#dialog-busca" class="btn btn-secondary" data-bs-toggle="modal">
-                <i class="fa fa-search"></i>&nbsp;
-                {{ 'button.find_ticket'|trans }}
-            </a>
-            <button id="notification" type="button" class="btn btn-warning" onclick="App.Notification.request(this)" style="display: none">
-                <i class="fa fa-exclamation"></i>&nbsp;
-                {{ 'button.enable_notification'|trans }}
-            </button>
-        </p>
 
         <div id="dialog-local" ref="localModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
@@ -583,7 +522,7 @@
                                                 {{atendimento.servico.nome}}
                                             </td>
                                             <td>
-                                                <span v-bind:style="{ 'color': atendimento.prioridade.cor, 'font-weight':  atendimento.prioridade.peso > 0 ? 'bold' : 'normal' }">
+                                                <span :style="{ 'color': atendimento.prioridade.cor, 'font-weight':  atendimento.prioridade.peso > 0 ? 'bold' : 'normal' }">
                                                     {{atendimento.prioridade.nome}}
                                                 </span>
                                             </td>
@@ -803,6 +742,9 @@
         const alertEncerrar = "{{ 'alert.finish.text'|trans }}";
         const modalErrorTitle = "{{ 'modal.error'|trans }}"
         const modalErrorText = "{{ 'modal.error.text'|trans }}";
+        const notificationTitle = "{{ 'label.attendance'|trans }}";
+        const notificationNewAttendance = "{{ 'label.notification.new_attendance'|trans }}";
+        const errorSaveCustomer = "{{ 'error.save_customer'|trans }}";
     
         App.Clock.init("novosga-clock", {{ time }}, "{{ unidade.timezone }}");
     </script>
