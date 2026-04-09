@@ -458,6 +458,54 @@
         <source>label.configuration.number_of_columns</source>
         <target>Número de columnas</target>
       </trans-unit>
+      <trans-unit id="label.customer.email">
+        <source>label.customer.email</source>
+        <target>Correo electrónico</target>
+      </trans-unit>
+      <trans-unit id="label.customer.phone">
+        <source>label.customer.phone</source>
+        <target>Teléfono</target>
+      </trans-unit>
+      <trans-unit id="label.no_current_attendance">
+        <source>label.no_current_attendance</source>
+        <target>Ningún turno en atención</target>
+      </trans-unit>
+      <trans-unit id="label.call_to_start">
+        <source>label.call_to_start</source>
+        <target>Haga clic en Llamar para iniciar la atención</target>
+      </trans-unit>
+      <trans-unit id="button.edit">
+        <source>button.edit</source>
+        <target>Editar</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_solved_partially">
+        <source>label.resolution_solved_partially</source>
+        <target>Resuelto parcialmente</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_forwarded">
+        <source>label.resolution_forwarded</source>
+        <target>Derivado</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_not_solved">
+        <source>label.resolution_not_solved</source>
+        <target>No resuelto</target>
+      </trans-unit>
+      <trans-unit id="label.redirect_attendance">
+        <source>label.redirect_attendance</source>
+        <target>Redirigir atención</target>
+      </trans-unit>
+      <trans-unit id="label.waiting_queues">
+        <source>label.waiting_queues</source>
+        <target>Filas de espera</target>
+      </trans-unit>
+      <trans-unit id="label.notification.new_attendance">
+        <source>label.notification.new_attendance</source>
+        <target>Nuevo turno en fila</target>
+      </trans-unit>
+      <trans-unit id="error.save_customer">
+        <source>error.save_customer</source>
+        <target>Error al guardar cliente</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

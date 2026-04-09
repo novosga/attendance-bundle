@@ -465,6 +465,54 @@
         <source>label.configuration.number_of_columns</source>
         <target>Number of columns</target>
       </trans-unit>
+      <trans-unit id="label.customer.email">
+        <source>label.customer.email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="label.customer.phone">
+        <source>label.customer.phone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="label.no_current_attendance">
+        <source>label.no_current_attendance</source>
+        <target>No ticket in attendance</target>
+      </trans-unit>
+      <trans-unit id="label.call_to_start">
+        <source>label.call_to_start</source>
+        <target>Click Call to start the attendance</target>
+      </trans-unit>
+      <trans-unit id="button.edit">
+        <source>button.edit</source>
+        <target>Edit</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_solved_partially">
+        <source>label.resolution_solved_partially</source>
+        <target>Partially solved</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_forwarded">
+        <source>label.resolution_forwarded</source>
+        <target>Forwarded</target>
+      </trans-unit>
+      <trans-unit id="label.resolution_not_solved">
+        <source>label.resolution_not_solved</source>
+        <target>Not solved</target>
+      </trans-unit>
+      <trans-unit id="label.redirect_attendance">
+        <source>label.redirect_attendance</source>
+        <target>Redirect attendance</target>
+      </trans-unit>
+      <trans-unit id="label.waiting_queues">
+        <source>label.waiting_queues</source>
+        <target>Waiting queues</target>
+      </trans-unit>
+      <trans-unit id="label.notification.new_attendance">
+        <source>label.notification.new_attendance</source>
+        <target>New ticket in queue</target>
+      </trans-unit>
+      <trans-unit id="error.save_customer">
+        <source>error.save_customer</source>
+        <target>Error saving customer</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

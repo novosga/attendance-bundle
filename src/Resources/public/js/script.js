@@ -65,7 +65,7 @@
                                 } catch (e) {
                                     console.error(e)
                                 }
-                                App.Notification.show('Atendimento', 'Novo atendimento na fila');
+                                App.Notification.show(notificationTitle, notificationNewAttendance);
                             }
                         } else {
                             document.title = defaultTitle;
@@ -280,7 +280,6 @@
             },
             
             encerrar(isRedirect) {
-                this.redirecionarAoEncerrar = false;
                 this.fazEncerrar(isRedirect);
             },
             
@@ -414,7 +413,7 @@
                     body.innerHTML = await resp.text();
                     submitButton.disabled = false;
                 }).catch(() => {
-                    alert('Erro ao salvar cliente');
+                    alert(errorSaveCustomer);
                     submitButton.disabled = false;
                 });
             },
@@ -497,7 +496,7 @@
             });
 
             if (!App.Notification.allowed()) {
-                document.getElementById('notification').style.display = 'inline';
+                // document.getElementById('notification').style.display = 'inline';
             }
 
             if (this.usuario.numeroLocal) {

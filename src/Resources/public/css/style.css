@@ -2,53 +2,61 @@
  * Novo SGA - Atendimento
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-.attendance-panel {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+
+body>section {
+    padding: 20px 10px;
 }
 
-.module-content .header {
-    margin-bottom: 0 !important;
+#atendimento .top {
+    max-width: 1600px;
+    margin: 0 auto 1rem auto;
 }
 
-#atendimento {
+#atendimento #local {
+    margin: 0 auto 1rem auto;
+    max-width: 260px;
+    color: #000;
+    padding: .5rem 1rem;
+    background-color: #F8CA00;
     position: relative;
 }
 
-/* local */
-
-#atendimento #local {
-    color: #000;
-    min-width: 130px;
-    background-color: #F8CA00;
-    border-bottom: 3px solid #333;
-    display: block;
-}
-
 #atendimento #local .local {
-    font-size: 20px;
-    line-height: 20px;
-    text-align: center;
-    display: block;
-    padding: .5rem 0;
+    font-size: 16px;
+    text-transform: uppercase;
 }
 
 #atendimento #local .numero {
-    font-size: 80px;
-    line-height: 80px;
-    padding: .8rem 0;
+    font-size: 5rem;
+    line-height: 1;
     font-weight: bold;
-    text-align: center;
-    display: block;
 }
 
 #atendimento #local .tipo-atendimento {
-    font-size: 14px;
-    line-height: 14px;
-    padding: .4rem 0;
-    text-align: center;
+    font-size: .9rem;
     font-weight: bold;
+}
+
+#atendimento #local .tipo-atendimento span {
+    padding: .1rem .5rem;
+    border-radius: var(--bs-card-border-radius);
+    background-color: rgba(255, 255, 255, .3);
+}
+
+#atendimento #local .user {
+    font-size: .8rem;
+}
+
+#atendimento #local .user span {
     display: block;
+}
+
+#atendimento #local .user .name {
+    font-weight: bold;
+}
+
+#atendimento #local .user .username {
+    opacity: .7;
 }
 
 #atendimento #local .tipo-atendimento.tipo-normal { color: blue; }
@@ -56,20 +64,69 @@
 #atendimento #local .tipo-atendimento.tipo-agendamento { color: darkorange; }
 
 #atendimento #local a {
-    color: #666;
-    bottom: 10px;
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
-    display: block;
+    color: #000;
+    padding: .3rem .7rem;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+
 }
 
-#atendimento #local a:hover { color: #000; }
+#atendimento #local a:hover {
+    color: #000;
+    border-radius: var(--bs-card-border-radius);
+    background-color: rgba(0, 0, 0, .1);
+}
 
-#atendimento .controls .btn .fa {
-    padding: 3pt 0;
-    font-size: 35pt;
+.attendance-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.attendance-panel .controls .col {
+    margin-bottom: 1rem;
+}
+
+.attendance-panel .controls .btn {
+    padding: 1rem 0;
+}
+
+.attendance-panel .controls .btn:disabled {
+    opacity: .3;
+}
+
+.attendance-panel .ticket-info .ticket {
+    color: #000;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-right: 1rem;
+}
+
+.attendance-panel .ticket-info .service {
+    color: #000;
+}
+
+.attendance-panel .list-group {
+    max-height: 410px;
+    overflow-y: auto;
+}
+
+.attendance-panel .list-group a {
+    width: 100%;
     display: block;
+    text-decoration: none;
+}
+
+.attendance-panel .list-group a:hover {
+    text-decoration: underline;
+}
+
+.attendance-panel .list-group.servicos-realizados li {
+    background-color: rgb(128 191 128 / 22%);
+}
+
+#atendimento .bottom h6 {
+    font-weight: bold;
 }
 
 /* fila */
@@ -117,16 +174,6 @@
     color: #999;
     font-style: italic;
     padding-top: 15px;
-}
-
-p.links {
-    padding-top: 20px;
-    text-align: center;
-    clear: both;
-}
-
-p.links a {
-    margin: 0 5px;
 }
 
 #dialog-busca .modal-dialog {
